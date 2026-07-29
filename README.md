@@ -1,0 +1,29 @@
+# n8n Automation Portfolio 🚀
+
+Welcome to my n8n automation portfolio! This repository showcases various workflows and full-stack projects I've built to automate tasks, integrate APIs, and leverage artificial intelligence.
+
+The goal of this repository is to demonstrate practical use cases of n8n for personal productivity, server management, AI integrations, and more.
+
+---
+
+## 📁 Projects
+
+Here are the current automation projects in this repository:
+
+### 1. [AI-Powered Daily Planner](./n8n_Weather_Calendar_Planner)
+A full-stack productivity dashboard that intelligently combines daily calendar events and local weather to generate highly personalized AI coaching insights using Google Gemini. Built with React and powered by an automated n8n backend workflow.
+
+---
+
+## 🛠 Future Projects Planned
+- AI RSS Summarizer
+- Discord Notifier
+- Server Monitor
+- AI Helpdesk Agent
+
+---
+
+## 🚀 About Me
+I am a developer passionate about building automated solutions, seamless integrations, and leveraging AI to improve workflows and productivity.
+
+Feel free to explore the folders above to see detailed documentation, architecture diagrams, and the `workflow.json` files for each project!

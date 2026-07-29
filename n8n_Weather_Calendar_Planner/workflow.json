@@ -1,0 +1,186 @@
+{
+  "name": "Weather + Calendar Planner",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "planner-data",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [ 250, 300 ],
+      "webhookId": "planner-data-webhook-id"
+    },
+    {
+      "parameters": {
+        "resource": "event",
+        "operation": "getAll",
+        "calendar": "primary",
+        "returnAll": true,
+        "options": {
+          "timeMin": "={{$now.beginningOf('day')}}",
+          "timeMax": "={{$now.endOf('day')}}"
+        }
+      },
+      "alwaysOutputData": true,
+      "id": "2",
+      "name": "Google Calendar",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1,
+      "position": [ 450, 300 ]
+    },
+    {
+      "parameters": {
+        "operation": "currentWeather",
+        "location": "cityName",
+        "cityName": "London"
+      },
+      "alwaysOutputData": true,
+      "id": "3",
+      "name": "OpenWeatherMap",
+      "type": "n8n-nodes-base.openWeatherMap",
+      "typeVersion": 1,
+      "position": [ 650, 300 ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let calendarEvents = [];\ntry { calendarEvents = $('Google Calendar1').all(); } catch(e) { calendarEvents = $('Google Calendar').all(); }\n\nlet weather = null;\ntry { weather = $('OpenWeatherMap1').first(); } catch(e) { weather = $('OpenWeatherMap').first(); }\n\nconst validEvents = calendarEvents.filter(e => e && e.json && e.json.summary).map(e => e.json);\nconst weatherData = (weather && weather.json && weather.json.main) ? weather.json : null;\n\nreturn [{\n  json: {\n    events: validEvents,\n    weather: weatherData,\n    promptString: `Events today: ${JSON.stringify(validEvents.map(e => e.summary))}\\nWeather today: ${weatherData ? weatherData.weather[0].description + ', ' + weatherData.main.temp + 'C' : 'Unknown'}`\n  }\n}];"
+      },
+      "id": "4",
+      "name": "Format Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [ 850, 300 ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "PASTE_YOUR_GEMINI_API_KEY_HERE"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"You are an AI productivity coach. Here is the user's agenda and weather for today:\\n{{ $json.promptString }}\\n\\nProvide a 2-sentence insight on how they should plan their day. Keep it punchy, encouraging, and highly specific to their schedule and weather.\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "5",
+      "name": "Gemini API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [ 1050, 300 ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const originalData = $('Format Data').first().json;\nconst aiResponse = $('Gemini API').first().json;\n\nlet insight = 'No insight generated.';\nif (aiResponse && aiResponse.candidates && aiResponse.candidates[0].content.parts[0].text) {\n  insight = aiResponse.candidates[0].content.parts[0].text;\n}\n\nreturn [{\n  json: {\n    events: originalData.events,\n    weather: originalData.weather,\n    ai_insight: insight\n  }\n}];"
+      },
+      "id": "6",
+      "name": "Final Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [ 1250, 300 ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar": {
+      "main": [
+        [
+          {
+            "node": "OpenWeatherMap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenWeatherMap": {
+      "main": [
+        [
+          {
+            "node": "Format Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar1": {
+      "main": [
+        [
+          {
+            "node": "OpenWeatherMap1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenWeatherMap1": {
+      "main": [
+        [
+          {
+            "node": "Format Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Data": {
+      "main": [
+        [
+          {
+            "node": "Gemini API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini API": {
+      "main": [
+        [
+          {
+            "node": "Final Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
