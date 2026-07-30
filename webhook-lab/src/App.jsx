@@ -10,6 +10,8 @@ import HandsOnLab from './components/HandsOnLab';
 import Quiz from './components/Quiz';
 import Dashboard from './components/Dashboard';
 import MissionMap from './components/MissionMap';
+import MissionBriefing from './components/MissionBriefing';
+import RewardScreen from './components/RewardScreen';
 import './App.css';
 
 function App() {
@@ -20,6 +22,7 @@ function App() {
   const [hearts, setHearts] = useState(() => parseInt(localStorage.getItem('webhook_hearts') || '3', 10));
   const [quizKey, setQuizKey] = useState(0);
   const [currentView, setCurrentView] = useState('map'); // 'map', 'learning', 'dashboard'
+  const [missionState, setMissionState] = useState('briefing'); // 'briefing', 'content', 'reward'
 
   const currentStep = curriculum[currentIndex];
 
@@ -47,20 +50,15 @@ function App() {
   const handleQuizSuccess = () => {
     if (highestUnlockedIndex === currentIndex) {
       if (currentIndex >= absoluteHighestIndex) {
-        setXp(prev => prev + 50);
+        const earnedXp = currentStep.briefing?.rewards?.xp || 50;
+        setXp(prev => prev + earnedXp);
         setAbsoluteHighestIndex(currentIndex + 1);
       }
-
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#06b6d4', '#8b5cf6', '#10b981']
-      });
       if (currentIndex < curriculum.length - 1) {
         setHighestUnlockedIndex(currentIndex + 1);
       }
     }
+    setMissionState('reward');
   };
 
   const handleQuizFail = () => {
@@ -72,6 +70,8 @@ function App() {
       setCurrentIndex(0);
       setHighestUnlockedIndex(0);
       setQuizKey(prev => prev + 1);
+      setMissionState('briefing');
+      setCurrentView('map');
     }
   };
 
@@ -97,6 +97,7 @@ function App() {
 
   const selectStep = (index) => {
     setCurrentIndex(index);
+    setMissionState('briefing');
     setCurrentView('learning');
   };
 
@@ -171,62 +172,83 @@ function App() {
 
         {/* MAIN CONTENT AREA */}
         <main className="main-content-area" style={{ width: '65%', maxWidth: 'none' }}>
-          <div className="content-card glass-panel animate-fade-in" key={currentStep.id}>
-            
-            {/* MISSION BRIEFING HEADER */}
-            <div style={{ marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '1px solid var(--glass-border)' }}>
-              <div style={{ fontSize: '0.9rem', color: 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                Mission {currentIndex + 1}
+          
+          {missionState === 'briefing' && (
+            <MissionBriefing 
+              mission={currentStep} 
+              missionIndex={currentIndex} 
+              onStartMission={() => setMissionState('content')} 
+            />
+          )}
+
+          {missionState === 'reward' && (
+            <RewardScreen 
+              xpGained={currentIndex === absoluteHighestIndex - 1 ? (currentStep.briefing?.rewards?.xp || 50) : 0}
+              newRank={getRank(xp)}
+              newAbsoluteIndex={absoluteHighestIndex}
+              unlockedBadgeId={currentStep.briefing?.rewards?.badge && currentStep.briefing?.rewards?.badge !== 'None' ? currentStep.briefing.rewards.badge : null}
+              onContinue={() => {
+                goToNext();
+                setCurrentView('map');
+              }}
+            />
+          )}
+
+          {missionState === 'content' && (
+            <div className="content-card glass-panel animate-fade-in" key={currentStep.id}>
+              
+              <div style={{ marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '1px solid var(--glass-border)' }}>
+                <div style={{ fontSize: '0.9rem', color: 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                  Mission {currentIndex + 1}
+                </div>
+                <h2 style={{ fontSize: '2rem', margin: '0 0 1rem 0', color: 'var(--text-main)' }}>
+                  {currentStep.title}
+                </h2>
               </div>
-              <h2 style={{ fontSize: '2rem', margin: '0 0 1rem 0', color: 'var(--text-main)' }}>
-                {currentStep.title}
-              </h2>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--accent-green)', padding: '0.25rem 0.75rem', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold' }}>
-                <Star size={14} fill="currentColor" /> Reward: 50 XP
+
+              {/* MARKDOWN CONTENT */}
+              <div className="markdown-body">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {currentStep.content}
+                </ReactMarkdown>
               </div>
+
+              {/* DYNAMIC COMPONENTS BASED ON STEP TYPE */}
+              {currentStep.type === 'visual-flow' && <VisualWorkflow />}
+              {currentStep.type === 'lab' && <HandsOnLab />}
+              {currentStep.quiz && (
+                <Quiz 
+                  key={`${currentStep.id}-${quizKey}`}
+                  quizData={currentStep.quiz} 
+                  onSuccess={handleQuizSuccess}
+                  onFail={handleQuizFail}
+                />
+              )}
+              
             </div>
-
-            {/* MARKDOWN CONTENT */}
-            <div className="markdown-body">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {currentStep.content}
-              </ReactMarkdown>
+            
+            {/* NAVIGATION BUTTONS */}
+            <div className="navigation-footer">
+              <button 
+                className="btn btn-secondary" 
+                onClick={goToPrev}
+                disabled={currentIndex === 0}
+              >
+                <ChevronLeft size={20} />
+                Previous
+              </button>
+              
+              <button 
+                className="btn btn-primary" 
+                onClick={goToNext}
+                disabled={currentIndex === curriculum.length - 1}
+              >
+                {currentIndex === curriculum.length - 2 ? 'Finish Course' : 'Next Lesson'}
+                <ChevronRight size={20} />
+              </button>
             </div>
+          )}
 
-            {/* DYNAMIC COMPONENTS BASED ON STEP TYPE */}
-            {currentStep.type === 'visual-flow' && <VisualWorkflow />}
-            {currentStep.type === 'lab' && <HandsOnLab />}
-            {currentStep.quiz && (
-              <Quiz 
-                key={`${currentStep.id}-${quizKey}`}
-                quizData={currentStep.quiz} 
-                onSuccess={handleQuizSuccess}
-                onFail={handleQuizFail}
-              />
-            )}
-            
-          </div>
-
-          {/* NAVIGATION BUTTONS */}
-          <div className="navigation-footer">
-            <button 
-              className="btn btn-secondary" 
-              onClick={goToPrev}
-              disabled={currentIndex === 0}
-            >
-              <ChevronLeft size={20} />
-              Previous
-            </button>
-            
-            <button 
-              className="btn btn-primary" 
-              onClick={goToNext}
-              disabled={currentIndex === curriculum.length - 1}
-            >
-              {currentIndex === curriculum.length - 2 ? 'Finish Course' : 'Next Lesson'}
-              <ChevronRight size={20} />
-            </button>
-          </div>
         </main>
       </div>
       )}

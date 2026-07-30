@@ -2,6 +2,11 @@ export const level4 = {
   id: "level-4",
   title: "Level 4 – REST APIs",
   type: "theory",
+  briefing: {
+    incident: "Acme Cloud's marketing team wants to build a new mobile app that shows live server statuses, but they don't know how to fetch the data from our backend.",
+    task: "You need to explain how our backend API is structured. Master the concept of REST APIs to teach the marketing team how to consume our data.",
+    rewards: { xp: 50, badge: 'badge_internet' }
+  },
   content: `
 ## Learning Objectives
 By the end of this level, you will understand what an API is, what makes an API "RESTful", and how to interact with resources using standard CRUD operations.

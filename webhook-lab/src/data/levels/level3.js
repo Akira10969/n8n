@@ -2,6 +2,11 @@ export const level3 = {
   id: "level-3",
   title: "Level 3 – HTTP Methods",
   type: "theory",
+  briefing: {
+    incident: "You figured out what the 404 error was! Now the customer wants to upload a new profile picture to their dashboard, but the server keeps rejecting the request.",
+    task: "Investigate how data is sent to a server. You need to understand HTTP verbs (GET, POST, PUT, DELETE) to fix the customer's upload feature.",
+    rewards: { xp: 50, badge: 'None' }
+  },
   content: `
 ## Learning Objectives
 By the end of this level, you will understand the purpose of different HTTP methods (verbs) and how they dictate the action a client wants the server to perform.

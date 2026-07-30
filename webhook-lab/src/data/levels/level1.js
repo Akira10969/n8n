@@ -2,6 +2,11 @@ export const level1 = {
   id: "level-1",
   title: "Level 1 – Internet & Web Fundamentals",
   type: "theory",
+  briefing: {
+    incident: "A high-priority ticket just came in: A VIP customer cannot access the Acme Cloud company website. The support team is panicking.",
+    task: "As the new IT Intern, your first task is to investigate the issue. But before you touch any production servers, you need to prove you understand the basics of how computers communicate over the internet.",
+    rewards: { xp: 50, badge: 'None' }
+  },
   content: `
 ## Learning Objectives
 By the end of this level, you will understand the foundational concepts of how computers communicate over a network, setting the stage for understanding HTTP and Webhooks.

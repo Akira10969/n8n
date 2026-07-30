@@ -2,6 +2,11 @@ export const level2 = {
   id: "level-2",
   title: "Level 2 – HTTP Fundamentals",
   type: "theory",
+  briefing: {
+    incident: "The VIP customer's internet connection is fine, but they are getting a strange '404' error when they try to load the Acme Cloud dashboard.",
+    task: "To understand what '404' means, you need to dive into the language of the web: HTTP. Learn how clients and servers speak to each other.",
+    rewards: { xp: 50, badge: 'None' }
+  },
   content: `
 ## Learning Objectives
 Understand the anatomy of an HTTP request and response, including URLs, headers, bodies, and status codes.

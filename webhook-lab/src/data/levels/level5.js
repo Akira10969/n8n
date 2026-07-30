@@ -1,7 +1,12 @@
 export const level5 = {
   id: "level-5",
-  title: "Level 5 – JSON",
+  title: "Level 5 – JSON Deep Dive",
   type: "theory",
+  briefing: {
+    incident: "The marketing team built their app, but they are complaining that the API returns data in a 'weird, unreadable format' that their code can't parse.",
+    task: "You need to fix the API response format. Learn about JSON (JavaScript Object Notation), the standard format for API communication.",
+    rewards: { xp: 50, badge: 'None' }
+  },
   content: `
 ## Learning Objectives
 By the end of this level, you will understand the syntax and structure of JSON, and why it has become the universal standard for sending and receiving data over the web.
