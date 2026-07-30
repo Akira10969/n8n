@@ -81,26 +81,25 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
 
   // Cinematic sequence logic
   useEffect(() => {
-    if (introPhase === 'init') {
-      const t1 = setTimeout(() => {
-        setIntroPhase('pan');
-        // Slow pan across the map
-        setMapTransform('scale(2.5) translate(15%, 20%)');
-      }, 100);
+    if (activeMissionIndex !== null) return;
+    
+    // Start sequence
+    const t1 = setTimeout(() => {
+      setIntroPhase('pan');
+      setMapTransform('scale(2.2) translate(15%, 20%)');
+    }, 100);
 
-      const t2 = setTimeout(() => {
-        setIntroPhase('zoom-out');
-        // Zoom out to reveal full map
-        setMapTransform('scale(1) translate(0%, 0%)');
-      }, 6000);
+    const t2 = setTimeout(() => {
+      setIntroPhase('zoom-out');
+      setMapTransform('scale(1) translate(0%, 0%)');
+    }, 6000);
 
-      const t3 = setTimeout(() => {
-        setIntroPhase('done');
-      }, 9500);
+    const t3 = setTimeout(() => {
+      setIntroPhase('done');
+    }, 9500);
 
-      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-    }
-  }, [introPhase]);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []); // Run ONLY once on mount
 
   // Handle active mission zooming (only when sequence is done)
   useEffect(() => {
@@ -136,6 +135,9 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
 
   return (
     <div className={`interactive-map-wrapper ${activeMissionIndex !== null ? 'sidebar-mode' : ''}`} ref={wrapperRef}>
+      
+      {/* Cinematic Ambient Background Music */}
+      <audio autoPlay loop src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=cinematic-atmosphere-score-2-22136.mp3" />
 
       {/* Cinematic Fog & Dust Overlay */}
       <div className={`map-fog-overlay ${isFogHeavy ? 'heavy' : 'light'}`}></div>
