@@ -14,52 +14,50 @@ const zones = [
 ];
 
 // Coordinates as percentages of the map image dimensions.
-// These snake through the biome map zones top-to-bottom.
+// These snake through the biome map zones horizontally from left to right.
 const missionCoordinates = [
-  // Foundation Zone (top-left forest island) — missions snake right then down
-  { x: 22, y: 8  }, // 1
-  { x: 32, y: 10 }, // 2
-  { x: 40, y: 8  }, // 3
-  { x: 50, y: 10 }, // 4
-  { x: 58, y: 8  }, // 5
+  // Foundation Zone (left forest)
+  { x: 4,  y: 60 }, // 1
+  { x: 8,  y: 40 }, // 2
+  { x: 12, y: 30 }, // 3
+  { x: 15, y: 55 }, // 4
+  { x: 18, y: 70 }, // 5
 
-  // Infrastructure Zone (snowy island top-right)
-  { x: 68, y: 14 }, // 6
-  { x: 75, y: 20 }, // 7
-  { x: 70, y: 27 }, // 8
-  { x: 60, y: 30 }, // 9
-  { x: 52, y: 26 }, // 10
+  // Infrastructure Zone (snowy tundra)
+  { x: 23, y: 60 }, // 6
+  { x: 25, y: 35 }, // 7
+  { x: 29, y: 25 }, // 8
+  { x: 32, y: 45 }, // 9
+  { x: 35, y: 65 }, // 10
 
-  // Cloud Zone (purple mystical center)
-  { x: 42, y: 30 }, // 11
-  { x: 33, y: 34 }, // 12
-  { x: 28, y: 40 }, // 13
-  { x: 35, y: 46 }, // 14
-  { x: 44, y: 48 }, // 15
+  // Cloud Zone (purple mystical center-left)
+  { x: 40, y: 55 }, // 11
+  { x: 42, y: 30 }, // 12
+  { x: 46, y: 25 }, // 13
+  { x: 49, y: 45 }, // 14
+  { x: 51, y: 65 }, // 15
 
-  // Security Zone (volcanic red lower-left)
-  { x: 54, y: 44 }, // 16
-  { x: 62, y: 48 }, // 17
-  { x: 70, y: 52 }, // 18
-  { x: 65, y: 58 }, // 19
-  { x: 55, y: 60 }, // 20
+  // Security Zone (volcanic lava center-right)
+  { x: 56, y: 55 }, // 16
+  { x: 58, y: 30 }, // 17
+  { x: 62, y: 25 }, // 18
+  { x: 65, y: 45 }, // 19
+  { x: 68, y: 65 }, // 20
 
-  // Automation Zone (sandy desert center-right)
-  { x: 46, y: 60 }, // 21
-  { x: 37, y: 62 }, // 22
-  { x: 28, y: 66 }, // 23
-  { x: 35, y: 72 }, // 24
-  { x: 44, y: 74 }, // 25
+  // Automation Zone (sandy desert right)
+  { x: 73, y: 55 }, // 21
+  { x: 75, y: 30 }, // 22
+  { x: 79, y: 25 }, // 23
+  { x: 82, y: 45 }, // 24
+  { x: 84, y: 65 }, // 25
 
-  // Observability Zone (oceanic islands lower)
-  { x: 54, y: 72 }, // 26
-  { x: 63, y: 74 }, // 27
-  { x: 70, y: 78 }, // 28
-  { x: 63, y: 84 }, // 29
-  { x: 54, y: 88 }, // 30
-
-  // Capstone (golden temple — bottom center)
-  { x: 42, y: 92 }, // 31
+  // Observability Zone & Capstone (oceanic crystal far right)
+  { x: 89, y: 55 }, // 26
+  { x: 91, y: 30 }, // 27
+  { x: 93, y: 25 }, // 28
+  { x: 95, y: 45 }, // 29
+  { x: 96, y: 65 }, // 30
+  { x: 98, y: 50 }, // 31 (Capstone)
 ];
 
 // Get zone color for a mission index
