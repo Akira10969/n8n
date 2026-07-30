@@ -1,96 +1,54 @@
 export const level6 = {
   id: "level-6",
-  title: "Level 6 – API Authentication",
+  title: "Level 6 – The Polling Problem",
   type: "theory",
+  briefing: {
+    incident: "CRITICAL ALERT: The Core Inventory Service is experiencing 99% CPU utilization. Memory is rapidly depleting. The service is on the verge of a cascading failure that will halt all MEI_Cloud_OS commerce operations.",
+    task: "Analyze the incoming traffic to the Inventory Service. Identify the source of the load spike and propose an architectural shift from continuous API polling to an event-driven model.",
+    rewards: { xp: 100, badge: 'None' }
+  },
   content: `
-## Learning Objectives
-By the end of this level, you will understand how APIs verify who you are, the different methods of authentication, and how to securely handle credentials.
+## Incident Analysis Report
+**Timestamp:** 04:12:08 UTC
+**Service:** Core\_Inventory\_API
+**Status:** DEGRADED
 
-## Prerequisites
-- Level 5 (JSON)
+Our monitoring tools indicate that the **Fulfillment Service** is hammering the Inventory API with over 15,000 requests per minute. 
 
-## Concept Explanation
-Because REST APIs are stateless, they do not remember you. If you want to delete a user or view private billing information, the API needs proof that you are authorized to do so on *every single request*.
-
-The most common ways to authenticate with an API include:
-1. **API Keys**: A long, secret string of characters (e.g., \`sk_live_123456\`). You usually pass this in an HTTP Header.
-2. **Bearer Tokens**: Similar to API keys, but usually generated dynamically upon login and passed in the \`Authorization\` header.
-3. **OAuth 2.0**: A complex flow used when you want to grant a third-party app access to your data without giving them your password (e.g., "Log in with Google").
-4. **JWT (JSON Web Token)**: A self-contained token that securely stores encrypted user data (like their User ID and Role) right inside the token itself.
-
-## Real-World Analogy
-Imagine trying to enter a secure office building.
-- **API Key**: You have a physical master key that unlocks the door. If someone steals it, they can get in.
-- **Bearer Token**: You show your ID to the front desk, and they print you a temporary visitor badge valid for 24 hours.
-- **OAuth 2.0**: You bring a guest. You tell the security guard, "This person is with me, they are allowed into the lobby, but not the server room."
-
-## Visual Diagram
-\`\`\`mermaid
-sequenceDiagram
-    participant App as Client Application
-    participant Auth as Auth Server
-    participant API as Resource API
-
-    App->>Auth: Here is my Username/Password
-    Auth-->>App: Valid! Here is a JWT (Token)
-    App->>API: GET /billing (Header: Authorization: Bearer <Token>)
-    API-->>App: Valid Token! Here is the billing data.
+When you intercept the traffic, you see the exact same request being made over and over:
+\`\`\`http
+GET /api/v1/inventory/status?item_id=99281
+\`\`\`
+And the response is almost always the same:
+\`\`\`json
+{ "status": "no_change", "stock": 0 }
 \`\`\`
 
-## Technical Deep Dive: JWT Anatomy
-A JSON Web Token (JWT) looks like a long string of random gibberish: \`eyJhbGciOiJIUzI1Ni... (truncated)\`. But it is actually three Base64 encoded strings separated by dots:
-1. **Header**: Contains the algorithm used to sign the token.
-2. **Payload**: A JSON object containing the actual data (e.g., \`{"userId": 5}\`).
-3. **Signature**: A cryptographic hash verifying that the token was created by your server and hasn't been altered by a hacker.
+The Fulfillment Service is continually asking, *"Do you have stock yet? Do you have stock yet? Do you have stock yet?"* 
 
-Because the token is cryptographically signed, the API server doesn't even need to query the database to verify it; it just mathematically checks the signature!
+This is known as **API Polling**. 
 
-## Code Example
-Sending an API Key or Bearer Token is usually done via the \`Authorization\` header.
+## Concept Explanation: APIs vs. Webhooks
 
-\`\`\`javascript
-// Fetching data using a Bearer Token
-fetch('https://api.stripe.com/v1/customers', {
-  method: 'GET',
-  headers: {
-    'Authorization': 'Bearer sk_test_123456789',
-    'Content-Type': 'application/json'
-  }
-});
-\`\`\`
+In a traditional **API Polling** model, the client must repeatedly ask the server if there is any new information. 
+- **Pros:** Very simple to implement. The client controls when it receives data.
+- **Cons:** Extremely inefficient. 99% of the requests result in a "no change" response, wasting CPU, memory, and network bandwidth on both sides.
 
-## Common Mistakes
-- **Exposing API Keys in Frontend Code:** If you put a secret API key into your React/Vue/Vanilla JS code, anyone can open their browser's Developer Tools, copy the key, and use it to delete your data or rack up massive server bills.
-- **Committing API Keys to GitHub:** Bots scan public GitHub repositories 24/7. If you accidentally commit a secret key, hackers will steal it within seconds.
+### The Webhook Paradigm (Push instead of Pull)
+Instead of the Fulfillment Service constantly asking if stock has updated, what if the Inventory Service just *told* the Fulfillment Service the exact moment it changed?
 
-## Troubleshooting
-- **Getting a 401 Unauthorized?** Your token is likely missing, expired, or misspelled in the header.
-- **Getting a 403 Forbidden?** Your token is perfectly valid, but the user account associated with it does not have administrative permissions to perform the requested action.
+This is what a **Webhook** does. 
 
-## Best Practices
-- **Use Environment Variables:** Store secret keys in a \`.env\` file on your backend server. Never hardcode them into your source code.
-- **Rotate Keys:** If you suspect an API key was leaked, immediately invalidate (roll) it in the provider's dashboard and generate a new one.
+A Webhook is essentially a **Reverse API**. 
+1. The Fulfillment Service provides the Inventory Service with a URL (e.g., \`https://fulfillment.mei.internal/webhook/inventory\`).
+2. The Fulfillment Service stops polling and goes to sleep.
+3. The moment the inventory changes, the Inventory Service sends an HTTP POST request to that URL containing the new data.
 
-## Hands-On Lab
-*No lab for this section, but next time you log into a web app, open your Network tab in Developer Tools, click on an API request, and look for the \`Authorization\` header!*
+### The Architectural Decision
+To save the Inventory Service from crashing, you must disable the polling loop in the Fulfillment Service and reconfigure it to listen for Webhooks instead. 
 
-## Key Takeaways
-1. Authentication proves *who* you are; Authorization proves *what* you can do.
-2. API Keys and Tokens must be sent with every request since APIs are stateless.
-3. Secret keys should only ever be used on secure backend servers, never in the frontend.
+As a Lead Operations Engineer, you must recognize when synchronous polling is creating an artificial bottleneck. By shifting to an event-driven webhook model, we can reduce network traffic by over 99%.
 
-## What's Next
-You now have the prerequisite knowledge of the Internet, HTTP, REST, JSON, and Authentication. It is finally time to dive into the core subject: **Webhooks**.
-`,
-  quiz: {
-    question: "If you want to securely use an API Key to charge a customer's credit card, where should the code that makes that API call live?",
-    options: [
-      "In the frontend React application, so it runs quickly on the user's device.",
-      "In a secure backend server environment (like Node.js or Python) where the user cannot see the source code.",
-      "In the query parameters of the URL.",
-      "It doesn't matter, as long as you use HTTPS."
-    ],
-    correctAnswerIndex: 1,
-    explanation: "Frontend code is fully visible to the user. Secret keys must be kept on a backend server, which acts as a secure middleman between the user and the payment API."
-  }
+> **SYSTEM OVERRIDE DETECTED:** While you are reading this report, a secondary spike in traffic just hit the load balancers. Proceed to the next mission immediately to implement the webhook fix before the server goes offline completely.
+`
 };

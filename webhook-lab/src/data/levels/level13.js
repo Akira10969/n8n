@@ -1,98 +1,56 @@
 export const level13 = {
   id: "level-13",
-  title: "Level 13 – Webhook Debugging",
+  title: "Level 13 – The Cryptographic Seal",
   type: "theory",
+  briefing: {
+    incident: "Your suspicions were correct. The attacker intercepted the new API key during transmission. Fraudulent account upgrades are happening again. Simple authentication is no longer sufficient; we need mathematical proof of authenticity.",
+    task: "Upgrade the webhook security architecture. Implement HMAC (Hash-based Message Authentication Code) signatures so the receiver can mathematically verify that the payload has not been tampered with and was sent by a trusted source.",
+    rewards: { xp: 150, badge: 'None' }
+  },
   content: `
-## Learning Objectives
-By the end of this level, you will understand how to identify, trace, and fix common webhook delivery failures.
+## Incident Analysis Report
+**Timestamp:** 04:55:22 UTC
+**Service:** Account_Upgrader_Service
+**Status:** COMPROMISED (LEVEL 3)
 
-## Prerequisites
-- Level 12 (Webhook Testing)
+The saboteur has proven they have network-level visibility. If they can intercept the API key in transit, they can impersonate the Billing Service indefinitely. 
 
-## Concept Explanation
-Debugging a webhook can be incredibly frustrating. Because webhooks are sent asynchronously in the background, you aren't staring at a browser screen waiting for an error message. If a webhook fails in production, it fails silently in the background.
+Sending a static password (API Key) over the network is like sending a wax-sealed envelope where anyone can copy the seal. We need a way to prove who sent the message without actually sending the password.
 
-To debug effectively, you must rely on **Observability**:
-1. **Provider Logs**: Most providers (Stripe, GitHub) have a dashboard showing a history of every webhook they attempted to send, including the exact JSON payload and the HTTP status code your server returned.
-2. **Server Logs**: Your receiver must print incoming payloads and errors to a log file or a monitoring service (like Datadog or Sentry).
-3. **Status Codes**: 
-   - If they logged a \`400\`, your code rejected their payload.
-   - If they logged a \`401\`, your security signature check failed.
-   - If they logged a \`500\`, your code crashed.
+## Concept Explanation: HMAC Signatures
 
-## Real-World Analogy
-Debugging webhooks without logs is like trying to fix a car engine with your eyes closed. You know the engine isn't working, but you have no idea which part failed. Adding logs is like turning the lights on and plugging in a diagnostic scanner.
+**HMAC (Hash-based Message Authentication Code)** is the industry standard for securing webhooks (used by Stripe, GitHub, Twilio, etc.).
 
-## Visual Diagram
-\`\`\`mermaid
-graph TD
-    A[Stripe Webhook Fails] --> B{Check Stripe Dashboard}
-    B -->|Status 401| C[Check Signature Verification Logic]
-    B -->|Status 500| D[Check Server Application Logs]
-    B -->|Timeout| E[Check if Processing is Asynchronous]
-    
-    C --> F[Fix Issue & Resend]
-    D --> F
-    E --> F
-\`\`\`
+Instead of sending the secret key in the request, the sender uses the secret key to mathematically "sign" the payload. 
 
-## Technical Deep Dive: Content-Type Validation
-A very common, subtle bug occurs with the \`Content-Type\` header. 
-Many developers assume all webhooks are sent as \`application/json\`. However, some older systems (like Twilio or older payment gateways) send webhooks as \`application/x-www-form-urlencoded\` (the format used by standard HTML forms). If your Express server is only configured with \`express.json()\`, it will completely ignore the urlencoded body, resulting in an empty payload and hours of confused debugging!
+1. **The Sender (Billing Service)** takes the JSON payload and the Secret Key, and runs them through a cryptographic hashing algorithm (like SHA-256).
+2. The result is a unique, unforgeable string of characters (the signature). 
+3. The sender sends the JSON payload and the signature in a header (e.g., \`X-MEI-Signature: sha256=abc123...\`), but *never sends the secret key*.
 
-## Code Example
-Always write robust error logging in your webhook receiver.
+When the **Receiver (Account Upgrader)** gets the webhook:
+1. It takes the incoming JSON payload and its own copy of the Secret Key.
+2. It runs the exact same hashing algorithm.
+3. If the signature the receiver generates matches the signature in the header, the webhook is **100% authentic**. 
+
+If the attacker alters even a single comma in the JSON payload, the math changes, the signatures won't match, and the request is rejected. Because the attacker doesn't know the Secret Key, they cannot generate a valid signature for their fake payloads.
+
+### Deploying the Cryptographic Seal
+
+You implement the HMAC verification middleware across all MEI_Cloud_OS webhook receivers. 
 
 \`\`\`javascript
-app.post('/webhook', express.json(), (req, res) => {
-  try {
-    // Attempt to process the payload
-    const event = req.body;
-    if (!event.type) throw new Error("Missing event type");
-    
-    // Success
-    res.status(200).send();
-  } catch (error) {
-    // LOG THE ERROR!
-    console.error(\`[Webhook Failed]: \${error.message}\`);
-    console.error("Payload received:", JSON.stringify(req.body));
-    
-    // Return a 400 so the provider knows it was a bad request
-    res.status(400).send(error.message);
-  }
-});
+const crypto = require('crypto');
+const expectedSignature = crypto.createHmac('sha256', process.env.WEBHOOK_SECRET)
+                                .update(request.rawBody)
+                                .digest('hex');
+
+if (request.headers['x-mei-signature'] !== expectedSignature) {
+    throw new Error("Mathematical Verification Failed. Dropping payload.");
+}
 \`\`\`
 
-## Common Mistakes
-- **Testing manually vs Real traffic:** Your manual Postman test might work perfectly because you capitalized a field (\`"UserId": 5\`), but the actual provider sends lowercase (\`"userid": 5\`). Always inspect the actual payload sent by the provider.
-- **Returning HTML error pages:** If your code crashes, many web frameworks default to returning a massive HTML error page. This wastes the provider's bandwidth. Configure your server to return clean JSON or plain text errors for API routes.
+The attacker attempts to send another fake upgrade. It fails. They try to alter a legitimate payload in transit. It fails. 
 
-## Troubleshooting
-- **Webhook works in staging but fails in production?** Your staging environment might have a different security secret than your production environment, causing signature verification to fail.
-
-## Best Practices
-- **Implement Idempotent Resends:** During debugging, you will often click "Resend Webhook" in the provider's dashboard. Make sure your system is idempotent (Level 15), meaning if you accidentally process a successful webhook twice while debugging, it won't duplicate data (like charging a customer twice).
-
-## Hands-On Lab
-*Next time a webhook fails, don't guess. Open the provider's dashboard, look at the HTTP status code, and check your server's exact log output for that timestamp.*
-
-## Key Takeaways
-1. Webhooks fail silently; logging is mandatory for survival.
-2. The HTTP status code logged by the provider is your first clue to solving the bug.
-3. Beware of differing \`Content-Type\` headers from older providers.
-
-## What's Next
-We mentioned that a 401 error means your signature verification failed. But how does that verification actually work? Next up, the most critical topic of all: **Webhook Security**.
-`,
-  quiz: {
-    question: "If you check a provider's dashboard and see they recorded a '500 Internal Server Error' for a webhook delivery, what is the most likely cause?",
-    options: [
-      "The provider's internal systems crashed while generating the JSON.",
-      "Your server received the request, but your code threw an unhandled exception or crashed while processing it.",
-      "The internet connection between the provider and your server was completely severed.",
-      "Your server was turned off entirely."
-    ],
-    correctAnswerIndex: 1,
-    explanation: "A 500 error means your server successfully received the request, but your application logic crashed (e.g., a database connection failed or a variable was undefined)."
-  }
+You have cryptographically locked them out. But a rogue entity with this level of access won't just give up. If they can't forge the data, they will try to destroy it.
+`
 };

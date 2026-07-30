@@ -1,100 +1,52 @@
 export const level14 = {
   id: "level-14",
-  title: "Level 14 – Webhook Security",
+  title: "Level 14 – The Network Flap",
   type: "theory",
+  briefing: {
+    incident: "Unable to forge webhooks, the saboteur has initiated a localized Denial of Service (DoS) attack. Intermittent network partitions are causing the receiving servers to go offline randomly for 10-20 seconds at a time. Webhooks sent during these micro-outages are lost forever.",
+    task: "Design a resilient webhook delivery pipeline. Implement Retry Logic and Exponential Backoff to ensure that webhooks are stored and re-transmitted if the receiver is temporarily unavailable.",
+    rewards: { xp: 120, badge: 'None' }
+  },
   content: `
-## Learning Objectives
-By the end of this level, you will understand how to secure webhooks using HMAC signatures, timestamps, and SSL to prevent malicious actors from spoofing events.
+## Incident Analysis Report
+**Timestamp:** 11:30:04 UTC
+**Service:** MEI_Network_Mesh
+**Status:** UNSTABLE
 
-## Prerequisites
-- Level 13 (Webhook Debugging)
+The cryptographic seals are holding, but the attacker has pivoted to a brute-force infrastructure attack. By flooding the internal network with junk traffic, they are causing our webhook receivers to randomly drop offline for brief periods.
 
-## Concept Explanation
-Because webhook receivers must be publicly accessible on the internet, *anyone* can send an HTTP POST request to your URL. 
-If an attacker discovers your URL (\`https://api.myapp.com/webhooks/billing\`), they could manually send a fake JSON payload saying \`"event": "invoice.paid", "amount": 1000\`. If your server blindly trusts this data, it will credit the attacker's account!
+When the Billing Service sends a payment webhook, it expects a \`200 OK\` response. But because the receiver is offline, the connection times out. 
 
-To prevent this, we use **HMAC (Hash-based Message Authentication Code)** signatures:
-1. The provider and you share a Secret Key (e.g., \`my_super_secret\`).
-2. Before sending the webhook, the provider mathematically hashes the JSON payload using that secret key, generating a unique Signature (e.g., \`x9f8b...\`).
-3. They put this signature in an HTTP Header.
-4. When you receive the payload, you hash it yourself using your copy of the secret key.
-5. If your generated hash matches the header hash, the webhook is genuine!
+Currently, the Billing Service's logic is:
+*"I sent the webhook. It timed out. Oh well, moving on to the next one."*
 
-## Real-World Analogy
-Imagine receiving a wax-sealed letter from a King.
-Anyone can write a letter and claim to be the King (spoofed JSON). But only the King possesses the royal signet ring (the Secret Key). When you see the exact wax seal stamped on the envelope (the HMAC Signature), you know with 100% certainty the King wrote it, and nobody tampered with the contents during delivery.
+This is a catastrophic design flaw. We are losing critical transactional data. 
 
-## Visual Diagram
-\`\`\`mermaid
-graph TD
-    A[Stripe Payload + Secret Key] -- HMAC-SHA256 --> B(Stripe Signature: xyz...)
-    B -- Sent in Header --> C{Your Server}
-    
-    C -- Hashes Payload with Your Secret Key --> D(Your Signature: xyz...)
-    D -- Compare --> E{Do they match?}
-    E -- Yes --> F[Process Webhook]
-    E -- No --> G[Reject 401 Unauthorized]
-\`\`\`
+## Concept Explanation: Retry Logic & Exponential Backoff
 
-## Technical Deep Dive: Replay Attacks and Timestamps
-Even with HMAC signatures, you are vulnerable to a **Replay Attack**. An attacker on your network intercepts a *valid* webhook request (e.g., "Credit User $10"). Because the signature is valid, the attacker simply copies the exact raw HTTP request and resends it 500 times. Your server processes it 500 times, crediting the user $5000!
+In distributed systems, you must always assume the network is unreliable. If a webhook fails to deliver (e.g., returns a 5xx error or times out), the sender must try again. 
 
-To fix this, providers include a **Timestamp** in the header and factor it into the HMAC hash. Your server checks the timestamp. If the timestamp is more than 5 minutes old, your server rejects it, rendering the intercepted webhook completely useless to the attacker!
+However, you cannot just spam retries immediately. If the receiving server is already struggling under a DoS attack, hitting it with thousands of immediate retries will completely destroy it.
 
-## Code Example
-Verifying a signature in Node.js using the built-in \`crypto\` module:
+This is where **Exponential Backoff** comes in. 
 
-\`\`\`javascript
-const crypto = require('crypto');
+Instead of retrying instantly, the sender waits for exponentially increasing amounts of time between each attempt:
+- Attempt 1: Fails
+- Attempt 2: Wait 2 seconds
+- Attempt 3: Wait 4 seconds
+- Attempt 4: Wait 8 seconds
+- Attempt 5: Wait 16 seconds
 
-function verifyWebhook(req, secretKey) {
-  // 1. Get the signature from the headers
-  const providerSignature = req.headers['x-provider-signature'];
-  
-  // 2. Hash the raw JSON body using your secret key
-  const myHash = crypto
-    .createHmac('sha256', secretKey)
-    .update(req.rawBody) // MUST use the raw text, not parsed JSON!
-    .digest('hex');
-    
-  // 3. Compare them safely to prevent timing attacks
-  return crypto.timingSafeEqual(
-    Buffer.from(providerSignature), 
-    Buffer.from(myHash)
-  );
-}
-\`\`\`
+This gives the receiving server time to recover, reboot, or shed load before the next wave of traffic hits.
 
-## Common Mistakes
-- **Hashing the parsed JSON:** This is the #1 mistake developers make. When Express runs \`express.json()\`, it strips out whitespace and modifies the string. If you hash the modified string, the signature will *never* match the provider's. You must hash the exact, raw textual buffer that came over the wire!
+### Building Resilience
 
-## Troubleshooting
-- **Signatures never match?** Ensure you are using the correct hashing algorithm (SHA256 vs SHA1). Ensure you are using the raw HTTP body buffer, not the parsed JSON object.
+You re-architect the Billing Service to decouple webhook sending from the main application thread. Instead of sending webhooks directly, the Billing Service now places the webhook payload into a background job processor. 
 
-## Best Practices
-- **Use Provider Libraries:** Companies like Stripe provide official SDKs (e.g., \`stripe.webhooks.constructEvent\`). Always use these official SDKs to verify signatures rather than writing the cryptography code yourself.
+The job processor attempts delivery. If the receiver is experiencing a micro-outage caused by the saboteur, the job processor detects the timeout, applies an exponential backoff formula, and schedules a retry for the future.
 
-## Hands-On Lab
-*This module focuses on the concepts, but understand that security is the most critical part of webhooks. An unsecured webhook is a massive vulnerability.*
+You watch the dashboard as a wave of DoS traffic hits. The receivers go offline. The webhooks fail. But this time, they aren't lost. The retries queue up, wait patiently, and as soon as the network stabilizes 12 seconds later, all the queued webhooks are successfully delivered. 
 
-## Key Takeaways
-1. Never trust incoming webhook data blindly.
-2. Verify the HMAC signature to prove authenticity.
-3. Validate timestamps to prevent Replay Attacks.
-4. You must hash the raw textual body, not the parsed JSON object.
-
-## What's Next
-Now that your webhooks are secure, how do we make sure they survive server crashes and network outages? Next up: **Reliability**.
-`,
-  quiz: {
-    question: "Why is it critical to hash the raw HTTP request body (as a string/buffer) rather than the parsed JSON object when verifying an HMAC signature?",
-    options: [
-      "Because JSON objects take too much memory to hash.",
-      "Because parsing JSON changes the spacing, ordering, or formatting of the text. Hashing this modified data will result in a completely different cryptographic signature that won't match the provider's.",
-      "Because cryptographic algorithms only accept binary video files.",
-      "Because parsing JSON automatically decrypts the payload."
-    ],
-    correctAnswerIndex: 1,
-    explanation: "Even a single missing space character will completely change an HMAC hash. You must hash the exact, byte-for-byte raw text that the provider sent over the network."
-  }
+You have thwarted the network attack. But what happens to the webhooks that *never* succeed, even after 10 retries?
+`
 };

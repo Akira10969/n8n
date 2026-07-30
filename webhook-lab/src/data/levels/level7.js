@@ -1,99 +1,63 @@
 export const level7 = {
   id: "level-7",
-  title: "Level 7 – Intro to Webhooks",
-  type: "visual-flow",
+  title: "Level 7 – The First Hook",
+  type: "theory",
+  briefing: {
+    incident: "You successfully terminated the Fulfillment Service's polling loop. CPU usage has dropped to 45%. Now you must establish the webhook connection so Fulfillment still receives stock updates.",
+    task: "Configure the Inventory Service to push event notifications to the Fulfillment webhook endpoint. Review the server logs to verify the connection is stable.",
+    rewards: { xp: 150, badge: 'foundation-completed' }
+  },
   content: `
-## Learning Objectives
-By the end of this level, you will understand what a webhook is, why it was invented, and how it differs from traditional API polling.
+## Deployment Log
+**Operator:** Player\_One
+**Action:** Webhook Registration
 
-## Prerequisites
-- Level 1-6 (HTTP, REST, and JSON)
+To establish the webhook, you register the Fulfillment Service's endpoint with the Inventory Service's event registry:
 
-## Concept Explanation
-A **Webhook** is an automated message sent from one app to another when something happens. They are sometimes called "Reverse APIs."
-
-### The Core Difference: Webhooks vs APIs
-To truly understand webhooks, you must understand how they differ from traditional APIs:
-
-| Feature | Standard REST API | Webhook |
-|---------|-------------------|---------|
-| **Direction** | Client pulls data from Server | Server pushes data to Client |
-| **Trigger** | Triggered by your code | Triggered by a remote event |
-| **Pacing** | You ask for updates (Polling) | You receive updates instantly |
-| **Metaphor** | Asking "Are we there yet?" | The driver saying "We arrived!" |
-
-This enables **Event-Driven Architecture**. Instead of constantly asking "Did someone buy my product?", you simply tell Shopify, "Here is my URL. Send an HTTP POST request to it the exact second a purchase is made."
-
-## Real-World Analogy
-Imagine you are waiting for an important package to arrive at the post office.
-- **Polling (Standard API)**: You call the post office every 10 minutes and ask, "Is it here yet?" Most of the time they say "No." You are wasting your time and their time.
-- **Webhook**: You go to the post office once, give them your phone number, and say, "Text me the second it arrives." You can now relax, and the communication only happens when the event actually occurs.
-
-## Visual Diagram
-\`\`\`mermaid
-sequenceDiagram
-    participant User
-    participant Provider as Webhook Provider (e.g. GitHub)
-    participant Receiver as Your Server
-
-    User->>Provider: Commits Code
-    Provider-->>Provider: Detects 'push' event
-    Provider->>Receiver: HTTP POST (Webhook Payload JSON)
-    Receiver-->>Provider: HTTP 200 OK
-    Receiver-->>Receiver: Process data (e.g., Deploy code)
+\`\`\`json
+POST /api/v1/webhooks/register
+{
+  "target_url": "https://fulfillment.mei.internal/hooks/inventory-update",
+  "events": ["inventory.stock.increased", "inventory.stock.depleted"]
+}
 \`\`\`
 
-## Technical Deep Dive: Polling vs Webhooks
-While webhooks are incredibly efficient, they require you to have a server running 24/7 on the public internet, ready to receive incoming POST requests. 
-Polling, on the other hand, allows you to pull data on *your* schedule. If your server is turned off for 5 hours, you can just poll the API when you turn it back on. If you miss a webhook while your server is down, that data might be lost (unless the provider has retry logic).
+The server responds with a \`201 Created\`. The connection is established. 
 
-## Code Example
-When you register a webhook with a provider (like Stripe), you are literally just giving them a URL to your server.
+## Concept Explanation: Anatomy of a Webhook
 
-\`\`\`javascript
-// Your server code listening for the Webhook
-app.post('/stripe-webhook', (req, res) => {
-  const event = req.body; // The JSON payload Stripe sent you
-  
-  if (event.type === 'payment_intent.succeeded') {
-    console.log("Payment successful! Fulfilling order...");
-  }
+Unlike traditional APIs where you write code to make a request, a webhook requires you to write code to *receive* a request. 
 
-  // You MUST send a 200 OK back to Stripe quickly!
-  res.status(200).send(); 
-});
+For this to work, the Fulfillment Service must be running a web server that listens for incoming HTTP POST requests on the \`/hooks/inventory-update\` route. When the Inventory Service detects a stock change, it builds an HTTP request containing the event data in JSON format, and fires it off to the \`target_url\`.
+
+### Verifying the Fix
+You tail the logs of the Fulfillment Service to ensure the webhooks are arriving correctly:
+
+\`\`\`log
+[INFO] Listening on port 8080...
+[INFO] Incoming POST from 10.4.22.1 (Inventory_Service)
+[INFO] Payload received: {"event": "inventory.stock.increased", "item_id": 99281, "new_stock": 50}
+[INFO] Processing order fulfillment for item 99281...
 \`\`\`
 
-## Common Mistakes
-- **Using a localhost URL:** You cannot tell GitHub to send a webhook to \`http://localhost:3000\`. GitHub is on the public internet and cannot see your personal laptop. You must provide a publicly routable URL (or use a tool like ngrok).
-- **Taking too long to respond:** Webhook providers expect you to respond with a \`200 OK\` almost immediately (usually within 3 seconds). If your server takes 10 seconds to process the data before responding, the provider will assume the webhook failed.
+It worked perfectly. The CPU graph on your dashboard turns from critical red back to a healthy green. The Foundation Zone is stable.
 
-## Troubleshooting
-- **Not receiving webhooks?** Check the provider's developer dashboard. They usually have a "Logs" section showing exactly what they sent and the error code your server returned.
+## Anomalous Activity Detected
 
-## Best Practices
-- **Respond immediately, process later:** When your server receives a webhook, immediately return \`200 OK\`, and then process the heavy data in the background (Asynchronous Processing).
+Just as you are about to close the terminal, you notice something strange in the Inventory Service's raw access logs. 
 
-## Hands-On Lab
-*(See the interactive visual workflow below to understand the concept of Polling vs Webhooks!)*
+While the Fulfillment Service's polling has stopped, there is still a high volume of traffic hitting the inventory endpoints. 
 
-## Key Takeaways
-1. Webhooks push data to you when an event occurs, eliminating the need to poll.
-2. Webhooks are almost universally sent as HTTP POST requests with a JSON body.
-3. You must have a publicly accessible server to receive webhooks.
+\`\`\`log
+[WARN] Rate limit exceeded for IP: 192.168.99.114
+[WARN] Rate limit exceeded for IP: 192.168.99.114
+[WARN] Rate limit exceeded for IP: 192.168.99.114
+\`\`\`
 
-## What's Next
-Now that you know what a webhook is conceptually, let's break down the exact anatomy of the request that the provider sends you.
-`,
-  quiz: {
-    question: "Why are webhooks vastly more efficient than API Polling?",
-    options: [
-      "Because webhooks are encrypted using military-grade AES-256.",
-      "Because polling requires you to constantly ask the server if an event happened (wasting bandwidth), whereas webhooks only send data when the event actually occurs.",
-      "Because webhooks compress the JSON payload automatically.",
-      "Because webhooks bypass the internet and use direct satellite connections."
-    ],
-    correctAnswerIndex: 1,
-    explanation: "Polling wastes huge amounts of bandwidth and CPU cycles asking for updates when nothing has changed. Webhooks are event-driven, acting only when necessary."
-  }
+You run a quick WHOIS lookup on the internal IP \`192.168.99.114\`. It doesn't belong to the Fulfillment Service. It doesn't belong to any known MEI_Cloud_OS infrastructure service.
+
+Someone—or something—was masking their traffic behind the Fulfillment Service's polling loop. Now that the polling has stopped, their unauthorized access is glaringly obvious. 
+
+Before you can investigate further, your console flashes with a new alert from the Platform Operations Zone. An external integration has suddenly stopped responding entirely. 
+`
 };

@@ -1,100 +1,58 @@
 export const level9 = {
   id: "level-9",
-  title: "Level 9 – Webhook Lifecycle",
+  title: "Level 9 – Decoding the Errors",
   type: "theory",
+  briefing: {
+    incident: "A massive influx of webhooks from the CRM system to the Analytics Engine is failing. Dashboards across the company are going blank. The logs are showing a chaotic mix of 400 Bad Request and 502 Bad Gateway errors.",
+    task: "Analyze the HTTP Status Codes to diagnose the root cause of the failures. Determine if the issue lies with the sender (CRM) or the receiver (Analytics Engine).",
+    rewards: { xp: 100, badge: 'None' }
+  },
   content: `
-## Learning Objectives
-By the end of this level, you will understand the step-by-step chronological lifecycle of a webhook from the moment an event occurs to the final success acknowledgment.
+## Incident Analysis Report
+**Timestamp:** 14:22:05 UTC
+**Service:** Analytics_Engine
+**Status:** CASCADING FAILURE
 
-## Prerequisites
-- Level 8 (Webhook Anatomy)
+You pull up the centralized logging dashboard. Thousands of requests are failing every minute, but they are failing for different reasons. 
 
-## Concept Explanation
-A webhook isn't just a single isolated request; it is a lifecycle consisting of multiple phases:
-
-1. **Trigger**: An event occurs on the provider's platform (e.g., A user merges a pull request on GitHub).
-2. **Payload Generation**: The provider's internal system packages the event details into a JSON payload and signs it.
-3. **Dispatch**: The provider sends an HTTP POST request to your configured webhook URL.
-4. **Receipt & Validation**: Your server receives the request, parses the JSON, and mathematically verifies the security signature.
-5. **Acknowledgment**: Your server immediately returns a \`200 OK\` HTTP response to tell the provider, "I got it, thanks!"
-6. **Processing**: Your server executes the actual business logic (e.g., updating a database, triggering a deployment).
-
-## Real-World Analogy
-Imagine a fast-food drive-thru.
-1. **Trigger**: You place your order at the speaker.
-2. **Payload**: The cashier types your order into the register.
-3. **Dispatch**: The kitchen printer prints the ticket.
-4. **Receipt**: The chef grabs the ticket.
-5. **Acknowledgment**: The chef shouts "Order up!" so the cashier knows they are working on it.
-6. **Processing**: The chef actually cooks the burger.
-
-## Visual Diagram
-\`\`\`mermaid
-sequenceDiagram
-    participant User
-    participant Provider as Webhook Provider
-    participant Receiver as Your Server
-
-    User->>Provider: Action (Buy Item)
-    Note over Provider: Generate Payload & Signature
-    Provider->>Receiver: POST /webhook
-    Note over Receiver: Verify Signature
-    Receiver-->>Provider: HTTP 2xx (Acknowledge)
-    Note over Receiver: Execute Database Logic
+\`\`\`log
+[ERROR] POST /webhook/analytics -> 400 Bad Request
+[ERROR] POST /webhook/analytics -> 502 Bad Gateway
+[ERROR] POST /webhook/analytics -> 400 Bad Request
 \`\`\`
 
-## Technical Deep Dive: Acknowledgment vs Processing
-The most critical rule in the webhook lifecycle is separating Step 5 (Acknowledgment) from Step 6 (Processing). 
-Providers have aggressive timeout limits. Stripe, for example, expects a \`200 OK\` response within seconds. If you try to do heavy database processing *before* you return the 200 OK, Stripe will assume your server crashed, mark the webhook as failed, and retry it later, leading to duplicate orders!
+To fix the outage, you need to understand what these numbers mean.
 
-## Code Example
-Notice how the response is sent *before* the heavy processing happens.
+## Concept Explanation: HTTP Status Codes
 
-\`\`\`javascript
-app.post('/webhook', (req, res) => {
-  // 1. Verify signature (Fast)
-  const isValid = verifySignature(req);
-  if (!isValid) return res.status(401).send();
+Every HTTP response includes a 3-digit **Status Code** indicating the result of the request. They are grouped into five classes:
 
-  // 2. Acknowledge IMMEDIATELY (Fast)
-  res.status(200).send("Webhook received");
+*   **1xx (Informational):** Request received, continuing process. (Rarely seen in daily ops).
+*   **2xx (Success):** The action was successfully received, understood, and accepted. (e.g., \`200 OK\`, \`201 Created\`).
+*   **3xx (Redirection):** Further action must be taken to complete the request. (e.g., \`301 Moved Permanently\`).
+*   **4xx (Client Error):** The request contains bad syntax or cannot be fulfilled. **This means the sender messed up.** (e.g., \`400 Bad Request\`, \`401 Unauthorized\`, \`404 Not Found\`).
+*   **5xx (Server Error):** The server failed to fulfill an apparently valid request. **This means the receiver is broken.** (e.g., \`500 Internal Server Error\`, \`502 Bad Gateway\`).
 
-  // 3. Process asynchronously (Slow)
-  setTimeout(() => {
-    generateLargePDFReport(req.body);
-  }, 0);
-});
+### The Diagnosis
+
+You look closer at the \`400 Bad Request\` errors. A 4xx error means the CRM system (the sender) is doing something wrong. You inspect the payload it's sending:
+
+\`\`\`json
+{
+  "event_type": "user_signup",
+  "payload": "{ corrupted_data_stream }",
+  "timestamp": null
+}
 \`\`\`
 
-## Common Mistakes
-- **Putting the \`res.send()\` at the very bottom of the function:** If you put the response after a slow database query, you will experience random timeout failures under heavy load.
+The JSON payload is malformed! The rogue entity has injected a corruption script into the CRM's outbound webhook queue. 
 
-## Troubleshooting
-- **Provider says "Timeout" but your code ran successfully?** You are acknowledging too late in the lifecycle. Move your \`res.status(200)\` higher up in your route handler.
+But what about the \`502 Bad Gateway\` errors? A 5xx error means our server (the Analytics Engine) is failing. 
 
-## Best Practices
-- **Use Message Queues:** Instead of \`setTimeout\`, true production systems drop the payload into a Message Queue (like RabbitMQ or Redis) instantly, and let a separate background worker process it. We will cover this in Level 17!
+You realize that the Analytics Engine's JSON parser wasn't built to handle corrupted data. When it tries to parse the malformed payload, the parsing process crashes entirely, causing the load balancer in front of it to return a \`502 Bad Gateway\` to subsequent requests while the server reboots.
 
-## Hands-On Lab
-*Think about how long your current API endpoints take to resolve. Any endpoint taking longer than 2 seconds is not suitable for synchronous webhook processing.*
+You immediately push a patch to the Analytics Engine to safely try-catch JSON parsing errors and gracefully return a \`400 Bad Request\` instead of crashing. 
 
-## Key Takeaways
-1. The lifecycle is: Trigger -> Generate -> Dispatch -> Acknowledge -> Process.
-2. Acknowledgment (returning 200 OK) must happen as fast as possible.
-3. Heavy processing should always be done asynchronously in the background.
-
-## What's Next
-Now you know *how* to receive a webhook correctly. In the next level, we will look at the tools and frameworks used to actually build a Webhook Receiver.
-`,
-  quiz: {
-    question: "Why is it critical to separate the Acknowledgment step from the Processing step in the webhook lifecycle?",
-    options: [
-      "Because processing JSON data automatically corrupts HTTP responses.",
-      "Because providers have strict timeout limits; if you process heavy data before acknowledging, the provider will assume failure and retry the webhook.",
-      "Because webhooks must be acknowledged using a GET request, but processed using a POST request.",
-      "It is not critical; you should always finish processing before acknowledging."
-    ],
-    correctAnswerIndex: 1,
-    explanation: "If you block the HTTP response while doing a 10-second database query, the webhook provider will time out, assume your server is down, and blast you with retry attempts."
-  }
+The 502s disappear. The servers stabilize. You've stopped the bleeding, but the saboteur is still out there, actively modifying our systems.
+`
 };
