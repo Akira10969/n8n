@@ -12,15 +12,33 @@ export default function Dashboard({ xp, hearts, rank, absoluteHighestIndex, tota
       <div style={{ marginBottom: '2.5rem', borderBottom: '2px solid var(--accent-cyan)', paddingBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
           <div style={{ color: 'var(--accent-cyan)', fontSize: '0.9rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-            &gt; Acme_Cloud_OS v2.4.1 // Secure Connection Established
+            &gt; MEI_Cloud_OS v2.4.1 // Secure Connection Established
           </div>
           <h1 style={{ fontSize: '2.5rem', margin: '0', color: 'var(--text-main)', letterSpacing: '0.05em' }}>
             EMPLOYEE PERSONNEL FILE
           </h1>
         </div>
-        <div style={{ textAlign: 'right', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-          ID: ACME-{Math.floor(Math.random() * 90000) + 10000}<br/>
-          STATUS: ACTIVE
+        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+            ID: MEI-{Math.floor(Math.random() * 90000) + 10000}<br/>
+            STATUS: ACTIVE
+          </div>
+          <button 
+            onClick={() => {
+              if (window.confirm("CRITICAL WARNING: This will format your employee database and wipe all mission progress. Proceed?")) {
+                localStorage.clear();
+                window.location.reload();
+              }
+            }}
+            style={{ 
+              background: 'transparent', border: '1px solid var(--accent-red)', color: 'var(--accent-red)', 
+              padding: '4px 8px', fontSize: '0.7rem', cursor: 'pointer', fontFamily: 'monospace', textTransform: 'uppercase' 
+            }}
+            onMouseOver={(e) => { e.target.style.background = 'rgba(239, 68, 68, 0.2)'; }}
+            onMouseOut={(e) => { e.target.style.background = 'transparent'; }}
+          >
+            [ FORMAT DATABASE ]
+          </button>
         </div>
       </div>
 
