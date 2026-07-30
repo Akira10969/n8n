@@ -184,7 +184,10 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
                 onClick={() => isUnlocked && onSelectMission(index)}
               >
                 {/* Pulse ring for current mission */}
-                {isNext && <div className="pulse-ring" style={{ borderColor: zoneColor, boxShadow: `0 0 10px ${zoneColor}` }}></div>}
+                {isNext && <div className="pulse-ring" style={{ borderColor: zoneColor, boxShadow: `0 0 12px ${zoneColor}` }}></div>}
+
+                {/* "YOU ARE HERE" floating label */}
+                {isNext && <div className="node-active-label">▶ NEXT MISSION</div>}
 
                 {/* Node icon */}
                 <div
@@ -192,25 +195,28 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
                   style={{
                     borderColor: isCompleted ? '#22c55e' : isNext ? zoneColor : isUnlocked ? zoneColor : 'rgba(255,255,255,0.2)',
                     background: isCompleted
-                      ? 'rgba(34,197,94,0.2)'
+                      ? 'rgba(34,197,94,0.25)'
                       : isNext
-                      ? `rgba(6,182,212,0.3)`
+                      ? `${zoneColor}44`
                       : isUnlocked
-                      ? `rgba(6,182,212,0.15)`
-                      : 'rgba(0,0,0,0.4)',
-                    boxShadow: (isNext || isActive) ? `0 0 16px ${zoneColor}` : isCompleted ? '0 0 10px #22c55e' : 'none',
+                      ? `${zoneColor}22`
+                      : 'rgba(0,0,0,0.55)',
+                    boxShadow: isNext ? `0 0 20px ${zoneColor}, 0 0 40px ${zoneColor}55` : isCompleted ? '0 0 12px #22c55e' : isActive ? `0 0 20px ${zoneColor}` : 'none',
                   }}
                 >
                   {!isUnlocked
-                    ? <Lock size={12} color="rgba(255,255,255,0.3)" />
+                    ? <Lock size={16} color="rgba(255,255,255,0.35)" />
                     : isCompleted
-                    ? <CheckCircle2 size={12} color="#22c55e" />
-                    : <Play size={12} color={zoneColor} fill={zoneColor} />
+                    ? <CheckCircle2 size={18} color="#22c55e" />
+                    : <Play size={18} color={zoneColor} fill={zoneColor} />
                   }
                 </div>
 
                 {/* Permanent number badge */}
-                <div className="node-badge" style={{ background: isCompleted ? '#22c55e' : isNext ? zoneColor : isUnlocked ? zoneColor : 'rgba(255,255,255,0.2)' }}>
+                <div className="node-badge" style={{
+                  background: isCompleted ? '#22c55e' : isNext ? zoneColor : isUnlocked ? zoneColor : 'rgba(80,80,80,0.8)',
+                  color: isUnlocked ? '#000' : 'rgba(255,255,255,0.5)'
+                }}>
                   {index + 1}
                 </div>
 
@@ -219,7 +225,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
                   <div className="hover-card-num" style={{ color: zoneColor }}>MISSION {index + 1}</div>
                   <div className="hover-card-title">{mission.title}</div>
                   <div className="hover-card-status">
-                    {!isUnlocked ? '🔒 Locked' : isCompleted ? '✅ Completed' : isNext ? '⭐ Active' : '🔓 Unlocked'}
+                    {!isUnlocked ? '🔒 Locked' : isCompleted ? '✅ Completed' : isNext ? '⭐ Current Mission' : '🔓 Unlocked'}
                   </div>
                 </div>
               </div>
