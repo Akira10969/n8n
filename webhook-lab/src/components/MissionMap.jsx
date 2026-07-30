@@ -70,26 +70,8 @@ function getZoneColor(index) {
 }
 
 export default function MissionMap({ curriculum, highestUnlockedIndex, activeMissionIndex, onSelectMission }) {
-  const mapLayerRef = useRef(null);
   const wrapperRef = useRef(null);
-  const [mapSize, setMapSize] = useState({ width: 0, height: 0 });
   const [mapTransform, setMapTransform] = useState('scale(1) translate(0,0)');
-
-  // Measure the wrapper dimensions for SVG overlay (not image natural size)
-  useEffect(() => {
-    const updateSize = () => {
-      if (wrapperRef.current) {
-        setMapSize({
-          width: wrapperRef.current.clientWidth,
-          height: wrapperRef.current.clientHeight
-        });
-      }
-    };
-    updateSize();
-    const ro = new ResizeObserver(updateSize);
-    if (wrapperRef.current) ro.observe(wrapperRef.current);
-    return () => ro.disconnect();
-  }, []);
 
   // Pan + zoom to selected mission
   useEffect(() => {
@@ -103,17 +85,13 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
     }
   }, [activeMissionIndex]);
 
-  // Build SVG path lines between consecutive nodes
+  // Build SVG path lines — use raw % values matching our coordinate system
   const pathLines = missionCoordinates.slice(0, curriculum.length - 1).map((coord, i) => {
     const next = missionCoordinates[i + 1];
-    if (!next || !mapSize.width || !mapSize.height) return null;
-    const x1 = (coord.x / 100) * mapSize.width;
-    const y1 = (coord.y / 100) * mapSize.height;
-    const x2 = (next.x / 100) * mapSize.width;
-    const y2 = (next.y / 100) * mapSize.height;
+    if (!next) return null;
     const isCompleted = i < highestUnlockedIndex;
     const isUnlocked = i <= highestUnlockedIndex;
-    return { x1, y1, x2, y2, isCompleted, isUnlocked };
+    return { x1: coord.x, y1: coord.y, x2: next.x, y2: next.y, isCompleted, isUnlocked };
   });
 
   return (
@@ -144,46 +122,49 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
 
           <img src="/mission-map-bg.jpg" alt="Mission Map" className="map-bg-image" />
 
-          {/* SVG CONNECTION PATHS */}
-          {mapSize.width > 0 && (
-            <svg
-              className="map-svg-overlay"
-              width={mapSize.width}
-              height={mapSize.height}
-              style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
-            >
-              <defs>
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
-                  <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
-                </filter>
-              </defs>
-              {pathLines.map((line, i) => {
-                if (!line) return null;
-                return (
-                  <g key={i}>
-                    {/* Base dashed gray path for all */}
+          {/* SVG CONNECTION PATHS — uses viewBox 0 0 100 100 matching CSS % coords */}
+          <svg
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            style={{
+              position: 'absolute', top: 0, left: 0,
+              width: '100%', height: '100%',
+              pointerEvents: 'none', zIndex: 3, overflow: 'visible'
+            }}
+          >
+            <defs>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="0.5" result="coloredBlur" />
+                <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+            {pathLines.map((line, i) => {
+              if (!line) return null;
+              return (
+                <g key={i}>
+                  {/* Base dashed gray path for all */}
+                  <line
+                    x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}
+                    stroke="rgba(255,255,255,0.15)"
+                    strokeWidth="0.4"
+                    strokeDasharray="1 0.8"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                  {/* Glowing completed/unlocked path overlay */}
+                  {line.isUnlocked && (
                     <line
                       x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}
-                      stroke="rgba(255,255,255,0.1)"
-                      strokeWidth="2"
-                      strokeDasharray="6 4"
+                      stroke={line.isCompleted ? '#22c55e' : '#06b6d4'}
+                      strokeWidth={line.isCompleted ? 0.6 : 0.4}
+                      strokeOpacity={line.isCompleted ? 0.9 : 0.6}
+                      filter="url(#glow)"
+                      vectorEffect="non-scaling-stroke"
                     />
-                    {/* Glowing completed/unlocked path overlay */}
-                    {line.isUnlocked && (
-                      <line
-                        x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}
-                        stroke={line.isCompleted ? '#22c55e' : '#06b6d4'}
-                        strokeWidth={line.isCompleted ? 2.5 : 1.5}
-                        strokeOpacity={line.isCompleted ? 0.8 : 0.5}
-                        filter="url(#glow)"
-                      />
-                    )}
-                  </g>
-                );
-              })}
-            </svg>
-          )}
+                  )}
+                </g>
+              );
+            })}
+          </svg>
 
           {/* MISSION NODES */}
           {curriculum.map((mission, index) => {
