@@ -1,0 +1,56 @@
+.boot-sequence-container {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #050505;
+  color: #22c55e;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  padding: 2rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  line-height: 1.5;
+}
+
+.boot-text {
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.boot-header p {
+  margin: 0;
+  color: #06b6d4;
+}
+
+.boot-step {
+  margin-top: 1rem;
+}
+.boot-step p {
+  margin: 0 0 0.25rem 0;
+  color: #a3a3a3;
+}
+
+.boot-step.highlight p {
+  color: #22c55e;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+}
+
+.boot-narrative {
+  margin-top: 2rem;
+  border-top: 1px dashed #333;
+  padding-top: 1rem;
+}
+
+.boot-narrative p {
+  margin: 0.5rem 0;
+  color: #d4d4d4;
+}
+
+.boot-narrative p.text-warn {
+  color: #ef4444;
+  font-weight: bold;
+}

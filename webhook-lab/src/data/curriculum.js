@@ -30,7 +30,7 @@ import { project5 } from './levels/project5';
 import { project6 } from './levels/project6';
 import { project7 } from './levels/project7';
 
-export const curriculum = [
+const rawCurriculum = [
   level1,
   level2,
   level3,
@@ -61,8 +61,34 @@ export const curriculum = [
   project4,
   project5,
   project6,
-  project7,
-  {
+  project7
+];
+
+export const curriculum = rawCurriculum.map((level, index) => {
+  let difficulty = '★☆☆☆☆';
+  let location = 'Foundation Zone';
+  
+  if (index >= 7 && index < 15) {
+    difficulty = '★★☆☆☆';
+    location = 'Platform Operations Zone';
+  } else if (index >= 15 && index < 24) {
+    difficulty = '★★★☆☆';
+    location = 'Distributed Systems Zone';
+  } else if (index >= 24) {
+    difficulty = '★★★★☆';
+    location = 'The Final Zone';
+  }
+
+  return {
+    ...level,
+    episodeNumber: index + 1,
+    duration: index >= 24 ? '45-60 minutes' : '15-20 minutes',
+    difficulty,
+    location
+  };
+});
+
+export const finalMessage = {
     id: "complete",
     title: "🎉 Course Complete",
     type: "complete",
@@ -81,5 +107,4 @@ You have completed the **Webhook Learning Roadmap**.
 
 You are now ready to implement production-grade webhooks! 🚀
 `
-  }
-];
+  };

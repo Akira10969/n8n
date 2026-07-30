@@ -13,6 +13,8 @@ import MissionMap from './components/MissionMap';
 import MissionBriefing from './components/MissionBriefing';
 import RewardScreen from './components/RewardScreen';
 import TerminalSimulator from './components/TerminalSimulator';
+import BootSequence from './components/BootSequence';
+import EpisodeCard from './components/EpisodeCard';
 import './App.css';
 import './game.css';
 
@@ -24,7 +26,8 @@ function App() {
   const [hearts, setHearts] = useState(() => parseInt(localStorage.getItem('webhook_hearts') || '3', 10));
   const [quizKey, setQuizKey] = useState(0);
   const [currentView, setCurrentView] = useState('map'); // 'map', 'learning', 'dashboard'
-  const [missionState, setMissionState] = useState('briefing'); // 'briefing', 'content', 'reward'
+  const [missionState, setMissionState] = useState('episode-card'); // 'episode-card', 'briefing', 'content', 'reward'
+  const [hasBooted, setHasBooted] = useState(false);
 
   const currentStep = curriculum[currentIndex];
 
@@ -72,7 +75,7 @@ function App() {
       setCurrentIndex(0);
       setHighestUnlockedIndex(0);
       setQuizKey(prev => prev + 1);
-      setMissionState('briefing');
+      setMissionState('episode-card');
       setCurrentView('map');
     }
   };
@@ -99,9 +102,17 @@ function App() {
 
   const selectStep = (index) => {
     setCurrentIndex(index);
-    setMissionState('briefing');
+    setMissionState('episode-card');
     setCurrentView('learning');
   };
+
+  const unlockCheat = () => {
+    setHighestUnlockedIndex(curriculum.length - 1);
+  };
+
+  if (!hasBooted) {
+    return <BootSequence highestUnlockedIndex={highestUnlockedIndex} onBootComplete={() => setHasBooted(true)} />;
+  }
 
   // Progress percentage
   const progress = ((currentIndex + 1) / curriculum.length) * 100;
@@ -207,26 +218,44 @@ function App() {
         {/* MAIN CONTENT AREA */}
         <main className="main-content-area" style={{ width: '65%', maxWidth: 'none' }}>
           
-          {missionState === 'briefing' && (
-            <MissionBriefing 
-              mission={currentStep} 
-              missionIndex={currentIndex} 
-              onStartMission={() => setMissionState('content')} 
-            />
-          )}
+          <div className="content-container slide-up">
+            {missionState === 'episode-card' && (
+              <EpisodeCard 
+                mission={currentStep} 
+                missionIndex={currentIndex} 
+                onComplete={() => setMissionState('briefing')} 
+              />
+            )}
+            
+            {missionState === 'briefing' && (
+              <MissionBriefing 
+                mission={currentStep} 
+                missionIndex={currentIndex} 
+                onStartMission={() => setMissionState('content')} 
+              />
+            )}
 
-          {missionState === 'reward' && (
-            <RewardScreen 
-              xpGained={currentIndex === absoluteHighestIndex - 1 ? (currentStep.briefing?.rewards?.xp || 50) : 0}
-              newRank={getRank(xp)}
-              newAbsoluteIndex={absoluteHighestIndex}
-              unlockedBadgeId={currentStep.briefing?.rewards?.badge && currentStep.briefing?.rewards?.badge !== 'None' ? currentStep.briefing.rewards.badge : null}
-              onContinue={() => {
-                goToNext();
-                setCurrentView('map');
-              }}
-            />
-          )}
+            {missionState === 'reward' && (
+              <RewardScreen 
+                mission={currentStep}
+                missionIndex={currentIndex}
+                xpGained={currentIndex === absoluteHighestIndex - 1 ? (currentStep.briefing?.rewards?.xp || 50) : 0}
+                newRank={getRank(xp)}
+                newAbsoluteIndex={absoluteHighestIndex}
+                unlockedBadgeId={currentStep.briefing?.rewards?.badge && currentStep.briefing?.rewards?.badge !== 'None' ? currentStep.briefing.rewards.badge : null}
+                onNextMission={() => {
+                  goToNext();
+                  setMissionState('episode-card');
+                  setCurrentView('map');
+                }}
+                onBackToMap={() => {
+                  goToNext();
+                  setMissionState('episode-card');
+                  setCurrentView('map');
+                }}
+              />
+            )}
+          </div>
 
           {missionState === 'content' && (
             <>
