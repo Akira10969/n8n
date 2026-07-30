@@ -3,6 +3,7 @@ export const level7 = {
   title: "Level 7 – The First Hook",
   type: "theory",
   briefing: {
+    recap: "You discovered the Fulfillment Service was polling the Inventory API 15,000 times a minute, causing a CPU spike. You halted the polling loop.",
     incident: "You successfully terminated the Fulfillment Service's polling loop. CPU usage has dropped to 45%. Now you must establish the webhook connection so Fulfillment still receives stock updates.",
     task: "Configure the Inventory Service to push event notifications to the Fulfillment webhook endpoint. Review the server logs to verify the connection is stable.",
     rewards: { xp: 150, badge: 'foundation-completed' }

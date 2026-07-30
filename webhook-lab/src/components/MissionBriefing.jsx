@@ -37,11 +37,22 @@ function Typewriter({ text, delay = 18, onDone }) {
 // We build the steps dynamically from the mission data
 function buildSteps(mission, missionIndex, rewardBadge) {
   const b = mission.briefing;
-  return [
+  const steps = [];
+  
+  if (b.recap) {
+    steps.push({
+      id: 'recap',
+      label: 'PREVIOUSLY ON MEI_CLOUD_OS',
+      icon: <Radio size={18} />,
+      color: '#f59e0b', // Amber/orange for flashback
+    });
+  }
+  
+  steps.push(
     {
       id: 'transmission',
       label: 'INCOMING TRANSMISSION',
-      icon: <Radio size={18} />,
+      icon: <AlertOctagon size={18} />,
       color: '#ef4444',
     },
     {
@@ -61,8 +72,10 @@ function buildSteps(mission, missionIndex, rewardBadge) {
       label: 'INITIALIZE MISSION',
       icon: <Play size={18} />,
       color: '#22c55e',
-    },
-  ];
+    }
+  );
+  
+  return steps;
 }
 
 // ─── Main Component ──────────────────────────────────────────────────────────
@@ -136,8 +149,21 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission 
       {/* ── Step Content ── */}
       <div className={`mb-step-content ${animIn ? 'slide-in' : 'slide-out'}`}>
 
-        {/* STEP 0: Incoming Transmission */}
-        {step === 0 && (
+        {/* STEP: Recap (Optional) */}
+        {steps[step].id === 'recap' && (
+          <div className="mb-card" style={{ borderColor: '#f59e0b', background: 'rgba(245,158,11,0.06)' }}>
+            <div className="mb-card-header" style={{ color: '#f59e0b' }}>
+              <Radio size={20} />
+              <span>PREVIOUSLY ON MEI_CLOUD_OS...</span>
+            </div>
+            <p className="mb-body-text" style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>
+              <Typewriter text={briefing.recap} delay={18} onDone={() => setTypewriterDone(true)} />
+            </p>
+          </div>
+        )}
+
+        {/* STEP: Incoming Transmission */}
+        {steps[step].id === 'transmission' && (
           <div className="mb-card" style={{ borderColor: '#ef4444', background: 'rgba(239,68,68,0.06)' }}>
             <div className="mb-card-header" style={{ color: '#ef4444' }}>
               <AlertOctagon size={20} />
@@ -150,8 +176,8 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission 
           </div>
         )}
 
-        {/* STEP 1: Mission Directive */}
-        {step === 1 && (
+        {/* STEP: Mission Directive */}
+        {steps[step].id === 'task' && (
           <div className="mb-card" style={{ borderColor: '#06b6d4', background: 'rgba(6,182,212,0.06)' }}>
             <div className="mb-card-header" style={{ color: '#06b6d4' }}>
               <Target size={20} />
@@ -163,8 +189,8 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission 
           </div>
         )}
 
-        {/* STEP 2: Rewards */}
-        {step === 2 && (
+        {/* STEP: Rewards */}
+        {steps[step].id === 'rewards' && (
           <div className="mb-card" style={{ borderColor: '#8b5cf6', background: 'rgba(139,92,246,0.06)' }}>
             <div className="mb-card-header" style={{ color: '#8b5cf6' }}>
               <Award size={20} />
@@ -179,7 +205,7 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission 
                 </div>
               </div>
               {rewardBadge ? (
-                <div className="mb-reward-chip" style={{ borderColor: '#22c55e', color: '#22c55e' }}>
+                <div className="mb-reward-chip" style={{ borderColor: rewardBadge.color, color: rewardBadge.color }}>
                   <span className="mb-reward-icon">{rewardBadge.icon}</span>
                   <div>
                     <div className="mb-reward-value">{rewardBadge.name}</div>

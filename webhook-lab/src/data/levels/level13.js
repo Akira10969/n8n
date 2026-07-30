@@ -3,6 +3,7 @@ export const level13 = {
   title: "Level 13 – The Cryptographic Seal",
   type: "theory",
   briefing: {
+    recap: "The attacker stole the shared secret from an exposed Git repo. You executed a zero-downtime key rotation using environment variables to secure the system.",
     incident: "Your suspicions were correct. The attacker intercepted the new API key during transmission. Fraudulent account upgrades are happening again. Simple authentication is no longer sufficient; we need mathematical proof of authenticity.",
     task: "Upgrade the webhook security architecture. Implement HMAC (Hash-based Message Authentication Code) signatures so the receiver can mathematically verify that the payload has not been tampered with and was sent by a trusted source.",
     rewards: { xp: 150, badge: 'None' }

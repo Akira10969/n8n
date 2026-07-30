@@ -3,6 +3,7 @@ export const level10 = {
   title: "Level 10 – The Missing Credentials",
   type: "theory",
   briefing: {
+    recap: "A massive influx of malformed payloads crashed the Analytics Engine. You patched the JSON parser to safely return 400 Bad Request instead of crashing.",
     incident: "Internal microservices have stopped communicating. The Authorization Service is blanket rejecting all requests from the Order Service with 401 Unauthorized errors, bringing all transactions to a halt.",
     task: "Inspect the raw HTTP requests traveling between the Order Service and the Authorization Service. Determine why valid requests are suddenly being rejected.",
     rewards: { xp: 100, badge: 'platform-operations-started' }

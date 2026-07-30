@@ -3,6 +3,7 @@ export const level11 = {
   title: "Level 11 – The Imposter",
   type: "theory",
   briefing: {
+    recap: "Internal microservices stopped trusting each other. You discovered and bypassed a rogue reverse proxy that was silently stripping Authorization headers in transit.",
     incident: "Hundreds of high-value user accounts have suddenly been granted 'Premium Administrator' access without payment. The system logs show these upgrades were triggered by successful billing webhooks. We are bleeding data and revenue.",
     task: "Investigate the webhook logs. Understand how an attacker is triggering legitimate system actions without making actual payments, and implement a foundational security layer.",
     rewards: { xp: 120, badge: 'None' }

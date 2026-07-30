@@ -3,6 +3,7 @@ export const level15 = {
   title: "Level 15 – The Dead Letter",
   type: "theory",
   briefing: {
+    recap: "Unable to forge webhooks, the attacker launched a localized DoS attack. You implemented Exponential Backoff and Retry Logic to ensure webhooks weren't permanently lost during network flaps.",
     incident: "Even with exponential backoff, some webhooks are failing their maximum number of retries. Once a webhook exhausts all retries, the background job processor quietly deletes it. We are still permanently losing a small percentage of critical data.",
     task: "Implement a Dead Letter Queue (DLQ) to catch and store any webhooks that fail all delivery attempts. Inspect the DLQ to figure out why these specific webhooks are un-deliverable.",
     rewards: { xp: 200, badge: 'platform-operations-completed' }

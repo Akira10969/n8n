@@ -3,6 +3,7 @@ export const level14 = {
   title: "Level 14 – The Network Flap",
   type: "theory",
   briefing: {
+    recap: "The attacker intercepted the new API key over the network. You deployed HMAC SHA-256 signatures to cryptographically guarantee the authenticity of every webhook.",
     incident: "Unable to forge webhooks, the saboteur has initiated a localized Denial of Service (DoS) attack. Intermittent network partitions are causing the receiving servers to go offline randomly for 10-20 seconds at a time. Webhooks sent during these micro-outages are lost forever.",
     task: "Design a resilient webhook delivery pipeline. Implement Retry Logic and Exponential Backoff to ensure that webhooks are stored and re-transmitted if the receiver is temporarily unavailable.",
     rewards: { xp: 120, badge: 'None' }

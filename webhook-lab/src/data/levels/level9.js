@@ -3,6 +3,7 @@ export const level9 = {
   title: "Level 9 – Decoding the Errors",
   type: "theory",
   briefing: {
+    recap: "You discovered that the external payment webhook receiver was failing because the router configuration was maliciously altered to reject POST requests.",
     incident: "A massive influx of webhooks from the CRM system to the Analytics Engine is failing. Dashboards across the company are going blank. The logs are showing a chaotic mix of 400 Bad Request and 502 Bad Gateway errors.",
     task: "Analyze the HTTP Status Codes to diagnose the root cause of the failures. Determine if the issue lies with the sender (CRM) or the receiver (Analytics Engine).",
     rewards: { xp: 100, badge: 'None' }

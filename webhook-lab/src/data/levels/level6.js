@@ -3,6 +3,7 @@ export const level6 = {
   title: "Level 6 – The Polling Problem",
   type: "theory",
   briefing: {
+    recap: "You successfully configured JSON payloads in the Foundation Zone. The basics are complete. Now, a live incident requires your attention.",
     incident: "CRITICAL ALERT: The Core Inventory Service is experiencing 99% CPU utilization. Memory is rapidly depleting. The service is on the verge of a cascading failure that will halt all MEI_Cloud_OS commerce operations.",
     task: "Analyze the incoming traffic to the Inventory Service. Identify the source of the load spike and propose an architectural shift from continuous API polling to an event-driven model.",
     rewards: { xp: 100, badge: 'None' }

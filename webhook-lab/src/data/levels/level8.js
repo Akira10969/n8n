@@ -3,6 +3,7 @@ export const level8 = {
   title: "Level 8 – The Silent Drops",
   type: "theory",
   briefing: {
+    recap: "You successfully deployed a webhook to replace the polling loop. However, the server logs revealed an unknown IP address was secretly masking its traffic behind the noise.",
     incident: "Payment webhooks from our external provider (Stripe) are failing to register in the MEI Billing System. Customers are being charged, but their accounts aren't being credited. We are losing revenue by the second.",
     task: "Investigate the Billing System's webhook receiver. Identify why the incoming payment notifications are being rejected with 405 Method Not Allowed errors.",
     rewards: { xp: 100, badge: 'None' }
