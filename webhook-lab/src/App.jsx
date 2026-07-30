@@ -111,7 +111,13 @@ function App() {
   };
 
   if (!hasBooted) {
-    return <BootSequence highestUnlockedIndex={highestUnlockedIndex} onBootComplete={() => setHasBooted(true)} />;
+    return (
+      <>
+        {/* Cinematic Ambient Background Music */}
+        <audio autoPlay loop src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=cinematic-atmosphere-score-2-22136.mp3" />
+        <BootSequence highestUnlockedIndex={highestUnlockedIndex} onBootComplete={() => setHasBooted(true)} />
+      </>
+    );
   }
 
   // Progress percentage
@@ -119,6 +125,9 @@ function App() {
 
   return (
     <>
+      
+      {/* Cinematic Ambient Background Music */}
+      <audio autoPlay loop src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=cinematic-atmosphere-score-2-22136.mp3" />
     <div className="particle-container">
       {[...Array(20)].map((_, i) => (
         <div key={i} className="particle" style={{

@@ -111,20 +111,26 @@ export default function BootSequence({ highestUnlockedIndex, onBootComplete }) {
   }, []);
 
   const [narrativeIndex, setNarrativeIndex] = useState(0);
+  const [fadeStatus, setFadeStatus] = useState('in');
 
   const handleLineComplete = () => {
+    const pauseTime = narrativeText[narrativeIndex].includes('...') ? 1500 : 1000;
     setTimeout(() => {
-      if (narrativeIndex < narrativeText.length - 1) {
-        setNarrativeIndex(n => n + 1);
-      } else {
-        setTimeout(onBootComplete, 1500); // Finish boot sequence
-      }
-    }, narrativeText[narrativeIndex].includes('...') ? 1500 : 800); // Pause longer on ellipses
+      setFadeStatus('out');
+      setTimeout(() => {
+        if (narrativeIndex < narrativeText.length - 1) {
+          setNarrativeIndex(n => n + 1);
+          setFadeStatus('in');
+        } else {
+          setTimeout(onBootComplete, 500);
+        }
+      }, 800); // Wait for CSS fade out
+    }, pauseTime);
   };
 
   return (
     <div className="boot-sequence-container">
-      <div className="boot-text">
+      <div className={`boot-text ${step >= 6 ? 'fade-out' : 'fade-in'}`}>
         <div className="boot-header">
           <p>══════════════════════════════════════</p>
           <p>MEI_Cloud_OS</p>
@@ -171,22 +177,16 @@ export default function BootSequence({ highestUnlockedIndex, onBootComplete }) {
             <br/>
           </div>
         )}
-
-        {step >= 6 && (
-          <div className="boot-narrative">
-            {narrativeText.slice(0, narrativeIndex + 1).map((line, i) => (
-              <p key={i} className={line.includes('Warning') || line.includes('EMERGENCY') ? 'text-warn' : ''}>
-                {i === narrativeIndex ? (
-                  <Typewriter text={line} onComplete={handleLineComplete} delay={30} />
-                ) : (
-                  <span>{line}</span>
-                )}
-              </p>
-            ))}
-          </div>
-        )}
-
       </div>
+
+      {step >= 6 && (
+        <div className={`boot-narrative-centered ${fadeStatus === 'in' ? 'fade-in' : 'fade-out'}`}>
+          <p className={narrativeText[narrativeIndex].includes('Warning') || narrativeText[narrativeIndex].includes('EMERGENCY') || narrativeText[narrativeIndex].includes('FAILURE') ? 'text-warn' : ''}>
+            <Typewriter key={narrativeIndex} text={narrativeText[narrativeIndex]} onComplete={handleLineComplete} delay={40} />
+          </p>
+        </div>
+      )}
+
     </div>
   );
 }
