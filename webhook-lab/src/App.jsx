@@ -59,8 +59,11 @@ function App() {
     if (hearts > 1) {
       setHearts(prev => prev - 1);
     } else {
-      alert("💔 Mission Failed! You lost all your hearts. Restarting mission...");
+      alert("💔 Game Over! You lost all your hearts. Restarting from the very beginning...");
       setHearts(3);
+      setXp(0);
+      setCurrentIndex(0);
+      setHighestUnlockedIndex(0);
       setQuizKey(prev => prev + 1);
     }
   };
