@@ -69,41 +69,52 @@ function getZoneColor(index) {
 
 export default function MissionMap({ curriculum, highestUnlockedIndex, activeMissionIndex, onSelectMission }) {
   const wrapperRef = useRef(null);
-  const [mapTransform, setMapTransform] = useState('scale(1.8) translate(-10%, 10%)'); // Start zoomed in a bit off-center
-  const [isRevealing, setIsRevealing] = useState(true);
+  
+  // Intro cinematic phases: 'init' -> 'pan' -> 'zoom-out' -> 'done'
+  const [introPhase, setIntroPhase] = useState(activeMissionIndex === null ? 'init' : 'done');
+  
+  // Determine starting transform based on phase
+  const [mapTransform, setMapTransform] = useState(() => {
+    if (activeMissionIndex === null) return 'scale(3) translate(-25%, -15%)';
+    return 'scale(1) translate(0, 0)';
+  });
 
-  // Cinematic initial reveal
+  // Cinematic sequence logic
   useEffect(() => {
-    if (activeMissionIndex === null) {
-      // Start the slow zoom out and pan to the highest unlocked index
-      const timer = setTimeout(() => {
-        setIsRevealing(false);
-        const coord = missionCoordinates[highestUnlockedIndex] || { x: 50, y: 50 };
-        // We want a slight pan to the current zone, but not fully zoomed in.
-        // A gentle scale(1.1) focused roughly on the current node.
-        const targetX = 50 - coord.x;
-        const targetY = 50 - coord.y;
-        setMapTransform(`scale(1.15) translate(${targetX * 0.4}%, ${targetY * 0.4}%)`);
-      }, 500); // Small delay to let the component mount and the episode card fade out
+    if (introPhase === 'init') {
+      const t1 = setTimeout(() => {
+        setIntroPhase('pan');
+        // Slow pan across the map
+        setMapTransform('scale(2.5) translate(15%, 20%)');
+      }, 100);
 
-      return () => clearTimeout(timer);
+      const t2 = setTimeout(() => {
+        setIntroPhase('zoom-out');
+        // Zoom out to reveal full map
+        setMapTransform('scale(1) translate(0%, 0%)');
+      }, 6000);
+
+      const t3 = setTimeout(() => {
+        setIntroPhase('done');
+      }, 9500);
+
+      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
     }
-  }, [highestUnlockedIndex, activeMissionIndex]);
+  }, [introPhase]);
 
-  // Pan + zoom to selected mission
+  // Handle active mission zooming (only when sequence is done)
   useEffect(() => {
+    if (introPhase !== 'done') return;
+    
     if (activeMissionIndex !== null && activeMissionIndex < missionCoordinates.length) {
       const coord = missionCoordinates[activeMissionIndex];
       const targetX = 50 - coord.x - 12; // shift left for panel
       const targetY = 50 - coord.y;
       setMapTransform(`scale(2.2) translate(${targetX}%, ${targetY}%)`);
-    } else if (!isRevealing) {
-      const coord = missionCoordinates[highestUnlockedIndex] || { x: 50, y: 50 };
-      const targetX = 50 - coord.x;
-      const targetY = 50 - coord.y;
-      setMapTransform(`scale(1.15) translate(${targetX * 0.4}%, ${targetY * 0.4}%)`);
+    } else {
+      setMapTransform('scale(1) translate(0%, 0%)');
     }
-  }, [activeMissionIndex, highestUnlockedIndex, isRevealing]);
+  }, [activeMissionIndex, introPhase]);
 
   // Build SVG path lines — use raw % values matching our coordinate system
   const pathLines = missionCoordinates.slice(0, curriculum.length - 1).map((coord, i) => {
@@ -114,16 +125,26 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
     return { x1: coord.x, y1: coord.y, x2: next.x, y2: next.y, isCompleted, isUnlocked };
   });
 
+  // Determine transition timing based on phase
+  let transitionStyle = 'transform 1.4s cubic-bezier(0.25, 1, 0.5, 1)';
+  if (introPhase === 'pan') transitionStyle = 'transform 6s linear';
+  if (introPhase === 'zoom-out') transitionStyle = 'transform 3.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+
+  // Determine if nodes and UI should be visible
+  const isUIVisible = introPhase === 'zoom-out' || introPhase === 'done';
+  const isFogHeavy = introPhase === 'init' || introPhase === 'pan';
+
   return (
     <div className={`interactive-map-wrapper ${activeMissionIndex !== null ? 'sidebar-mode' : ''}`} ref={wrapperRef}>
 
       {/* Cinematic Fog & Dust Overlay */}
-      <div className={`map-fog-overlay ${isRevealing ? 'heavy' : 'light'}`}></div>
+      <div className={`map-fog-overlay ${isFogHeavy ? 'heavy' : 'light'}`}></div>
       <div className="dust-particles"></div>
+      <div className={`cinematic-vignette ${introPhase !== 'done' ? 'active' : ''}`}></div>
 
       {/* Minimal floating header — only shown when no mission active */}
       {activeMissionIndex === null && (
-        <div className="map-hud-chip animate-fade-in">
+        <div className="map-hud-chip" style={{ opacity: isUIVisible ? 1 : 0, transition: 'opacity 2s ease 1s' }}>
           <span className="hud-dot"></span>
           MISSION CONTROL — SELECT ASSIGNMENT
         </div>
@@ -131,7 +152,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
 
       {/* Zone Legend */}
       {activeMissionIndex === null && (
-        <div className="zone-legend animate-fade-in">
+        <div className="zone-legend" style={{ opacity: isUIVisible ? 1 : 0, transition: 'opacity 2s ease 1.5s' }}>
           {zones.map(zone => (
             <div key={zone.name} className="zone-legend-item">
               <span className="zone-dot" style={{ background: zone.color, boxShadow: `0 0 6px ${zone.color}` }}></span>
@@ -142,7 +163,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
       )}
 
       <div className="map-viewport">
-        <div className="map-layer" style={{ transform: mapTransform, transition: isRevealing ? 'transform 4s cubic-bezier(0.25, 1, 0.5, 1)' : 'transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)' }}>
+        <div className="map-layer" style={{ transform: mapTransform, transition: transitionStyle }}>
 
           <img src="/mission-map-bg.jpg" alt="Mission Map" className="map-bg-image" />
 
@@ -153,7 +174,8 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
             style={{
               position: 'absolute', top: 0, left: 0,
               width: '100%', height: '100%',
-              pointerEvents: 'none', zIndex: 3, overflow: 'visible'
+              pointerEvents: 'none', zIndex: 3, overflow: 'visible',
+              opacity: isUIVisible ? 1 : 0, transition: 'opacity 2s ease 1s'
             }}
           >
             <defs>
@@ -204,7 +226,12 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
               <div
                 key={mission.id}
                 className={`map-node-wrapper ${isUnlocked ? 'unlocked' : 'locked'} ${isNext ? 'is-next' : ''} ${isActive ? 'is-active' : ''} ${isBlurred ? 'is-blurred' : ''}`}
-                style={{ left: `${coord.x}%`, top: `${coord.y}%` }}
+                style={{ 
+                  left: `${coord.x}%`, 
+                  top: `${coord.y}%`,
+                  opacity: isUIVisible ? 1 : 0,
+                  transition: `opacity 2s ease ${1.5 + (index * 0.05)}s, transform 0.3s ease`
+                }}
                 onClick={() => isUnlocked && onSelectMission(index)}
               >
                 {/* Pulse ring for current mission */}

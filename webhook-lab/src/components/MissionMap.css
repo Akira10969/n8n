@@ -109,7 +109,7 @@
 .map-bg-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
   object-position: center top;
   display: block;
   user-select: none;
@@ -336,3 +336,6 @@
   0% { background-position: 0 0; }
   100% { background-position: -500px 500px; }
 }
+
+.cinematic-vignette { position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 150px rgba(0,0,0,0.9); z-index: 12; pointer-events: none; opacity: 0; transition: opacity 3s ease; }
+.cinematic-vignette.active { opacity: 1; }
