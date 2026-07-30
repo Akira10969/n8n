@@ -71,17 +71,24 @@ function getZoneColor(index) {
 
 export default function MissionMap({ curriculum, highestUnlockedIndex, activeMissionIndex, onSelectMission }) {
   const mapLayerRef = useRef(null);
+  const wrapperRef = useRef(null);
   const [mapSize, setMapSize] = useState({ width: 0, height: 0 });
   const [mapTransform, setMapTransform] = useState('scale(1) translate(0,0)');
 
-  // Measure the map image dimensions dynamically for SVG overlay
+  // Measure the wrapper dimensions for SVG overlay (not image natural size)
   useEffect(() => {
-    const img = mapLayerRef.current?.querySelector('.map-bg-image');
-    if (!img) return;
-    const update = () => setMapSize({ width: img.clientWidth, height: img.clientHeight });
-    img.addEventListener('load', update);
-    update();
-    return () => img.removeEventListener('load', update);
+    const updateSize = () => {
+      if (wrapperRef.current) {
+        setMapSize({
+          width: wrapperRef.current.clientWidth,
+          height: wrapperRef.current.clientHeight
+        });
+      }
+    };
+    updateSize();
+    const ro = new ResizeObserver(updateSize);
+    if (wrapperRef.current) ro.observe(wrapperRef.current);
+    return () => ro.disconnect();
   }, []);
 
   // Pan + zoom to selected mission
@@ -110,7 +117,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
   });
 
   return (
-    <div className={`interactive-map-wrapper ${activeMissionIndex !== null ? 'sidebar-mode' : ''}`}>
+    <div className={`interactive-map-wrapper ${activeMissionIndex !== null ? 'sidebar-mode' : ''}`} ref={wrapperRef}>
 
       {/* Minimal floating header — only shown when no mission active */}
       {activeMissionIndex === null && (
