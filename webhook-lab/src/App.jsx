@@ -11,7 +11,7 @@ import './App.css';
 
 function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [highestUnlockedIndex, setHighestUnlockedIndex] = useState(curriculum.length);
+  const [highestUnlockedIndex, setHighestUnlockedIndex] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const currentStep = curriculum[currentIndex];
 
