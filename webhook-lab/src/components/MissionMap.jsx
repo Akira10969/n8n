@@ -118,7 +118,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
       )}
 
       <div className="map-viewport">
-        <div className="map-layer" ref={mapLayerRef} style={{ transform: mapTransform }}>
+        <div className="map-layer" style={{ transform: mapTransform }}>
 
           <img src="/mission-map-bg.jpg" alt="Mission Map" className="map-bg-image" />
 
