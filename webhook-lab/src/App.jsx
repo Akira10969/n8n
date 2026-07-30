@@ -13,6 +13,7 @@ import MissionMap from './components/MissionMap';
 import MissionBriefing from './components/MissionBriefing';
 import RewardScreen from './components/RewardScreen';
 import './App.css';
+import './game.css';
 
 function App() {
   const [currentIndex, setCurrentIndex] = useState(() => parseInt(localStorage.getItem('webhook_current_index') || '0', 10));
@@ -105,7 +106,19 @@ function App() {
   const progress = ((currentIndex + 1) / curriculum.length) * 100;
 
   return (
-    <div className="learning-module">
+    <>
+    <div className="particle-container">
+      {[...Array(20)].map((_, i) => (
+        <div key={i} className="particle" style={{
+          left: `${Math.random() * 100}%`,
+          width: `${Math.random() * 4 + 2}px`,
+          height: `${Math.random() * 4 + 2}px`,
+          animationDuration: `${Math.random() * 10 + 5}s`,
+          animationDelay: `${Math.random() * 5}s`
+        }}></div>
+      ))}
+    </div>
+    <div className="learning-module crt">
       {/* HEADER WITH PROGRESS BAR */}
       <header className="module-header">
         <div className="header-content">
@@ -255,6 +268,7 @@ function App() {
       </div>
       )}
     </div>
+    </>
   );
 }
 

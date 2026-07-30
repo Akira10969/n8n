@@ -1,6 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AlertOctagon, Target, Award, Play } from 'lucide-react';
 import { badges } from '../data/achievements';
+
+function Typewriter({ text, delay = 15 }) {
+  const [currentText, setCurrentText] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    setCurrentText('');
+    setCurrentIndex(0);
+  }, [text]);
+
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      const timeout = setTimeout(() => {
+        setCurrentText(prevText => prevText + text[currentIndex]);
+        setCurrentIndex(prevIndex => prevIndex + 1);
+      }, delay);
+      return () => clearTimeout(timeout);
+    }
+  }, [currentIndex, delay, text]);
+
+  return <span>{currentText}{currentIndex < text.length ? <span className="cursor-blink">_</span> : null}</span>;
+}
 
 export default function MissionBriefing({ mission, missionIndex, onStartMission }) {
   const briefing = mission.briefing;
@@ -46,8 +68,8 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission 
         <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--accent-red)', margin: '0 0 1rem 0', fontSize: '1.25rem' }}>
           <AlertOctagon size={24} /> Incident Report
         </h3>
-        <p style={{ color: 'var(--text-main)', fontSize: '1.1rem', lineHeight: 1.6, margin: 0 }}>
-          {briefing.incident}
+        <p style={{ color: 'var(--text-main)', fontSize: '1.1rem', lineHeight: 1.6, margin: 0, fontFamily: 'monospace' }}>
+          <Typewriter text={briefing.incident} />
         </p>
       </div>
 
@@ -63,8 +85,8 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission 
         <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--accent-cyan)', margin: '0 0 1rem 0', fontSize: '1.25rem' }}>
           <Target size={24} /> Your Task
         </h3>
-        <p style={{ color: 'var(--text-main)', fontSize: '1.1rem', lineHeight: 1.6, margin: 0 }}>
-          {briefing.task}
+        <p style={{ color: 'var(--text-main)', fontSize: '1.1rem', lineHeight: 1.6, margin: 0, fontFamily: 'monospace' }}>
+          <Typewriter text={briefing.task} delay={10} />
         </p>
       </div>
 

@@ -1,0 +1,100 @@
+/* CRT SCANLINE OVERLAY */
+.crt::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.15) 50%
+  );
+  background-size: 100% 4px;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.crt::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(18, 16, 16, 0.05);
+  opacity: 0;
+  z-index: 100;
+  pointer-events: none;
+  animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+  0% { opacity: 0.02; }
+  50% { opacity: 0.05; }
+  100% { opacity: 0.02; }
+}
+
+/* GLOBAL CUSTOM CURSOR */
+body {
+  cursor: crosshair;
+}
+
+button, a, .mission-card {
+  cursor: pointer !important;
+}
+
+/* FLOATING PARTICLES (Data bits) */
+.particle-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  background: rgba(6, 182, 212, 0.2);
+  border-radius: 50%;
+  animation: floatUp linear infinite;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(100vh) scale(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(80vh) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(20vh) scale(1);
+  }
+  100% {
+    transform: translateY(-10vh) scale(0);
+    opacity: 0;
+  }
+}
+
+/* TYPEWRITER BLINK */
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+  display: inline-block;
+  width: 8px;
+  background: var(--accent-cyan);
+  color: transparent;
+  margin-left: 2px;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
