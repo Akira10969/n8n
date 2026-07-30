@@ -12,7 +12,7 @@ export default function Dashboard({ xp, hearts, rank, absoluteHighestIndex, tota
       <div style={{ marginBottom: '2.5rem', borderBottom: '2px solid var(--accent-cyan)', paddingBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
           <div style={{ color: 'var(--accent-cyan)', fontSize: '0.9rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-            > Acme_Cloud_OS v2.4.1 // Secure Connection Established
+            &gt; Acme_Cloud_OS v2.4.1 // Secure Connection Established
           </div>
           <h1 style={{ fontSize: '2.5rem', margin: '0', color: 'var(--text-main)', letterSpacing: '0.05em' }}>
             EMPLOYEE PERSONNEL FILE

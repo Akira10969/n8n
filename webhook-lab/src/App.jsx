@@ -109,7 +109,7 @@ function App() {
       {/* HEADER WITH PROGRESS BAR */}
       <header className="module-header">
         <div className="header-content">
-          <h1>Webhook Learning Roadmap</h1>
+          <h1 style={{ fontFamily: 'monospace', letterSpacing: '0.1em' }}>Acme_Cloud_OS // MISSION CONTROL</h1>
           <div className="gamification-stats" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginLeft: 'auto', marginRight: '2rem' }}>
             <button 
               onClick={() => setCurrentView('map')}
@@ -195,7 +195,8 @@ function App() {
           )}
 
           {missionState === 'content' && (
-            <div className="content-card glass-panel animate-fade-in" key={currentStep.id}>
+            <>
+              <div className="content-card glass-panel animate-fade-in" key={currentStep.id}>
               
               <div style={{ marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '1px solid var(--glass-border)' }}>
                 <div style={{ fontSize: '0.9rem', color: 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 'bold', marginBottom: '0.5rem' }}>
@@ -247,6 +248,7 @@ function App() {
                 <ChevronRight size={20} />
               </button>
             </div>
+            </>
           )}
 
         </main>
