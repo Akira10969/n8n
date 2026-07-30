@@ -1,95 +1,35 @@
 export const level3 = {
   id: "level-3",
-  title: "Level 3 – HTTP Methods",
+  title: "Level 3 – The Typo",
   type: "theory",
   briefing: {
-    incident: "You figured out what the 404 error was! Now the customer wants to upload a new profile picture to their dashboard, but the server keeps rejecting the request.",
-    task: "Investigate how data is sent to a server. You need to understand HTTP verbs (GET, POST, PUT, DELETE) to fix the customer's upload feature.",
+    recap: "You verified the web server process crashed and Sarah rebooted it. The server is listening on Port 80 again.",
+    incident: "[UNIT-7 NOC-BOT]: Incident escalated. Marketing Developers report the web server is online, but the 'Submit Lead' function is returning a 404 Not Found error.",
+    task: "[SARAH - SENIOR PLATFORM ENGINEER]: The server is up, but the developers say it's broken. Classic. Let's look at the exact HTTP request they are sending to the server to see who's really at fault here.",
     rewards: { xp: 50, badge: 'None' }
   },
   content: `
-## Learning Objectives
-By the end of this level, you will understand the purpose of different HTTP methods (verbs) and how they dictate the action a client wants the server to perform.
+## Incident Communication Log
 
-## Prerequisites
-- Level 2 (HTTP Fundamentals)
+**Sarah (Senior Engineer):** 
+"Alright, so \`curl\` isn't just a ping tool. It's a full-fledged HTTP client. 
 
-## Concept Explanation
-An HTTP URL tells the server *where* to go, but the **HTTP Method** (also known as a Verb) tells the server *what to do* when it gets there. 
+**HTTP (Hypertext Transfer Protocol)** is the language clients and servers use to talk to each other. When a browser (or curl) connects to a server, it doesn't just say 'hello'. It sends a formatted text document called an **HTTP Request**.
 
-There are several standard methods used in modern web development:
+Every HTTP Request needs a **Path** (like \`/index.html\` or \`/api/submit\`). It tells the server exactly *which* file or function the client wants.
 
-1. **GET**: Retrieve data. It should never modify data on the server (it is "safe" and "read-only").
-2. **POST**: Submit new data to the server to create a new resource.
-3. **PUT**: Replace an existing resource entirely.
-4. **PATCH**: Apply partial modifications to an existing resource.
-5. **DELETE**: Remove a resource from the server.
-6. **OPTIONS**: Ask the server what methods are allowed for a specific URL (used mainly for browser security/CORS).
+The devs claim their code is perfect. Let's verify that. Use \`curl\` with the \`-v\` (verbose) flag. This will print out the exact HTTP conversation happening under the hood when you try to hit their endpoint."
 
-## Real-World Analogy
-Imagine you are managing a physical filing cabinet.
-- **GET**: Reading a file without changing it.
-- **POST**: Writing a brand-new file and shoving it into the cabinet.
-- **PUT**: Taking an existing file out, shredding it, and replacing it with a completely rewritten version.
-- **PATCH**: Taking a file out, crossing out one sentence, writing a new one, and putting it back.
-- **DELETE**: Taking the file out and burning it.
-
-## Technical Deep Dive: PUT vs PATCH
-These two methods are often confused because they both "update" data, but they operate differently under the hood:
-
-If a User Profile looks like this: \`{"name": "Jem", "age": 26, "city": "London"}\`
-
-If you send a **PUT** request with \`{"name": "James"}\`, the server will overwrite the entire resource. The new profile will be \`{"name": "James"}\`. The \`age\` and \`city\` fields will be deleted!
-
-If you send a **PATCH** request with \`{"name": "James"}\`, the server will merge the data. The new profile will be \`{"name": "James", "age": 26, "city": "London"}\`.
-
-## Code Example
-When using JavaScript's \`fetch\` API, you specify the method in the configuration object. If you don't specify a method, it defaults to **GET**.
-
-\`\`\`javascript
-// A POST Request to create a new user
-fetch('https://api.example.com/users', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    name: "Jem",
-    email: "jem@example.com"
-  })
-});
-\`\`\`
-
-## Common Mistakes
-- **Using GET to delete or update data:** Because GET requests are cached by browsers and CDNs, triggering a state change with a GET request (e.g., \`/deleteUser?id=5\`) can result in accidental deletions when search engine bots crawl your links!
-- **Sending a Body in a GET request:** While technically possible in some servers, it violates the HTTP specification. GET requests should pass data via Query Parameters, not the Body.
-
-## Troubleshooting
-- **Getting a 405 Method Not Allowed error?** This means the URL exists, but the server is not configured to accept the specific verb you used. (e.g., You tried to POST to a read-only endpoint).
-
-## Best Practices
-- **Idempotency:** A method is "idempotent" if making the same request 100 times has the same effect as making it once. GET, PUT, and DELETE should always be idempotent. (Deleting a file once deletes it. Deleting it 99 more times does nothing extra). POST is generally *not* idempotent (clicking "Checkout" 100 times creates 100 orders!).
-
-## Mini Quiz
-*(Test your knowledge below!)*
-
-## Key Takeaways
-1. **GET** reads data, **POST** creates data, **DELETE** removes data.
-2. **PUT** replaces an entire object, while **PATCH** updates specific fields.
-3. Never use GET to perform actions that modify data on the server.
-
-## What's Next
-Now you know how to format requests and specify actions. In the next level, we'll see how developers organize these URLs and Methods into a structured **REST API**.
+> **SYSTEM ALERT:** The developers are trying to hit \`http://10.4.12.88:80/api/sumbit_lead\`. Run a verbose curl against this URL to see what is happening.
 `,
-  quiz: {
-    question: "If you have a user profile with 50 fields, and you only want to update their 'email_address' without affecting the other 49 fields, which HTTP method is best practice?",
-    options: [
-      "POST",
-      "PUT",
-      "PATCH",
-      "GET"
-    ],
-    correctAnswerIndex: 2,
-    explanation: "PATCH is specifically designed for partial modifications. Using PUT would require you to send all 50 fields back to the server, otherwise the missing 49 fields might be deleted."
+  simulator: {
+    tasks: [
+      {
+        command: 'curl -v http://10.4.12.88:80/api/sumbit_lead',
+        instruction: 'Execute a verbose curl request against the developer\'s endpoint.',
+        successMessage: '> GET /api/sumbit_lead HTTP/1.1\n> Host: 10.4.12.88:80\n> User-Agent: curl/7.81.0\n>\n< HTTP/1.1 404 Not Found\n< Content-Length: 42\n< \n{"error": "Endpoint /sumbit_lead not found"}\n[SARAH]: "Hah! Look at the path. They spelled it \'sumbit_lead\'. Classic developer typo."',
+        errorMessage: 'Invalid syntax. Use `curl -v <URL>`'
+      }
+    ]
   }
 };
