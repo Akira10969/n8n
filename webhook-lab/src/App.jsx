@@ -9,17 +9,17 @@ import VisualWorkflow from './components/VisualWorkflow';
 import HandsOnLab from './components/HandsOnLab';
 import Quiz from './components/Quiz';
 import Dashboard from './components/Dashboard';
+import MissionMap from './components/MissionMap';
 import './App.css';
 
 function App() {
   const [currentIndex, setCurrentIndex] = useState(() => parseInt(localStorage.getItem('webhook_current_index') || '0', 10));
   const [highestUnlockedIndex, setHighestUnlockedIndex] = useState(() => parseInt(localStorage.getItem('webhook_highest_index') || '0', 10));
   const [absoluteHighestIndex, setAbsoluteHighestIndex] = useState(() => parseInt(localStorage.getItem('webhook_absolute_highest_index') || '0', 10));
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [xp, setXp] = useState(() => parseInt(localStorage.getItem('webhook_xp') || '0', 10));
   const [hearts, setHearts] = useState(() => parseInt(localStorage.getItem('webhook_hearts') || '3', 10));
   const [quizKey, setQuizKey] = useState(0);
-  const [currentView, setCurrentView] = useState('learning');
+  const [currentView, setCurrentView] = useState('map'); // 'map', 'mission', 'dashboard'
 
   const currentStep = curriculum[currentIndex];
 
@@ -97,7 +97,7 @@ function App() {
 
   const selectStep = (index) => {
     setCurrentIndex(index);
-    setSidebarOpen(false);
+    setCurrentView('mission');
   };
 
   // Progress percentage
@@ -108,15 +108,17 @@ function App() {
       {/* HEADER WITH PROGRESS BAR */}
       <header className="module-header">
         <div className="header-content">
-          <button className="mobile-menu-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>
-            {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
           <h1>Webhook Learning Roadmap</h1>
           <div className="gamification-stats" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginLeft: 'auto', marginRight: '2rem' }}>
             <button 
-              onClick={() => setCurrentView(currentView === 'learning' ? 'dashboard' : 'learning')}
+              onClick={() => setCurrentView('map')}
+              style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', padding: '0.5rem 1rem', borderRadius: '8px', color: 'var(--text-main)', cursor: 'pointer', fontWeight: 'bold' }}>
+              Mission Map
+            </button>
+            <button 
+              onClick={() => setCurrentView('dashboard')}
               style={{ background: 'var(--accent-cyan)', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', color: '#000', cursor: 'pointer', fontWeight: 'bold', marginRight: '1rem' }}>
-              {currentView === 'learning' ? 'Player Profile' : 'Resume Mission'}
+              Player Profile
             </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-red)', fontWeight: 'bold' }}>
               <Heart fill="currentColor" size={20} /> {hearts}
@@ -135,7 +137,7 @@ function App() {
         </div>
       </header>
 
-      {currentView === 'dashboard' ? (
+      {currentView === 'dashboard' && (
         <Dashboard 
           xp={xp} 
           hearts={hearts} 
@@ -143,54 +145,35 @@ function App() {
           absoluteHighestIndex={absoluteHighestIndex} 
           totalMissions={curriculum.length} 
         />
-      ) : (
-      <div className="module-layout">
-        {/* SIDEBAR NAVIGATION */}
-        <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-          <div className="sidebar-header">
-            <h3>Course Content</h3>
-          </div>
-          <ul className="sidebar-menu">
-            {curriculum.map((step, index) => {
-              const isCompleted = index < highestUnlockedIndex;
-              const isActive = index === currentIndex;
-              const isLocked = index > highestUnlockedIndex;
-              
-              return (
-                <li key={step.id} className={`${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''}`}>
-                  <button 
-                    onClick={() => selectStep(index)}
-                    disabled={isLocked}
-                    style={{ opacity: isLocked ? 0.5 : 1, cursor: isLocked ? 'not-allowed' : 'pointer' }}
-                  >
-                    <span className="step-icon">
-                      {isLocked ? (
-                        <Lock size={16} color="var(--text-muted)" />
-                      ) : isCompleted && !isActive ? (
-                        <CheckCircle2 size={16} color="var(--accent-green)" />
-                      ) : isActive ? (
-                        <BookOpen size={16} color="var(--accent-cyan)" />
-                      ) : (
-                        <div className="circle-placeholder"></div>
-                      )}
-                    </span>
-                    <span className="step-title">{step.title}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </aside>
+      )}
 
-        {/* OVERLAY FOR MOBILE SIDEBAR */}
-        {sidebarOpen && (
-          <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)}></div>
-        )}
+      {currentView === 'map' && (
+        <MissionMap 
+          curriculum={curriculum}
+          highestUnlockedIndex={highestUnlockedIndex}
+          onSelectMission={selectStep}
+        />
+      )}
 
+      {currentView === 'mission' && (
+      <div className="module-layout" style={{ justifyContent: 'center' }}>
         {/* MAIN CONTENT AREA */}
-        <main className="main-content-area">
+        <main className="main-content-area" style={{ width: '100%', maxWidth: '800px' }}>
           <div className="content-card glass-panel animate-fade-in" key={currentStep.id}>
             
+            {/* MISSION BRIEFING HEADER */}
+            <div style={{ marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '1px solid var(--glass-border)' }}>
+              <div style={{ fontSize: '0.9rem', color: 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                Mission {currentIndex + 1}
+              </div>
+              <h2 style={{ fontSize: '2rem', margin: '0 0 1rem 0', color: 'var(--text-main)' }}>
+                {currentStep.title}
+              </h2>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--accent-green)', padding: '0.25rem 0.75rem', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold' }}>
+                <Star size={14} fill="currentColor" /> Reward: 50 XP
+              </div>
+            </div>
+
             {/* MARKDOWN CONTENT */}
             <div className="markdown-body">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
