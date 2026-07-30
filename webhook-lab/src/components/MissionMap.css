@@ -1,48 +1,97 @@
+/* =====================
+   MAP WRAPPER
+===================== */
 .interactive-map-wrapper {
   position: relative;
   width: 100%;
-  height: calc(100vh - 65px); /* Full height minus header */
+  height: calc(100vh - 65px);
   overflow: hidden;
   background: #05070a;
 }
 
-.map-overlay-header {
+/* =====================
+   HUD CHIP (Mini header)
+===================== */
+.map-hud-chip {
   position: absolute;
-  top: 2rem;
+  top: 1rem;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 20;
-  text-align: center;
-  background: rgba(11, 15, 25, 0.85);
-  padding: 1.5rem 3rem;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 1.2rem;
+  background: rgba(11, 15, 25, 0.88);
   border: 1px solid var(--accent-cyan);
-  clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-  backdrop-filter: blur(10px);
-}
-
-.map-overlay-header h1 {
-  font-size: 2.5rem;
-  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 0.5rem;
-}
-
-.map-overlay-header p {
-  color: var(--text-muted);
-  margin: 0;
+  color: var(--accent-cyan);
   font-family: var(--font-mono);
-  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  backdrop-filter: blur(12px);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.hud-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  box-shadow: 0 0 6px var(--accent-cyan);
+  animation: blink 1.2s infinite;
+}
+
+/* =====================
+   ZONE LEGEND
+===================== */
+.zone-legend {
+  position: absolute;
+  top: 4rem;
+  right: 1rem;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: rgba(11, 15, 25, 0.82);
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
+.zone-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.zone-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.zone-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
+/* =====================
+   VIEWPORT & MAP LAYER
+===================== */
 .map-viewport {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  perspective: 1000px;
 }
 
 .map-layer {
@@ -50,144 +99,174 @@
   top: 0;
   left: 0;
   width: 100%;
-  /* Assuming the image is taller than it is wide, we let it scale to full width */
   transform-origin: center center;
-  transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 1.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .map-bg-image {
   width: 100%;
   height: auto;
   display: block;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
-/* INTERACTIVE NODES */
-.map-interactive-node {
+.map-svg-overlay {
+  overflow: visible;
+}
+
+/* =====================
+   MISSION NODE WRAPPER
+===================== */
+.map-node-wrapper {
   position: absolute;
-  width: 40px;
-  height: 40px;
-  transform: translate(-50%, -50%); /* Center on coordinate */
+  transform: translate(-50%, -50%);
   z-index: 10;
   cursor: pointer;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 3px;
   transition: all 0.3s ease;
 }
 
-.mission-node-icon {
-  width: 30px;
-  height: 30px;
-  background: rgba(11, 15, 25, 0.8);
-  border: 2px solid var(--glass-border);
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); /* Hexagon */
+.map-node-wrapper:hover {
+  z-index: 50;
+}
+
+.map-node-wrapper.locked {
+  cursor: not-allowed;
+  opacity: 0.45;
+  filter: grayscale(80%);
+}
+
+.map-node-wrapper.is-blurred {
+  opacity: 0.15;
+  filter: blur(1.5px) grayscale(80%);
+  pointer-events: none;
+}
+
+/* =====================
+   PULSE RING
+===================== */
+.pulse-ring {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulseRing 2s ease-out infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes pulseRing {
+  0%   { transform: translate(-50%, -50%) scale(0.8); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+}
+
+/* =====================
+   NODE ICON (circle)
+===================== */
+.node-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
-  transition: all 0.3s ease;
   position: relative;
   z-index: 2;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(4px);
 }
 
-.map-interactive-node:hover .mission-node-icon {
-  transform: scale(1.2);
-  background: rgba(6, 182, 212, 0.2);
+.map-node-wrapper:hover .node-icon {
+  transform: scale(1.25);
 }
 
-.map-interactive-node.locked {
-  opacity: 0.5;
-  filter: grayscale(100%);
-  cursor: not-allowed;
+.map-node-wrapper.is-active .node-icon {
+  transform: scale(1.35);
 }
 
-.map-interactive-node.unlocked .mission-node-icon {
-  border-color: var(--accent-green);
-  color: var(--accent-green);
+/* =====================
+   NUMBER BADGE
+===================== */
+.node-badge {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: bold;
+  color: #000;
+  border-radius: 999px;
+  padding: 1px 5px;
+  line-height: 1.4;
+  z-index: 2;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transition: all 0.25s ease;
+  min-width: 18px;
+  text-align: center;
 }
 
-.map-interactive-node.next-mission .mission-node-icon {
-  border-color: var(--accent-cyan);
-  background: rgba(6, 182, 212, 0.2);
-  box-shadow: 0 0 15px var(--accent-cyan);
-}
-
-.map-interactive-node.active-mission .mission-node-icon {
-  border-color: var(--accent-purple);
-  background: rgba(139, 92, 246, 0.3);
-  box-shadow: 0 0 20px var(--accent-purple);
-  transform: scale(1.3);
-}
-
-.map-interactive-node.blurred-mission {
-  opacity: 0.2;
-  filter: blur(2px) grayscale(80%);
-}
-
-.node-pulse {
+/* =====================
+   HOVER CARD
+===================== */
+.node-hover-card {
   position: absolute;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: var(--accent-cyan);
-  box-shadow: 0 0 10px var(--accent-cyan);
-  animation: mapPulse 2s infinite;
-  z-index: 1;
-}
-
-@keyframes mapPulse {
-  0% { transform: scale(0.5); opacity: 0.8; }
-  100% { transform: scale(1.5); opacity: 0; }
-}
-
-/* TOOLTIP */
-.node-tooltip {
-  position: absolute;
-  bottom: 120%;
+  bottom: calc(100% + 10px);
   left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  background: rgba(11, 15, 25, 0.95);
-  border: 1px solid var(--accent-cyan);
-  padding: 0.75rem 1rem;
-  width: max-content;
-  max-width: 200px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(9, 12, 22, 0.97);
+  border: 1px solid;
+  padding: 0.55rem 0.8rem;
+  min-width: 150px;
+  max-width: 190px;
   text-align: center;
   opacity: 0;
   visibility: hidden;
   transition: all 0.2s ease;
-  z-index: 30;
   pointer-events: none;
-  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  z-index: 100;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  backdrop-filter: blur(14px);
 }
 
-.map-interactive-node:hover .node-tooltip {
+.map-node-wrapper:hover .node-hover-card {
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(0);
 }
 
-.tooltip-number {
-  font-size: 0.75rem;
-  color: var(--accent-cyan);
+.hover-card-num {
   font-family: var(--font-mono);
-  margin-bottom: 0.25rem;
-  text-transform: uppercase;
-}
-
-.tooltip-title {
-  font-size: 0.9rem;
-  color: var(--text-main);
+  font-size: 0.65rem;
   font-weight: bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
 }
 
-/* Optional center dot for visual debugging of exact coordinates */
-.node-center-dot {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: white;
-  border-radius: 50%;
-  z-index: 3;
-  pointer-events: none;
-  opacity: 0.5;
+.hover-card-title {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--text-main);
+  line-height: 1.3;
+  margin-bottom: 0.3rem;
+}
+
+.hover-card-status {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* =====================
+   SIDEBAR MODE
+===================== */
+.interactive-map-wrapper.sidebar-mode .map-layer {
+  /* transform handled via JS */
 }

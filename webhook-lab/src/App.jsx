@@ -122,29 +122,37 @@ function App() {
       {/* HEADER WITH PROGRESS BAR */}
       <header className="module-header">
         <div className="header-content">
-          <h1 style={{ fontFamily: 'monospace', letterSpacing: '0.1em' }}>Acme_Cloud_OS // MISSION CONTROL</h1>
-          <div className="gamification-stats" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginLeft: 'auto', marginRight: '2rem' }}>
+          <h1 style={{ fontFamily: 'monospace', letterSpacing: '0.08em', fontSize: '0.95rem', textTransform: 'uppercase', flex: 1 }}>Acme_Cloud_OS <span style={{ color: 'var(--text-muted)' }}>//</span> Mission Control</h1>
+          <div className="gamification-stats" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginLeft: 'auto' }}>
             <button 
               onClick={() => setCurrentView('map')}
-              style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', padding: '0.5rem 1rem', borderRadius: '8px', color: 'var(--text-main)', cursor: 'pointer', fontWeight: 'bold' }}>
-              Mission Map
-            </button>
+              style={{ 
+                background: currentView === 'map' ? 'rgba(6,182,212,0.15)' : 'rgba(255,255,255,0.05)', 
+                border: currentView === 'map' ? '1px solid var(--accent-cyan)' : '1px solid rgba(255,255,255,0.1)', 
+                padding: '0.35rem 0.9rem', color: currentView === 'map' ? 'var(--accent-cyan)' : 'var(--text-muted)', 
+                cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem', fontFamily: 'monospace', letterSpacing: '0.06em'
+              }}>MAP</button>
             <button 
               onClick={() => setCurrentView('dashboard')}
-              style={{ background: 'var(--accent-cyan)', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', color: '#000', cursor: 'pointer', fontWeight: 'bold', marginRight: '1rem' }}>
-              Player Profile
-            </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-red)', fontWeight: 'bold' }}>
-              <Heart fill="currentColor" size={20} /> {hearts}
+              style={{ 
+                background: currentView === 'dashboard' ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.05)', 
+                border: currentView === 'dashboard' ? '1px solid var(--accent-purple)' : '1px solid rgba(255,255,255,0.1)', 
+                padding: '0.35rem 0.9rem', color: currentView === 'dashboard' ? 'var(--accent-purple)' : 'var(--text-muted)', 
+                cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem', fontFamily: 'monospace', letterSpacing: '0.06em'
+              }}>PROFILE</button>
+            <div style={{ width: '1px', height: '20px', background: 'var(--glass-border)', margin: '0 0.25rem' }}></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--accent-red)', fontWeight: 'bold', fontSize: '0.85rem' }}>
+              <Heart fill="currentColor" size={16} /> {hearts}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-cyan)', fontWeight: 'bold' }}>
-              <Star fill="currentColor" size={20} /> {xp} XP
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--accent-cyan)', fontWeight: 'bold', fontSize: '0.85rem' }}>
+              <Star fill="currentColor" size={16} /> {xp} XP
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-purple)', fontWeight: 'bold' }}>
-              <Trophy size={20} /> <span style={{ fontSize: '0.9rem' }}>{getRank(xp)}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--accent-purple)', fontWeight: 'bold', fontSize: '0.85rem' }}>
+              <Trophy size={16} /> <span style={{ fontSize: '0.8rem', fontFamily: 'monospace' }}>{getRank(xp)}</span>
             </div>
+            <div style={{ width: '1px', height: '20px', background: 'var(--glass-border)', margin: '0 0.25rem' }}></div>
+            <div className="progress-text" style={{ fontSize: '0.8rem', fontFamily: 'monospace', color: 'var(--text-muted)' }}>{currentIndex + 1}/{curriculum.length}</div>
           </div>
-          <div className="progress-text">{currentIndex + 1} of {curriculum.length}</div>
         </div>
         <div className="progress-bar-container">
           <div className="progress-bar" style={{ width: `${progress}%` }}></div>
@@ -162,19 +170,21 @@ function App() {
       )}
 
       {currentView === 'map' && (
-        <MissionMap 
-          curriculum={curriculum}
-          highestUnlockedIndex={highestUnlockedIndex}
-          activeMissionIndex={null}
-          onSelectMission={selectStep}
-        />
+        <div style={{ position: 'relative', width: '100%' }}>
+          <MissionMap 
+            curriculum={curriculum}
+            highestUnlockedIndex={highestUnlockedIndex}
+            activeMissionIndex={null}
+            onSelectMission={selectStep}
+          />
+        </div>
       )}
 
       {currentView === 'learning' && (
       <div className="module-layout" style={{ display: 'flex', gap: '2rem', padding: '0 2rem', alignItems: 'flex-start' }}>
         
         {/* SIDEBAR MISSION MAP */}
-        <aside style={{ width: '35%', height: 'calc(100vh - 120px)', position: 'sticky', top: '100px', overflowY: 'auto', paddingRight: '1rem' }}>
+        <aside style={{ width: '38%', height: 'calc(100vh - 120px)', position: 'sticky', top: '100px', overflowY: 'auto', borderRight: '1px solid var(--glass-border)' }}>
           <MissionMap 
             curriculum={curriculum}
             highestUnlockedIndex={highestUnlockedIndex}
