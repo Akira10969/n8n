@@ -1,0 +1,172 @@
+/* ══════════════════════════════
+   TERMINAL SIMULATOR
+══════════════════════════════ */
+
+.term-sim-wrapper {
+  margin-top: 2rem;
+  background: rgba(9, 12, 22, 0.95);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HUD Header ── */
+.term-hud-header {
+  background: rgba(6, 182, 212, 0.15);
+  border-bottom: 1px solid rgba(6, 182, 212, 0.3);
+  padding: 0.6rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.term-hud-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--accent-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+}
+
+.term-hud-task-count {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+/* ── Task Panel ── */
+.term-task-panel {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(0,0,0,0.4);
+}
+
+.term-task-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: #facc15;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.4rem;
+}
+
+.term-task-instruction {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: var(--text-main);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ── Terminal Window ── */
+.term-window {
+  padding: 1rem 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  min-height: 250px;
+  max-height: 400px;
+  overflow-y: auto;
+  cursor: text;
+  background: #000;
+}
+
+.term-output {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.term-line {
+  line-height: 1.4;
+  word-break: break-all;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.term-system { color: #a1a1aa; }
+.term-input { color: #fff; }
+.term-output { color: #cbd5e1; }
+.term-success { color: #22c55e; }
+.term-error { color: #ef4444; }
+
+.term-icon-success { margin-top: 2px; flex-shrink: 0; }
+.term-icon-error { margin-top: 2px; flex-shrink: 0; }
+
+/* ── Input Line ── */
+.term-input-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.term-prompt {
+  color: #22c55e;
+  white-space: nowrap;
+}
+
+.term-input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  flex: 1;
+  outline: none;
+}
+
+/* ── Success Banner ── */
+.term-success-banner {
+  background: rgba(34, 197, 94, 0.1);
+  border-top: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.term-success-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #22c55e;
+  font-family: var(--font-mono);
+  font-weight: bold;
+  letter-spacing: 0.1em;
+}
+
+.term-btn-continue {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #22c55e;
+  color: #000;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  transition: all 0.2s ease;
+}
+
+.term-btn-continue:hover {
+  background: #16a34a;
+  transform: translateX(4px);
+}

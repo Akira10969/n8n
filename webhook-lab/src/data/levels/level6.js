@@ -50,5 +50,21 @@ To save the Inventory Service from crashing, you must disable the polling loop i
 As a Lead Operations Engineer, you must recognize when synchronous polling is creating an artificial bottleneck. By shifting to an event-driven webhook model, we can reduce network traffic by over 99%.
 
 > **SYSTEM OVERRIDE DETECTED:** While you are reading this report, a secondary spike in traffic just hit the load balancers. Proceed to the next mission immediately to implement the webhook fix before the server goes offline completely.
-`
+`,
+  simulator: {
+    tasks: [
+      {
+        command: 'ps aux | grep polling',
+        instruction: 'Find the rogue polling process. Use the standard Linux command to list processes and filter for "polling".',
+        successMessage: 'root      1204  99.0  2.1  fulfillment_polling_loop.sh',
+        errorMessage: 'Invalid command. Try `ps aux | grep polling`'
+      },
+      {
+        command: 'mei-cli service stop fulfillment_polling',
+        instruction: 'Terminate the rogue service using the MEI Cloud OS custom CLI. Command: mei-cli service stop fulfillment_polling',
+        successMessage: '[OK] Signal SIGTERM sent to fulfillment_polling... Process terminated. CPU load dropping.',
+        errorMessage: 'Invalid command. Use `mei-cli service stop <service_name>`'
+      }
+    ]
+  }
 };

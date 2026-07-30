@@ -59,5 +59,21 @@ You run a quick WHOIS lookup on the internal IP \`192.168.99.114\`. It doesn't b
 Someone—or something—was masking their traffic behind the Fulfillment Service's polling loop. Now that the polling has stopped, their unauthorized access is glaringly obvious. 
 
 Before you can investigate further, your console flashes with a new alert from the Platform Operations Zone. An external integration has suddenly stopped responding entirely. 
-`
+`,
+  simulator: {
+    tasks: [
+      {
+        command: 'curl -X POST http://api.mei.internal/v1/webhooks/register -d \'{"target_url":"https://fulfillment.mei.internal/hooks/inventory-update","events":["inventory.stock.increased"]}\'',
+        instruction: 'Register the webhook endpoint using standard curl. Use a POST request with the exact JSON payload shown in the deployment log.',
+        successMessage: 'HTTP/1.1 201 Created\n{"status": "success", "webhook_id": "wh_8912384a"}',
+        errorMessage: 'Invalid syntax. Example: curl -X POST http://url -d \'{"key":"value"}\''
+      },
+      {
+        command: 'mei-cli events replay --webhook wh_8912384a',
+        instruction: 'Trigger a test event using the MEI CLI to verify the connection is active.',
+        successMessage: '[OK] Event replayed. Fulfillment Service responded with 200 OK. Connection stable.',
+        errorMessage: 'Invalid command. Try `mei-cli events replay --webhook <webhook_id>`'
+      }
+    ]
+  }
 };

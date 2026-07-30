@@ -12,6 +12,7 @@ import Dashboard from './components/Dashboard';
 import MissionMap from './components/MissionMap';
 import MissionBriefing from './components/MissionBriefing';
 import RewardScreen from './components/RewardScreen';
+import TerminalSimulator from './components/TerminalSimulator';
 import './App.css';
 import './game.css';
 
@@ -250,6 +251,14 @@ function App() {
               {/* DYNAMIC COMPONENTS BASED ON STEP TYPE */}
               {currentStep.type === 'visual-flow' && <VisualWorkflow />}
               {currentStep.type === 'lab' && <HandsOnLab />}
+              {currentStep.simulator && (
+                <TerminalSimulator 
+                  key={`${currentStep.id}-sim`}
+                  simulatorData={currentStep.simulator}
+                  onSuccess={handleQuizSuccess}
+                  onFail={handleQuizFail}
+                />
+              )}
               {currentStep.quiz && (
                 <Quiz 
                   key={`${currentStep.id}-${quizKey}`}
