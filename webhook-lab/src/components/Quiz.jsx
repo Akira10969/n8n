@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, XCircle, HelpCircle } from 'lucide-react';
 
-export default function Quiz({ quizData }) {
+export default function Quiz({ quizData, onSuccess, onFail }) {
   const [selectedOption, setSelectedOption] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -13,13 +13,18 @@ export default function Quiz({ quizData }) {
 
   if (!quizData) return null;
 
+  const isCorrect = selectedOption === quizData.correctAnswerIndex;
+
   const handleSubmit = () => {
     if (selectedOption !== null) {
       setIsSubmitted(true);
+      if (selectedOption === quizData.correctAnswerIndex) {
+        if (onSuccess) onSuccess();
+      } else {
+        if (onFail) onFail();
+      }
     }
   };
-
-  const isCorrect = selectedOption === quizData.correctAnswerIndex;
 
   return (
     <div className="glass-panel" style={{ marginTop: '2.5rem' }}>

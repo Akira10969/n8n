@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { ChevronRight, ChevronLeft, Menu, X, BookOpen, CheckCircle2, Lock } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Menu, X, BookOpen, CheckCircle2, Lock, Heart, Trophy, Star } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 import { curriculum } from './data/curriculum';
 import VisualWorkflow from './components/VisualWorkflow';
@@ -10,10 +11,60 @@ import Quiz from './components/Quiz';
 import './App.css';
 
 function App() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [highestUnlockedIndex, setHighestUnlockedIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(() => parseInt(localStorage.getItem('webhook_current_index') || '0', 10));
+  const [highestUnlockedIndex, setHighestUnlockedIndex] = useState(() => parseInt(localStorage.getItem('webhook_highest_index') || '0', 10));
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [xp, setXp] = useState(() => parseInt(localStorage.getItem('webhook_xp') || '0', 10));
+  const [hearts, setHearts] = useState(() => parseInt(localStorage.getItem('webhook_hearts') || '3', 10));
+  const [quizKey, setQuizKey] = useState(0);
+
   const currentStep = curriculum[currentIndex];
+
+  useEffect(() => {
+    localStorage.setItem('webhook_current_index', currentIndex);
+    localStorage.setItem('webhook_highest_index', highestUnlockedIndex);
+    localStorage.setItem('webhook_xp', xp);
+    localStorage.setItem('webhook_hearts', hearts);
+  }, [currentIndex, highestUnlockedIndex, xp, hearts]);
+
+  const getRank = (currentXp) => {
+    if (currentXp < 500) return 'IT Intern';
+    if (currentXp < 1000) return 'IT Support';
+    if (currentXp < 1500) return 'Help Desk Engineer';
+    if (currentXp < 2000) return 'Jr. SysAdmin';
+    if (currentXp < 2500) return 'SysAdmin';
+    if (currentXp < 3000) return 'Infrastructure Eng.';
+    if (currentXp < 3500) return 'Platform Eng.';
+    if (currentXp < 4000) return 'DevOps Eng.';
+    if (currentXp < 4500) return 'Cloud Eng.';
+    return 'Solutions Architect';
+  };
+
+  const handleQuizSuccess = () => {
+    if (highestUnlockedIndex === currentIndex) {
+      setXp(prev => prev + 50);
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#06b6d4', '#8b5cf6', '#10b981']
+      });
+      if (currentIndex < curriculum.length - 1) {
+        setHighestUnlockedIndex(currentIndex + 1);
+      }
+    }
+  };
+
+  const handleQuizFail = () => {
+    if (hearts > 1) {
+      setHearts(prev => prev - 1);
+    } else {
+      alert("💔 Mission Failed! You lost all your hearts. Restarting mission...");
+      setHearts(3);
+      setQuizKey(prev => prev + 1);
+    }
+  };
+
 
   // Scroll to top when changing steps
   useEffect(() => {
@@ -51,6 +102,17 @@ function App() {
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
           <h1>Webhook Learning Roadmap</h1>
+          <div className="gamification-stats" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginLeft: 'auto', marginRight: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-red)', fontWeight: 'bold' }}>
+              <Heart fill="currentColor" size={20} /> {hearts}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-cyan)', fontWeight: 'bold' }}>
+              <Star fill="currentColor" size={20} /> {xp} XP
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-purple)', fontWeight: 'bold' }}>
+              <Trophy size={20} /> <span style={{ fontSize: '0.9rem' }}>{getRank(xp)}</span>
+            </div>
+          </div>
           <div className="progress-text">{currentIndex + 1} of {curriculum.length}</div>
         </div>
         <div className="progress-bar-container">
@@ -115,7 +177,14 @@ function App() {
             {/* DYNAMIC COMPONENTS BASED ON STEP TYPE */}
             {currentStep.type === 'visual-flow' && <VisualWorkflow />}
             {currentStep.type === 'lab' && <HandsOnLab />}
-            {currentStep.quiz && <Quiz quizData={currentStep.quiz} />}
+            {currentStep.quiz && (
+              <Quiz 
+                key={`${currentStep.id}-${quizKey}`}
+                quizData={currentStep.quiz} 
+                onSuccess={handleQuizSuccess}
+                onFail={handleQuizFail}
+              />
+            )}
             
           </div>
 
