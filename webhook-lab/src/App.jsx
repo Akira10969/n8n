@@ -19,7 +19,7 @@ function App() {
   const [xp, setXp] = useState(() => parseInt(localStorage.getItem('webhook_xp') || '0', 10));
   const [hearts, setHearts] = useState(() => parseInt(localStorage.getItem('webhook_hearts') || '3', 10));
   const [quizKey, setQuizKey] = useState(0);
-  const [currentView, setCurrentView] = useState('map'); // 'map', 'mission', 'dashboard'
+  const [currentView, setCurrentView] = useState('map'); // 'map', 'learning', 'dashboard'
 
   const currentStep = curriculum[currentIndex];
 
@@ -97,7 +97,7 @@ function App() {
 
   const selectStep = (index) => {
     setCurrentIndex(index);
-    setCurrentView('mission');
+    setCurrentView('learning');
   };
 
   // Progress percentage
@@ -151,14 +151,26 @@ function App() {
         <MissionMap 
           curriculum={curriculum}
           highestUnlockedIndex={highestUnlockedIndex}
+          activeMissionIndex={null}
           onSelectMission={selectStep}
         />
       )}
 
-      {currentView === 'mission' && (
-      <div className="module-layout" style={{ justifyContent: 'center' }}>
+      {currentView === 'learning' && (
+      <div className="module-layout" style={{ display: 'flex', gap: '2rem', padding: '0 2rem', alignItems: 'flex-start' }}>
+        
+        {/* SIDEBAR MISSION MAP */}
+        <aside style={{ width: '35%', height: 'calc(100vh - 120px)', position: 'sticky', top: '100px', overflowY: 'auto', paddingRight: '1rem' }}>
+          <MissionMap 
+            curriculum={curriculum}
+            highestUnlockedIndex={highestUnlockedIndex}
+            activeMissionIndex={currentIndex}
+            onSelectMission={selectStep}
+          />
+        </aside>
+
         {/* MAIN CONTENT AREA */}
-        <main className="main-content-area" style={{ width: '100%', maxWidth: '800px' }}>
+        <main className="main-content-area" style={{ width: '65%', maxWidth: 'none' }}>
           <div className="content-card glass-panel animate-fade-in" key={currentStep.id}>
             
             {/* MISSION BRIEFING HEADER */}

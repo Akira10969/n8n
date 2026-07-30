@@ -2,22 +2,26 @@ import React from 'react';
 import { Lock, CheckCircle2, Play, BookOpen } from 'lucide-react';
 import './MissionMap.css';
 
-export default function MissionMap({ curriculum, highestUnlockedIndex, onSelectMission }) {
+export default function MissionMap({ curriculum, highestUnlockedIndex, activeMissionIndex, onSelectMission }) {
   return (
-    <div className="mission-map-container animate-fade-in">
-      <div className="map-header">
-        <h1>Mission Control</h1>
-        <p>Select your next assignment.</p>
-      </div>
+    <div className={`mission-map-container animate-fade-in ${activeMissionIndex !== null ? 'sidebar-mode' : ''}`}>
+      {activeMissionIndex === null && (
+        <div className="map-header">
+          <h1>Mission Control</h1>
+          <p>Select your next assignment.</p>
+        </div>
+      )}
       
       <div className="map-grid">
         {curriculum.map((mission, index) => {
           const isUnlocked = index <= highestUnlockedIndex;
           const isCompleted = index < highestUnlockedIndex;
           const isNext = index === highestUnlockedIndex;
+          const isActive = index === activeMissionIndex;
+          const isBlurred = activeMissionIndex !== null && !isActive;
 
           return (
-            <div key={mission.id} className={`map-node ${isUnlocked ? 'unlocked' : 'locked'} ${isNext ? 'next-mission' : ''}`}>
+            <div key={mission.id} className={`map-node ${isUnlocked ? 'unlocked' : 'locked'} ${isNext ? 'next-mission' : ''} ${isActive ? 'active-mission' : ''} ${isBlurred ? 'blurred-mission' : ''}`}>
               <div className="node-connector"></div>
               <button 
                 className="mission-card glass-panel"
