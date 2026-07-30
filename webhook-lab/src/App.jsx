@@ -8,6 +8,7 @@ import { curriculum } from './data/curriculum';
 import VisualWorkflow from './components/VisualWorkflow';
 import HandsOnLab from './components/HandsOnLab';
 import Quiz from './components/Quiz';
+import Dashboard from './components/Dashboard';
 import './App.css';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
   const [xp, setXp] = useState(() => parseInt(localStorage.getItem('webhook_xp') || '0', 10));
   const [hearts, setHearts] = useState(() => parseInt(localStorage.getItem('webhook_hearts') || '3', 10));
   const [quizKey, setQuizKey] = useState(0);
+  const [currentView, setCurrentView] = useState('learning');
 
   const currentStep = curriculum[currentIndex];
 
@@ -111,6 +113,11 @@ function App() {
           </button>
           <h1>Webhook Learning Roadmap</h1>
           <div className="gamification-stats" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginLeft: 'auto', marginRight: '2rem' }}>
+            <button 
+              onClick={() => setCurrentView(currentView === 'learning' ? 'dashboard' : 'learning')}
+              style={{ background: 'var(--accent-cyan)', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', color: '#000', cursor: 'pointer', fontWeight: 'bold', marginRight: '1rem' }}>
+              {currentView === 'learning' ? 'Player Profile' : 'Resume Mission'}
+            </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-red)', fontWeight: 'bold' }}>
               <Heart fill="currentColor" size={20} /> {hearts}
             </div>
@@ -128,6 +135,15 @@ function App() {
         </div>
       </header>
 
+      {currentView === 'dashboard' ? (
+        <Dashboard 
+          xp={xp} 
+          hearts={hearts} 
+          rank={getRank(xp)} 
+          absoluteHighestIndex={absoluteHighestIndex} 
+          totalMissions={curriculum.length} 
+        />
+      ) : (
       <div className="module-layout">
         {/* SIDEBAR NAVIGATION */}
         <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
@@ -218,6 +234,7 @@ function App() {
           </div>
         </main>
       </div>
+      )}
     </div>
   );
 }
