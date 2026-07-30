@@ -13,6 +13,7 @@ import './App.css';
 function App() {
   const [currentIndex, setCurrentIndex] = useState(() => parseInt(localStorage.getItem('webhook_current_index') || '0', 10));
   const [highestUnlockedIndex, setHighestUnlockedIndex] = useState(() => parseInt(localStorage.getItem('webhook_highest_index') || '0', 10));
+  const [absoluteHighestIndex, setAbsoluteHighestIndex] = useState(() => parseInt(localStorage.getItem('webhook_absolute_highest_index') || '0', 10));
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [xp, setXp] = useState(() => parseInt(localStorage.getItem('webhook_xp') || '0', 10));
   const [hearts, setHearts] = useState(() => parseInt(localStorage.getItem('webhook_hearts') || '3', 10));
@@ -23,9 +24,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('webhook_current_index', currentIndex);
     localStorage.setItem('webhook_highest_index', highestUnlockedIndex);
+    localStorage.setItem('webhook_absolute_highest_index', absoluteHighestIndex);
     localStorage.setItem('webhook_xp', xp);
     localStorage.setItem('webhook_hearts', hearts);
-  }, [currentIndex, highestUnlockedIndex, xp, hearts]);
+  }, [currentIndex, highestUnlockedIndex, absoluteHighestIndex, xp, hearts]);
 
   const getRank = (currentXp) => {
     if (currentXp < 500) return 'IT Intern';
@@ -42,7 +44,11 @@ function App() {
 
   const handleQuizSuccess = () => {
     if (highestUnlockedIndex === currentIndex) {
-      setXp(prev => prev + 50);
+      if (currentIndex >= absoluteHighestIndex) {
+        setXp(prev => prev + 50);
+        setAbsoluteHighestIndex(currentIndex + 1);
+      }
+
       confetti({
         particleCount: 100,
         spread: 70,
@@ -59,9 +65,8 @@ function App() {
     if (hearts > 1) {
       setHearts(prev => prev - 1);
     } else {
-      alert("💔 Game Over! You lost all your hearts. Restarting from the very beginning...");
+      alert("💔 Game Over! You lost all your hearts. Returning to Mission 1 to rebuild your progress!");
       setHearts(3);
-      setXp(0);
       setCurrentIndex(0);
       setHighestUnlockedIndex(0);
       setQuizKey(prev => prev + 1);
