@@ -69,7 +69,26 @@ function getZoneColor(index) {
 
 export default function MissionMap({ curriculum, highestUnlockedIndex, activeMissionIndex, onSelectMission }) {
   const wrapperRef = useRef(null);
-  const [mapTransform, setMapTransform] = useState('scale(1) translate(0,0)');
+  const [mapTransform, setMapTransform] = useState('scale(1.8) translate(-10%, 10%)'); // Start zoomed in a bit off-center
+  const [isRevealing, setIsRevealing] = useState(true);
+
+  // Cinematic initial reveal
+  useEffect(() => {
+    if (activeMissionIndex === null) {
+      // Start the slow zoom out and pan to the highest unlocked index
+      const timer = setTimeout(() => {
+        setIsRevealing(false);
+        const coord = missionCoordinates[highestUnlockedIndex] || { x: 50, y: 50 };
+        // We want a slight pan to the current zone, but not fully zoomed in.
+        // A gentle scale(1.1) focused roughly on the current node.
+        const targetX = 50 - coord.x;
+        const targetY = 50 - coord.y;
+        setMapTransform(`scale(1.15) translate(${targetX * 0.4}%, ${targetY * 0.4}%)`);
+      }, 500); // Small delay to let the component mount and the episode card fade out
+
+      return () => clearTimeout(timer);
+    }
+  }, [highestUnlockedIndex, activeMissionIndex]);
 
   // Pan + zoom to selected mission
   useEffect(() => {
@@ -78,10 +97,13 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
       const targetX = 50 - coord.x - 12; // shift left for panel
       const targetY = 50 - coord.y;
       setMapTransform(`scale(2.2) translate(${targetX}%, ${targetY}%)`);
-    } else {
-      setMapTransform('scale(1) translate(0,0)');
+    } else if (!isRevealing) {
+      const coord = missionCoordinates[highestUnlockedIndex] || { x: 50, y: 50 };
+      const targetX = 50 - coord.x;
+      const targetY = 50 - coord.y;
+      setMapTransform(`scale(1.15) translate(${targetX * 0.4}%, ${targetY * 0.4}%)`);
     }
-  }, [activeMissionIndex]);
+  }, [activeMissionIndex, highestUnlockedIndex, isRevealing]);
 
   // Build SVG path lines — use raw % values matching our coordinate system
   const pathLines = missionCoordinates.slice(0, curriculum.length - 1).map((coord, i) => {
@@ -94,6 +116,10 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
 
   return (
     <div className={`interactive-map-wrapper ${activeMissionIndex !== null ? 'sidebar-mode' : ''}`} ref={wrapperRef}>
+
+      {/* Cinematic Fog & Dust Overlay */}
+      <div className={`map-fog-overlay ${isRevealing ? 'heavy' : 'light'}`}></div>
+      <div className="dust-particles"></div>
 
       {/* Minimal floating header — only shown when no mission active */}
       {activeMissionIndex === null && (
@@ -116,7 +142,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
       )}
 
       <div className="map-viewport">
-        <div className="map-layer" style={{ transform: mapTransform }}>
+        <div className="map-layer" style={{ transform: mapTransform, transition: isRevealing ? 'transform 4s cubic-bezier(0.25, 1, 0.5, 1)' : 'transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)' }}>
 
           <img src="/mission-map-bg.jpg" alt="Mission Map" className="map-bg-image" />
 

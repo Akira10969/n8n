@@ -305,3 +305,34 @@
 .interactive-map-wrapper.sidebar-mode .map-layer {
   /* transform handled via JS */
 }
+
+/* =====================
+   CINEMATIC FOG & DUST
+===================== */
+.map-fog-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at center, transparent 10%, rgba(0,0,0,0.85) 100%), linear-gradient(to top, rgba(0,0,0,0.9), transparent 50%);
+  z-index: 10;
+  pointer-events: none;
+  transition: opacity 3.5s ease-in-out;
+}
+
+.map-fog-overlay.heavy { opacity: 1; }
+.map-fog-overlay.light { opacity: 0; }
+
+.dust-particles {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: 11;
+  pointer-events: none;
+  opacity: 0.4;
+  animation: floatDust 80s linear infinite;
+}
+
+@keyframes floatDust {
+  0% { background-position: 0 0; }
+  100% { background-position: -500px 500px; }
+}
