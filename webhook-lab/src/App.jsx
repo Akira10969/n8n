@@ -122,7 +122,7 @@ function App() {
       {/* HEADER WITH PROGRESS BAR */}
       <header className="module-header">
         <div className="header-content">
-          <h1 style={{ fontFamily: 'monospace', letterSpacing: '0.08em', fontSize: '0.95rem', textTransform: 'uppercase', flex: 1 }}>Acme_Cloud_OS <span style={{ color: 'var(--text-muted)' }}>//</span> Mission Control</h1>
+          <h1 style={{ fontFamily: 'monospace', letterSpacing: '0.08em', fontSize: '0.95rem', textTransform: 'uppercase', flex: 1 }}>MEI_Cloud_OS <span style={{ color: 'var(--text-muted)' }}>//</span> Mission Control</h1>
           <div className="gamification-stats" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginLeft: 'auto' }}>
             <button 
               onClick={() => setCurrentView('map')}

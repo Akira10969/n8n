@@ -1,124 +1,240 @@
-import React, { useState, useEffect } from 'react';
-import { AlertOctagon, Target, Award, Play } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { AlertOctagon, Target, Award, Play, ChevronRight, Radio, CheckCircle2 } from 'lucide-react';
 import { badges } from '../data/achievements';
+import './MissionBriefing.css';
 
-function Typewriter({ text, delay = 15 }) {
-  const [currentText, setCurrentText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
+// ─── Typewriter component ────────────────────────────────────────────────────
+function Typewriter({ text, delay = 18, onDone }) {
+  const [displayed, setDisplayed] = useState('');
+  const [idx, setIdx] = useState(0);
 
   useEffect(() => {
-    setCurrentText('');
-    setCurrentIndex(0);
+    setDisplayed('');
+    setIdx(0);
   }, [text]);
 
   useEffect(() => {
-    if (currentIndex < text.length) {
-      const timeout = setTimeout(() => {
-        setCurrentText(prevText => prevText + text[currentIndex]);
-        setCurrentIndex(prevIndex => prevIndex + 1);
+    if (idx < text.length) {
+      const t = setTimeout(() => {
+        setDisplayed(p => p + text[idx]);
+        setIdx(i => i + 1);
       }, delay);
-      return () => clearTimeout(timeout);
+      return () => clearTimeout(t);
+    } else if (onDone) {
+      onDone();
     }
-  }, [currentIndex, delay, text]);
+  }, [idx, text, delay, onDone]);
 
-  return <span>{currentText}{currentIndex < text.length ? <span className="cursor-blink">_</span> : null}</span>;
+  return (
+    <span>
+      {displayed}
+      {idx < text.length && <span className="mb-blink">▌</span>}
+    </span>
+  );
 }
 
+// ─── Step definitions ────────────────────────────────────────────────────────
+// We build the steps dynamically from the mission data
+function buildSteps(mission, missionIndex, rewardBadge) {
+  const b = mission.briefing;
+  return [
+    {
+      id: 'transmission',
+      label: 'INCOMING TRANSMISSION',
+      icon: <Radio size={18} />,
+      color: '#ef4444',
+    },
+    {
+      id: 'task',
+      label: 'MISSION DIRECTIVE',
+      icon: <Target size={18} />,
+      color: '#06b6d4',
+    },
+    {
+      id: 'rewards',
+      label: 'POTENTIAL REWARDS',
+      icon: <Award size={18} />,
+      color: '#8b5cf6',
+    },
+    {
+      id: 'launch',
+      label: 'INITIALIZE MISSION',
+      icon: <Play size={18} />,
+      color: '#22c55e',
+    },
+  ];
+}
+
+// ─── Main Component ──────────────────────────────────────────────────────────
 export default function MissionBriefing({ mission, missionIndex, onStartMission }) {
+  const [step, setStep] = useState(0);
+  const [typewriterDone, setTypewriterDone] = useState(false);
+  const [animIn, setAnimIn] = useState(true);
+  const panelRef = useRef(null);
+
   const briefing = mission.briefing;
 
-  // Fallback for missions that don't have a briefing defined yet
+  // Reset state when mission changes
+  useEffect(() => {
+    setStep(0);
+    setTypewriterDone(false);
+    setAnimIn(true);
+  }, [mission.id]);
+
+  const rewardBadge = briefing?.rewards?.badge && briefing.rewards.badge !== 'None'
+    ? badges.find(b => b.id === briefing.rewards.badge)
+    : null;
+
+  const steps = buildSteps(mission, missionIndex, rewardBadge);
+  const totalSteps = steps.length;
+
+  // Advance to next step with slide-in animation
+  const advance = () => {
+    setAnimIn(false);
+    setTimeout(() => {
+      setStep(s => s + 1);
+      setTypewriterDone(false);
+      setAnimIn(true);
+    }, 300);
+  };
+
+  // Fallback for missions with no briefing
   if (!briefing) {
     return (
-      <div className="glass-panel animate-fade-in" style={{ padding: '3rem 2rem', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'var(--text-main)' }}>{mission.title}</h2>
-        <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Proceed to the learning module.</p>
-        <button className="btn btn-primary" onClick={onStartMission}>
-          <Play size={20} fill="currentColor" /> Start Mission
-        </button>
+      <div className="mb-wrapper">
+        <div className="mb-panel">
+          <h2 className="mb-title">{mission.title}</h2>
+          <button className="mb-btn-primary" onClick={onStartMission}>
+            <Play size={18} fill="currentColor" /> Start Mission
+          </button>
+        </div>
       </div>
     );
   }
 
-  // Find the badge if there is one
-  const rewardBadge = briefing.rewards?.badge && briefing.rewards.badge !== 'None'
-    ? badges.find(b => b.id === briefing.rewards.badge)
-    : null;
-
   return (
-    <div className="glass-panel animate-fade-in" style={{ padding: '2rem' }}>
-      
-      {/* HEADER */}
-      <div style={{ textAlign: 'center', marginBottom: '3rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '1.5rem' }}>
-        <div style={{ fontSize: '1rem', color: 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-          Mission {missionIndex + 1} Briefing
-        </div>
-        <h1 style={{ fontSize: '2.5rem', color: 'var(--text-main)', margin: '0' }}>{mission.title}</h1>
-      </div>
-
-      {/* INCIDENT REPORT */}
-      <div style={{ 
-        background: 'rgba(239, 68, 68, 0.05)', 
-        border: '1px solid rgba(239, 68, 68, 0.2)', 
-        borderLeft: '4px solid var(--accent-red)',
-        padding: '1.5rem', 
-        borderRadius: '8px',
-        marginBottom: '2rem'
-      }}>
-        <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--accent-red)', margin: '0 0 1rem 0', fontSize: '1.25rem' }}>
-          <AlertOctagon size={24} /> Incident Report
-        </h3>
-        <p style={{ color: 'var(--text-main)', fontSize: '1.1rem', lineHeight: 1.6, margin: 0, fontFamily: 'monospace' }}>
-          <Typewriter text={briefing.incident} />
-        </p>
-      </div>
-
-      {/* TASK */}
-      <div style={{ 
-        background: 'rgba(6, 182, 212, 0.05)', 
-        border: '1px solid rgba(6, 182, 212, 0.2)', 
-        borderLeft: '4px solid var(--accent-cyan)',
-        padding: '1.5rem', 
-        borderRadius: '8px',
-        marginBottom: '2rem'
-      }}>
-        <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--accent-cyan)', margin: '0 0 1rem 0', fontSize: '1.25rem' }}>
-          <Target size={24} /> Your Task
-        </h3>
-        <p style={{ color: 'var(--text-main)', fontSize: '1.1rem', lineHeight: 1.6, margin: 0, fontFamily: 'monospace' }}>
-          <Typewriter text={briefing.task} delay={10} />
-        </p>
-      </div>
-
-      {/* REWARDS */}
-      <div style={{ marginBottom: '3rem' }}>
-        <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--accent-purple)', margin: '0 0 1rem 0', fontSize: '1.25rem' }}>
-          <Award size={24} /> Potential Rewards
-        </h3>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <div style={{ background: 'rgba(139, 92, 246, 0.1)', border: '1px solid var(--accent-purple)', padding: '0.75rem 1.5rem', borderRadius: '8px', color: 'var(--text-main)', fontWeight: 'bold' }}>
-            ⭐ {briefing.rewards?.xp || 50} XP
-          </div>
-          
-          {rewardBadge && (
-            <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--accent-green)', padding: '0.75rem 1.5rem', borderRadius: '8px', color: 'var(--text-main)', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              {rewardBadge.icon} {rewardBadge.name} Badge
+    <div className="mb-wrapper" ref={panelRef}>
+      {/* ── Step Progress Bar ── */}
+      <div className="mb-progress-track">
+        {steps.map((s, i) => (
+          <div key={s.id} className={`mb-progress-step ${i < step ? 'done' : ''} ${i === step ? 'active' : ''}`}>
+            <div className="mb-step-dot" style={{ borderColor: i <= step ? s.color : undefined, background: i < step ? s.color : undefined }}>
+              {i < step ? <CheckCircle2 size={10} color="#000" /> : <span className="mb-step-num">{i + 1}</span>}
             </div>
-          )}
-        </div>
+            <span className="mb-step-label">{s.label}</span>
+            {i < totalSteps - 1 && <div className={`mb-step-line ${i < step ? 'filled' : ''}`} style={{ background: i < step ? s.color : undefined }} />}
+          </div>
+        ))}
       </div>
 
-      {/* START BUTTON */}
-      <div style={{ textAlign: 'center' }}>
-        <button 
-          className="btn btn-primary" 
-          onClick={onStartMission}
-          style={{ padding: '1rem 3rem', fontSize: '1.25rem', width: '100%', maxWidth: '400px', display: 'inline-flex', justifyContent: 'center' }}
+      {/* ── Mission Identity ── */}
+      <div className="mb-identity">
+        <div className="mb-mission-code">MISSION_{String(missionIndex + 1).padStart(2, '0')}</div>
+        <h1 className="mb-title">{mission.title}</h1>
+      </div>
+
+      {/* ── Step Content ── */}
+      <div className={`mb-step-content ${animIn ? 'slide-in' : 'slide-out'}`}>
+
+        {/* STEP 0: Incoming Transmission */}
+        {step === 0 && (
+          <div className="mb-card" style={{ borderColor: '#ef4444', background: 'rgba(239,68,68,0.06)' }}>
+            <div className="mb-card-header" style={{ color: '#ef4444' }}>
+              <AlertOctagon size={20} />
+              <span>INCOMING TRANSMISSION — PRIORITY ALPHA</span>
+              <span className="mb-blink-dot"></span>
+            </div>
+            <p className="mb-body-text">
+              <Typewriter text={briefing.incident} delay={18} onDone={() => setTypewriterDone(true)} />
+            </p>
+          </div>
+        )}
+
+        {/* STEP 1: Mission Directive */}
+        {step === 1 && (
+          <div className="mb-card" style={{ borderColor: '#06b6d4', background: 'rgba(6,182,212,0.06)' }}>
+            <div className="mb-card-header" style={{ color: '#06b6d4' }}>
+              <Target size={20} />
+              <span>MISSION DIRECTIVE</span>
+            </div>
+            <p className="mb-body-text">
+              <Typewriter text={briefing.task} delay={14} onDone={() => setTypewriterDone(true)} />
+            </p>
+          </div>
+        )}
+
+        {/* STEP 2: Rewards */}
+        {step === 2 && (
+          <div className="mb-card" style={{ borderColor: '#8b5cf6', background: 'rgba(139,92,246,0.06)' }}>
+            <div className="mb-card-header" style={{ color: '#8b5cf6' }}>
+              <Award size={20} />
+              <span>POTENTIAL REWARDS</span>
+            </div>
+            <div className="mb-rewards-grid">
+              <div className="mb-reward-chip" style={{ borderColor: '#facc15', color: '#facc15' }}>
+                <span className="mb-reward-icon">⭐</span>
+                <div>
+                  <div className="mb-reward-value">{briefing.rewards?.xp || 50} XP</div>
+                  <div className="mb-reward-label">Experience Points</div>
+                </div>
+              </div>
+              {rewardBadge ? (
+                <div className="mb-reward-chip" style={{ borderColor: '#22c55e', color: '#22c55e' }}>
+                  <span className="mb-reward-icon">{rewardBadge.icon}</span>
+                  <div>
+                    <div className="mb-reward-value">{rewardBadge.name}</div>
+                    <div className="mb-reward-label">Badge Unlocked</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-reward-chip" style={{ borderColor: '#22c55e', color: '#22c55e' }}>
+                  <span className="mb-reward-icon">🏅</span>
+                  <div>
+                    <div className="mb-reward-value">+1 Mission Complete</div>
+                    <div className="mb-reward-label">Career Progress</div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* Auto-advance after a brief pause since no typewriter here */}
+            {!typewriterDone && setTimeout(() => setTypewriterDone(true), 800)}
+          </div>
+        )}
+
+        {/* STEP 3: Launch */}
+        {step === 3 && (
+          <div className="mb-card mb-card-launch" style={{ borderColor: '#22c55e', background: 'rgba(34,197,94,0.06)' }}>
+            <div className="mb-card-header" style={{ color: '#22c55e' }}>
+              <Play size={20} fill="currentColor" />
+              <span>SYSTEMS READY — AWAITING AUTHORIZATION</span>
+            </div>
+            <p className="mb-body-text" style={{ color: 'var(--text-muted)' }}>
+              All prerequisite checks passed. Your mission parameters are locked in. Click INITIALIZE to begin deployment.
+            </p>
+            <button className="mb-btn-launch" onClick={onStartMission}>
+              <Play size={22} fill="currentColor" />
+              INITIALIZE MISSION
+            </button>
+            {!typewriterDone && setTimeout(() => setTypewriterDone(true), 500)}
+          </div>
+        )}
+
+      </div>
+
+      {/* ── Continue Button (hidden on last step) ── */}
+      {step < totalSteps - 1 && (
+        <button
+          className={`mb-btn-continue ${typewriterDone ? 'ready' : 'waiting'}`}
+          onClick={typewriterDone ? advance : undefined}
+          disabled={!typewriterDone}
         >
-          <Play size={24} fill="currentColor" /> Initialize Mission
+          {typewriterDone ? (
+            <>CONTINUE <ChevronRight size={18} /></>
+          ) : (
+            <span className="mb-loading-dots">Receiving<span>.</span><span>.</span><span>.</span></span>
+          )}
         </button>
-      </div>
-
+      )}
     </div>
   );
 }
