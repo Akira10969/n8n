@@ -271,12 +271,7 @@ function App() {
                 newRank={getRank(xp)}
                 newAbsoluteIndex={absoluteHighestIndex}
                 unlockedBadgeId={currentStep.briefing?.rewards?.badge && currentStep.briefing?.rewards?.badge !== 'None' ? currentStep.briefing.rewards.badge : null}
-                onNextMission={() => {
-                  goToNext();
-                  setMissionState('episode-card');
-                  setCurrentView('map');
-                }}
-                onBackToMap={() => {
+                onContinue={() => {
                   goToNext();
                   setMissionState('episode-card');
                   setCurrentView('map');
