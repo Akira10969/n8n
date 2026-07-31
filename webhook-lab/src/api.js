@@ -9,7 +9,7 @@ export const getAuthTokens = () => {
 
 export const registerPlayer = async () => {
   try {
-    const res = await fetch('/api/register.php');
+    const res = await fetch('/backend/api/register.php');
     const data = await res.json();
     if (data.success) {
       localStorage.setItem('webhook_engineer_id', data.data.engineer_id);
@@ -27,7 +27,7 @@ export const syncProgress = async (progressData) => {
   if (!auth.engineer_id) return;
 
   try {
-    const res = await fetch('/api/sync_progress.php', {
+    const res = await fetch('/backend/api/sync_progress.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -46,7 +46,7 @@ export const sendHeartbeat = async () => {
   if (!auth.engineer_id) return;
 
   try {
-    await fetch('/api/heartbeat.php', {
+    await fetch('/backend/api/heartbeat.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(auth)
@@ -61,7 +61,7 @@ export const logEvent = async (eventType, missionIndex = null, eventData = null)
   if (!auth.engineer_id) return;
 
   try {
-    await fetch('/api/analytics.php', {
+    await fetch('/backend/api/analytics.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

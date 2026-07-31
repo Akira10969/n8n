@@ -8,7 +8,7 @@ export default function AdminDashboard({ onBack }) {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch('/api/admin_stats.php');
+        const res = await fetch('/backend/api/admin_stats.php');
         const data = await res.json();
         if (data.success) {
           setStats(data.data);
