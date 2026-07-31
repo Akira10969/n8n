@@ -219,3 +219,81 @@ body.corrupted-mode .terminal-simulator {
     opacity: 0;
   }
 }
+
+/* --- GAME ENDING CINEMATIC --- */
+.game-ending-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  transition: background 2s ease-in-out;
+  overflow: hidden;
+}
+
+.reverse-collapse .collapsing {
+  animation: collapse-singularity 2s ease-in forwards !important;
+}
+
+.reverse-collapse .exploding {
+  animation: explode-disk 2s ease-in forwards !important;
+}
+
+@keyframes collapse-singularity {
+  0% { transform: scale(1); box-shadow: 0 0 50px 10px #ff003c, inset 0 0 40px #ff003c; }
+  20% { transform: scale(1.5); box-shadow: 0 0 100px 30px #ff003c, inset 0 0 80px #ff003c; }
+  100% { transform: scale(0); box-shadow: 0 0 0 0 transparent, inset 0 0 0 transparent; }
+}
+
+@keyframes explode-disk {
+  0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); filter: blur(15px); }
+  100% { transform: translate(-50%, -50%) rotate(720deg) scale(0); filter: blur(0); opacity: 0; }
+}
+
+.released-object {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: #39ff14; /* Green restored color */
+  font-size: 2rem;
+  animation: release 3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  z-index: 6;
+  opacity: 0;
+  filter: drop-shadow(0 0 10px #39ff14);
+}
+
+@keyframes release {
+  0% {
+    transform: translate(0, 0) scale(0) rotate(720deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    /* Exploded outward */
+    transform: translate(var(--target-x), var(--target-y)) scale(1) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+.flashbang {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #fff;
+  z-index: 100;
+  animation: flash 2s ease-out forwards;
+}
+
+@keyframes flash {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  100% { opacity: 0; display: none; }
+}

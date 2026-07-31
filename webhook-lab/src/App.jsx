@@ -32,6 +32,7 @@ function App() {
   const [hasStarted, setHasStarted] = useState(() => sessionStorage.getItem('webhook_has_started') === 'true');
   const [hasSeenMapIntro, setHasSeenMapIntro] = useState(() => sessionStorage.getItem('webhook_has_seen_map_intro') === 'true');
   const [hasSeenVoidReveal, setHasSeenVoidReveal] = useState(() => localStorage.getItem('webhook_has_seen_void_reveal') === 'true');
+  const [hasCompletedGame, setHasCompletedGame] = useState(() => localStorage.getItem('webhook_has_completed_game') === 'true');
 
   const currentStep = curriculum[currentIndex];
 
@@ -42,19 +43,20 @@ function App() {
     localStorage.setItem('webhook_xp', xp);
     localStorage.setItem('webhook_hearts', hearts);
     localStorage.setItem('webhook_has_seen_void_reveal', hasSeenVoidReveal);
+    localStorage.setItem('webhook_has_completed_game', hasCompletedGame);
     sessionStorage.setItem('webhook_has_booted', hasBooted);
     sessionStorage.setItem('webhook_has_started', hasStarted);
     sessionStorage.setItem('webhook_has_seen_map_intro', hasSeenMapIntro);
-  }, [currentIndex, highestUnlockedIndex, absoluteHighestIndex, xp, hearts, hasBooted, hasStarted, hasSeenMapIntro, hasSeenVoidReveal]);
+  }, [currentIndex, highestUnlockedIndex, absoluteHighestIndex, xp, hearts, hasBooted, hasStarted, hasSeenMapIntro, hasSeenVoidReveal, hasCompletedGame]);
 
   // Check if we need to apply corrupted mode
   useEffect(() => {
-    if (currentIndex >= 24 && hasSeenVoidReveal) {
+    if (currentIndex >= 24 && hasSeenVoidReveal && !hasCompletedGame) {
       document.body.classList.add('corrupted-mode');
     } else {
       document.body.classList.remove('corrupted-mode');
     }
-  }, [currentIndex, hasSeenVoidReveal]);
+  }, [currentIndex, hasSeenVoidReveal, hasCompletedGame]);
 
   const getRank = (currentXp) => {
     if (currentXp < 500) return 'IT Intern';
@@ -237,6 +239,7 @@ function App() {
           rank={getRank(xp)} 
           absoluteHighestIndex={absoluteHighestIndex} 
           totalMissions={curriculum.length} 
+          hasCompletedGame={hasCompletedGame}
         />
       )}
 
@@ -296,10 +299,25 @@ function App() {
                 newAbsoluteIndex={absoluteHighestIndex}
                 unlockedBadgeId={currentStep.briefing?.rewards?.badge && currentStep.briefing?.rewards?.badge !== 'None' ? currentStep.briefing.rewards.badge : null}
                 onContinue={() => {
-                  goToNext();
+                  if (currentIndex === curriculum.length - 1 && !hasCompletedGame) {
+                    setMissionState('game-ending');
+                  } else {
+                    goToNext();
+                    setMissionState('episode-card');
+                    setCurrentView('map');
+                  }
+                }}
+              />
+            )}
+
+            {missionState === 'game-ending' && (
+              <GameEnding 
+                xp={xp}
+                onEndingComplete={() => {
+                  setHasCompletedGame(true);
                   setMissionState('episode-card');
                   setCurrentView('map');
-                }}
+                }} 
               />
             )}
           </div>

@@ -67,7 +67,7 @@ function getZoneColor(index) {
   return zone ? zone.color : '#06b6d4';
 }
 
-export default function MissionMap({ curriculum, highestUnlockedIndex, activeMissionIndex, onSelectMission, skipIntro, onIntroComplete }) {
+export default function MissionMap({ curriculum, highestUnlockedIndex, activeMissionIndex, onSelectMission, skipIntro, onIntroComplete, hasCompletedGame }) {
   const wrapperRef = useRef(null);
   
   // Intro cinematic phases: 'init' -> 'pan' -> 'zoom-out' -> 'done'
@@ -168,7 +168,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
           <img src="/mission-map-bg.jpg" alt="Mission Map" className="map-bg-image" />
           
           {/* Dynamic Void Overlay */}
-          {highestUnlockedIndex >= 24 && (
+          {highestUnlockedIndex >= 24 && !hasCompletedGame && (
             <div 
               className="void-map-overlay"
               style={{
@@ -301,6 +301,22 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
               </div>
             );
           })}
+          
+          {/* FINAL CELEBRATION MESSAGE */}
+          {hasCompletedGame && activeMissionIndex === null && (
+            <div className="celebration-overlay" style={{
+              position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+              background: 'rgba(11, 15, 25, 0.95)', border: '2px solid var(--accent-cyan)', padding: '3rem',
+              textAlign: 'center', zIndex: 100, boxShadow: '0 0 50px rgba(6, 182, 212, 0.5)',
+              borderRadius: '8px', opacity: isUIVisible ? 1 : 0, transition: 'opacity 3s ease 2s'
+            }}>
+              <h2 style={{ color: 'var(--accent-cyan)', fontSize: '2rem', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Congratulations.</h2>
+              <p style={{ color: 'var(--text-main)', fontSize: '1.2rem', marginBottom: '1rem' }}>You didn't just complete a course.</p>
+              <p style={{ color: 'var(--text-main)', fontSize: '1.2rem', marginBottom: '2rem' }}>You restored an entire platform.</p>
+              <h3 style={{ color: 'var(--accent-purple)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Welcome, Platform Engineer.</h3>
+            </div>
+          )}
+
         </div>
       </div>
     </div>

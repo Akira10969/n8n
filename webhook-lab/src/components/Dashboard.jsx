@@ -2,7 +2,7 @@ import React from 'react';
 import { badges, toolbox } from '../data/achievements';
 import { Trophy, Star, Heart, Activity, CheckCircle2, Lock } from 'lucide-react';
 
-export default function Dashboard({ xp, hearts, rank, absoluteHighestIndex, totalMissions }) {
+export default function Dashboard({ xp, hearts, rank, absoluteHighestIndex, totalMissions, hasCompletedGame }) {
   
   const completionPercentage = Math.round((absoluteHighestIndex / totalMissions) * 100);
 
@@ -42,6 +42,19 @@ export default function Dashboard({ xp, hearts, rank, absoluteHighestIndex, tota
           </button>
         </div>
       </div>
+
+      {/* FINAL CERTIFICATION BANNER */}
+      {hasCompletedGame && (
+        <div style={{ marginBottom: '3rem', background: 'rgba(139, 92, 246, 0.1)', border: '2px solid var(--accent-purple)', padding: '2rem', textAlign: 'center', boxShadow: '0 0 30px rgba(139, 92, 246, 0.2)' }}>
+          <Trophy size={48} color="var(--accent-purple)" style={{ marginBottom: '1rem' }} />
+          <h2 style={{ fontSize: '2rem', color: 'var(--accent-cyan)', margin: '0 0 0.5rem 0', textTransform: 'uppercase', letterSpacing: '0.1em', textShadow: '0 0 10px var(--accent-cyan)' }}>
+            MEI Certified Platform Engineer
+          </h2>
+          <p style={{ color: 'var(--text-main)', fontSize: '1.1rem', margin: '0' }}>
+            Awarded for the successful restoration of MEI_Cloud_OS. All core infrastructure systems are optimal.
+          </p>
+        </div>
+      )}
 
       {/* OVERVIEW STATS */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
