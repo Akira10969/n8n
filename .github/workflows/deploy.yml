@@ -20,6 +20,7 @@ jobs:
         
     - name: 🔨 Build Project
       run: |
+        cd webhook-lab
         npm install
         npm run build
         
@@ -27,9 +28,9 @@ jobs:
       run: |
         mkdir deploy_package
         # Copy compiled frontend assets to root of deploy package
-        cp -R dist/* deploy_package/
+        cp -R webhook-lab/dist/* deploy_package/
         # Copy backend folder to deploy package
-        cp -R backend deploy_package/backend
+        cp -R webhook-lab/backend deploy_package/backend
         
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
