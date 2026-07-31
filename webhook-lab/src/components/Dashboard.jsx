@@ -53,6 +53,16 @@ export default function Dashboard({ xp, hearts, rank, absoluteHighestIndex, tota
           <p style={{ color: 'var(--text-main)', fontSize: '1.1rem', margin: '0' }}>
             Awarded for the successful restoration of MEI_Cloud_OS. All core infrastructure systems are optimal.
           </p>
+          <button 
+            className="btn"
+            style={{ marginTop: '1.5rem', background: 'rgba(139, 92, 246, 0.2)', border: '1px solid var(--accent-purple)', color: 'var(--accent-purple)', padding: '0.5rem 1rem', fontSize: '0.9rem', cursor: 'pointer' }}
+            onClick={() => {
+              localStorage.removeItem('webhook_has_seen_post_credits');
+              window.location.reload();
+            }}
+          >
+            [ REPLAY EPILOGUE ]
+          </button>
         </div>
       )}
 
