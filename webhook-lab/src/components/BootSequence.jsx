@@ -5,6 +5,8 @@ const Typewriter = ({ text, delay = 20, onComplete }) => {
   const [displayed, setDisplayed] = useState('');
   const [idx, setIdx] = useState(0);
 
+  const hasCompleted = React.useRef(false);
+
   useEffect(() => {
     if (idx < text.length) {
       // Randomize delay to simulate realistic, tense AI typing
@@ -22,7 +24,10 @@ const Typewriter = ({ text, delay = 20, onComplete }) => {
       }, currentDelay);
       return () => clearTimeout(t);
     } else {
-      if (onComplete) onComplete();
+      if (onComplete && !hasCompleted.current) {
+        hasCompleted.current = true;
+        onComplete();
+      }
     }
   }, [idx, text, delay, onComplete]);
 
@@ -188,7 +193,7 @@ export default function BootSequence({ highestUnlockedIndex, onBootComplete }) {
         )}
       </div>
 
-      {step >= 6 && (
+      {step >= 6 && narrativeText[narrativeIndex] && (
         <div className={`boot-narrative-centered ${fadeStatus === 'in' ? 'fade-in' : 'fade-out'}`}>
           <p className={narrativeText[narrativeIndex].includes('Warning') || narrativeText[narrativeIndex].includes('EMERGENCY') || narrativeText[narrativeIndex].includes('FAILURE') ? 'text-warn' : ''}>
             <Typewriter key={narrativeIndex} text={narrativeText[narrativeIndex]} onComplete={handleLineComplete} delay={120} />
