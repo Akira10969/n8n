@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Lock, CheckCircle2, Play } from 'lucide-react';
+import PostGameSequence from './PostGameSequence';
 import './MissionMap.css';
 
 // Zone definitions for region labels and colors
@@ -303,31 +304,14 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
               </div>
             );
           })}
-          
-          {/* FINAL CELEBRATION MESSAGE */}
+          {/* FINAL POST-GAME SEQUENCE */}
           {hasCompletedGame && activeMissionIndex === null && !hasAcknowledged && (
-            <div className="celebration-overlay" style={{
-              position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-              background: 'rgba(11, 15, 25, 0.95)', border: '2px solid var(--accent-cyan)', padding: '3rem',
-              textAlign: 'center', zIndex: 100, boxShadow: '0 0 50px rgba(6, 182, 212, 0.5)',
-              borderRadius: '8px', opacity: isUIVisible ? 1 : 0, transition: 'opacity 3s ease 2s'
-            }}>
-              <h2 style={{ color: 'var(--accent-cyan)', fontSize: '2rem', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Congratulations.</h2>
-              <p style={{ color: 'var(--text-main)', fontSize: '1.2rem', marginBottom: '1rem' }}>You didn't just complete a course.</p>
-              <p style={{ color: 'var(--text-main)', fontSize: '1.2rem', marginBottom: '2rem' }}>You restored an entire platform.</p>
-              <h3 style={{ color: 'var(--accent-purple)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '2.5rem' }}>Welcome, Platform Engineer.</h3>
-              
-              <button 
-                className="btn btn-primary" 
-                style={{ padding: '0.8rem 2rem', fontSize: '1.1rem' }}
-                onClick={() => {
-                  setHasAcknowledged(true);
-                  localStorage.setItem('webhook_has_acknowledged_ending', 'true');
-                }}
-              >
-                Acknowledge
-              </button>
-            </div>
+            <PostGameSequence 
+              onComplete={() => {
+                setHasAcknowledged(true);
+                localStorage.setItem('webhook_has_acknowledged_ending', 'true');
+              }} 
+            />
           )}
 
         </div>

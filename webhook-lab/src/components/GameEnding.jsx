@@ -22,7 +22,6 @@ export default function GameEnding({ onEndingComplete, xp }) {
 
   const [metrics, setMetrics] = useState([]);
   const [metricIndex, setMetricIndex] = useState(0);
-  const [anomalyVisible, setAnomalyVisible] = useState(false);
   
   const audioRef = useRef(null);
 
@@ -59,18 +58,7 @@ export default function GameEnding({ onEndingComplete, xp }) {
       const timer = setTimeout(() => setPhase(2), 4000);
       return () => clearTimeout(timer);
     } else if (phase === 3) {
-      // Certificate phase - wait 5s to show anomaly
-      const timer = setTimeout(() => {
-        setAnomalyVisible(true);
-        // Play subtle glitch sound
-        const glitch = new Audio('/error.webm');
-        glitch.volume = 0.1;
-        glitch.playbackRate = 1.5;
-        glitch.play().catch(e => console.log(e));
-
-        setTimeout(() => setAnomalyVisible(false), 4000);
-      }, 6000);
-      return () => clearTimeout(timer);
+      // Certificate phase
     }
   }, [phase]);
 
@@ -171,14 +159,6 @@ export default function GameEnding({ onEndingComplete, xp }) {
               Return to World Map
             </button>
           </div>
-          
-          {anomalyVisible && (
-            <div className="post-credits-anomaly" style={{ position: 'absolute', bottom: '-80px', right: '0', textAlign: 'right', color: '#ff003c', fontSize: '0.8rem', fontFamily: 'monospace', opacity: 0.8, animation: 'jitter-mild 0.2s infinite' }}>
-              <div>[SYSTEM_WARN]</div>
-              <div>Unknown archived process detected.</div>
-              <div>Status: Dormant</div>
-            </div>
-          )}
         </div>
       )}
     </div>
