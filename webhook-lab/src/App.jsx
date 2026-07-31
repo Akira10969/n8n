@@ -294,6 +294,10 @@ function App() {
         />
       )}
 
+      {currentView === 'admin' && (
+        <AdminDashboard onBack={() => setCurrentView('dashboard')} />
+      )}
+
       {currentView === 'map' && (
         <div style={{ position: 'relative', width: '100%' }}>
           <MissionMap 
@@ -331,10 +335,6 @@ function App() {
                 missionIndex={currentIndex} 
                 onComplete={() => setMissionState('briefing')} 
               />
-            )}
-
-            {currentView === 'admin' && (
-              <AdminDashboard onBack={() => setCurrentView('dashboard')} />
             )}
             
             {currentView === 'learning' && missionState === 'briefing' && (
