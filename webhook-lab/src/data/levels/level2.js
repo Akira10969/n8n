@@ -29,16 +29,16 @@ Let's test this manually. Instead of \`ping\`, I want you to act as a web client
   simulator: {
     tasks: [
       {
-        command: 'curl http://10.4.12.88:80',
-        instruction: 'Use curl to request the webpage from the marketing server on port 80.',
+        command: /^curl\s+(http:\/\/)?10\.4\.12\.88(:80)?\/?$/i,
+        instruction: 'Type `curl http://10.4.12.88:80` to request the webpage from the marketing server on port 80.',
         successMessage: 'curl: (7) Failed to connect to 10.4.12.88 port 80: Connection refused\n[SARAH]: "Exactly as I suspected. The web process crashed. Let me reboot the Nginx service real quick..."\n[SARAH]: "Okay, try it again."',
-        errorMessage: 'Invalid syntax. Use `curl http://<IP>:<PORT>`'
+        errorMessage: 'Validation Failed. Hint: Use `curl http://10.4.12.88:80` to make the request.'
       },
       {
-        command: 'curl http://10.4.12.88:80',
-        instruction: 'Sarah rebooted the web server. Run the exact same curl command again.',
+        command: /^curl\s+(http:\/\/)?10\.4\.12\.88(:80)?\/?$/i,
+        instruction: 'Sarah rebooted the web server. Run the exact same curl command again: `curl http://10.4.12.88:80`',
         successMessage: 'HTTP/1.1 200 OK\nContent-Type: text/html\n\n<html><body><h1>MEI Marketing v1.0</h1></body></html>\n[SARAH]: "Boom. We have HTML. Good job, kid."',
-        errorMessage: 'Invalid syntax. Use `curl http://<IP>:<PORT>`'
+        errorMessage: 'Validation Failed. Hint: Use `curl http://10.4.12.88:80` to make the request.'
       }
     ]
   }
