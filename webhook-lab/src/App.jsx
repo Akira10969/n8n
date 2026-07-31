@@ -177,10 +177,6 @@ function App() {
     logEvent('mission_start', index);
   };
 
-  const unlockCheat = () => {
-    setHighestUnlockedIndex(curriculum.length - 1);
-  };
-
   // Progress percentage
   const progress = ((currentIndex + 1) / curriculum.length) * 100;
 
@@ -236,13 +232,7 @@ function App() {
       <header className="module-header">
         <div className="header-content">
           <h1 
-            style={{ fontFamily: 'monospace', letterSpacing: '0.08em', fontSize: '0.95rem', textTransform: 'uppercase', flex: 1, cursor: 'pointer' }}
-            onDoubleClick={() => {
-              setHighestUnlockedIndex(curriculum.length - 1);
-              setAbsoluteHighestIndex(curriculum.length);
-              setXp(prev => prev + 15000);
-            }}
-            title="Double-click to unlock Developer Mode (All Missions)"
+            style={{ fontFamily: 'monospace', letterSpacing: '0.08em', fontSize: '0.95rem', textTransform: 'uppercase', flex: 1 }}
           >
             MEI_Cloud_OS <span style={{ color: 'var(--text-muted)' }}>//</span> Mission Control
           </h1>
