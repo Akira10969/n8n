@@ -166,6 +166,18 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
         <div className="map-layer" style={{ transform: mapTransform, transition: transitionStyle }}>
 
           <img src="/mission-map-bg.jpg" alt="Mission Map" className="map-bg-image" />
+          
+          {/* Dynamic Void Overlay */}
+          {highestUnlockedIndex >= 24 && (
+            <div 
+              className="void-map-overlay"
+              style={{
+                background: `radial-gradient(circle at 95% 50%, #000 0%, #000 ${Math.max(0, 70 - (highestUnlockedIndex - 24) * 15)}%, transparent ${Math.max(20, 120 - (highestUnlockedIndex - 24) * 20)}%)`,
+                opacity: isUIVisible ? 0.95 : 0,
+                transition: 'background 2s ease-in-out, opacity 2s ease 1s'
+              }}
+            ></div>
+          )}
 
           {/* SVG CONNECTION PATHS — uses viewBox 0 0 100 100 matching CSS % coords */}
           <svg

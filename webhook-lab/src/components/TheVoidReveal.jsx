@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Database, Webhook, Cloud, Server, Lock } from 'lucide-react';
 
 export default function TheVoidReveal({ onRevealComplete }) {
   const [phase, setPhase] = useState(0);
   const [textIndex, setTextIndex] = useState(0);
+  const [consumedObjects, setConsumedObjects] = useState([]);
 
   const scriptLines = [
     { text: "WARNING: UNAUTHORIZED BROADCAST DETECTED", style: 'system-alert' },
@@ -57,8 +59,20 @@ export default function TheVoidReveal({ onRevealComplete }) {
         return () => clearTimeout(timer);
       }
     } else if (phase === 1) {
-      // Trigger global screen-tearing
-      document.body.classList.add('screen-tearing-active');
+      // Trigger the singularity
+      document.body.classList.add('screen-tearing-active'); // Minimal jitter now
+      
+      // Generate random objects to be consumed
+      const icons = [Database, Webhook, Cloud, Server, Lock];
+      const objects = Array.from({ length: 25 }).map((_, i) => {
+        const Icon = icons[Math.floor(Math.random() * icons.length)];
+        const startX = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 50 + 50); // far left or right
+        const startY = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 50 + 50); // far top or bottom
+        const delay = Math.random() * 2;
+        return { id: i, Icon, startX, startY, delay };
+      });
+      setConsumedObjects(objects);
+
       const timer = setTimeout(() => {
         document.body.classList.remove('screen-tearing-active');
         setPhase(2);
@@ -88,10 +102,26 @@ export default function TheVoidReveal({ onRevealComplete }) {
       )}
 
       {phase === 1 && (
-        <div className="eyes-of-the-void">
-          <div className="eye-left"></div>
-          <div className="eye-right"></div>
-          <div className="void-roar">THE VOID</div>
+        <div className="void-singularity-container">
+          <div className="black-hole"></div>
+          <div className="accretion-disk"></div>
+          
+          {consumedObjects.map(obj => (
+            <div 
+              key={obj.id} 
+              className="consumed-object"
+              style={{
+                left: `calc(50% + ${obj.startX}vw)`,
+                top: `calc(50% + ${obj.startY}vh)`,
+                animationDelay: `${obj.delay}s`,
+                '--target-x': `${-obj.startX}vw`,
+                '--target-y': `${-obj.startY}vh`
+              }}
+            >
+              <obj.Icon size={32} />
+            </div>
+          ))}
+          
         </div>
       )}
     </div>

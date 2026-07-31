@@ -49,42 +49,54 @@
   text-shadow: 0 0 15px #ff003c, 0 0 30px #ff003c;
 }
 
-/* The Eyes of the Void - Climax Glitch */
-.eyes-of-the-void {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15vw;
-  mix-blend-mode: exclusion;
-  pointer-events: none;
-}
-
-.eye-left, .eye-right {
-  width: 10vw;
-  height: 3vw;
-  background: #ff003c;
-  border-radius: 50%;
-  box-shadow: 0 0 100px #ff003c, 0 0 200px #ff003c;
-  animation: eye-flicker 0.1s infinite, eye-widen 3s forwards;
-  filter: blur(5px);
-}
-
-.void-roar {
+/* --- The Singularity (Black Hole) --- */
+.void-singularity-container {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 15vw;
-  font-weight: 900;
-  color: #ff003c;
-  mix-blend-mode: overlay;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.black-hole {
+  position: relative;
+  width: 25vw;
+  height: 25vw;
+  border-radius: 50%;
+  background: #000;
+  box-shadow: 0 0 50px 10px #ff003c, inset 0 0 40px #ff003c;
+  z-index: 5;
+  animation: singularity-pulse 4s ease-in-out infinite, jitter-mild 0.5s infinite;
+}
+
+.accretion-disk {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 45vw;
+  height: 45vw;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0%, rgba(255, 0, 60, 0.8) 25%, transparent 50%, rgba(255, 0, 60, 0.8) 75%, transparent 100%);
+  filter: blur(15px);
+  animation: disk-spin 3s linear infinite;
+  z-index: 4;
+}
+
+.consumed-object {
+  position: absolute;
+  color: var(--accent-cyan);
+  font-size: 2rem;
+  animation: consume 2.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+  z-index: 6;
   opacity: 0.8;
-  animation: jitter 0.05s infinite, screen-tear 0.2s infinite;
+  filter: drop-shadow(0 0 10px var(--accent-cyan));
 }
 
 /* Global Screen Tearing triggered during phase 1 */
@@ -112,8 +124,22 @@ body.corrupted-mode .app-container {
 
 /* Corrupted Map Filters */
 body.corrupted-mode .map-image {
-  filter: contrast(150%) saturate(60%) hue-rotate(120deg) invert(10%);
+  /* Reduced overall contrast filtering since the void overlay handles the darkness */
+  filter: saturate(70%) hue-rotate(120deg) contrast(120%);
   transition: filter 3s ease-in-out;
+}
+
+/* The dynamic void overlay on the map */
+.void-map-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  transition: background 3s ease-in-out;
+  mix-blend-mode: multiply;
 }
 
 body.corrupted-mode .map-node.locked {
@@ -167,22 +193,29 @@ body.corrupted-mode .terminal-simulator {
   100% { transform: translate(0, 0); }
 }
 
-@keyframes screen-tear {
-  0% { clip-path: inset(10% 0 80% 0); transform: translateX(-10px); }
-  20% { clip-path: inset(80% 0 10% 0); transform: translateX(15px); }
-  40% { clip-path: inset(40% 0 40% 0); transform: translateX(-5px); }
-  60% { clip-path: inset(20% 0 60% 0); transform: translateX(20px); }
-  80% { clip-path: inset(60% 0 20% 0); transform: translateX(-15px); }
-  100% { clip-path: inset(10% 0 80% 0); transform: translateX(10px); }
+@keyframes singularity-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 50px 10px #ff003c, inset 0 0 40px #ff003c; }
+  50% { transform: scale(1.05); box-shadow: 0 0 80px 20px #ff003c, inset 0 0 60px #ff003c; }
+  100% { transform: scale(1); box-shadow: 0 0 50px 10px #ff003c, inset 0 0 40px #ff003c; }
 }
 
-@keyframes eye-flicker {
-  0% { opacity: 1; transform: scaleY(1); }
-  50% { opacity: 0.5; transform: scaleY(0.1); }
-  100% { opacity: 1; transform: scaleY(1); }
+@keyframes disk-spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+  50% { transform: translate(-50%, -50%) rotate(180deg) scale(1.1); }
+  100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); }
 }
 
-@keyframes eye-widen {
-  0% { height: 0vw; }
-  100% { height: 15vw; border-radius: 50% 50% 10% 10%; }
+@keyframes consume {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    /* Pulled entirely into center */
+    transform: translate(var(--target-x), var(--target-y)) scale(0) rotate(720deg);
+    opacity: 0;
+  }
 }
