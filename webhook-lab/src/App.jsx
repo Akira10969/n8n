@@ -29,6 +29,7 @@ function App() {
   const [missionState, setMissionState] = useState('episode-card'); // 'episode-card', 'briefing', 'content', 'reward'
   const [hasBooted, setHasBooted] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const [hasSeenMapIntro, setHasSeenMapIntro] = useState(false);
 
   const currentStep = curriculum[currentIndex];
 
@@ -226,6 +227,8 @@ function App() {
             highestUnlockedIndex={highestUnlockedIndex}
             activeMissionIndex={null}
             onSelectMission={selectStep}
+            skipIntro={hasSeenMapIntro}
+            onIntroComplete={() => setHasSeenMapIntro(true)}
           />
         </div>
       )}
@@ -240,6 +243,7 @@ function App() {
             highestUnlockedIndex={highestUnlockedIndex}
             activeMissionIndex={currentIndex}
             onSelectMission={selectStep}
+            skipIntro={true}
           />
         </aside>
 

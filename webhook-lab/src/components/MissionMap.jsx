@@ -67,21 +67,21 @@ function getZoneColor(index) {
   return zone ? zone.color : '#06b6d4';
 }
 
-export default function MissionMap({ curriculum, highestUnlockedIndex, activeMissionIndex, onSelectMission }) {
+export default function MissionMap({ curriculum, highestUnlockedIndex, activeMissionIndex, onSelectMission, skipIntro, onIntroComplete }) {
   const wrapperRef = useRef(null);
   
   // Intro cinematic phases: 'init' -> 'pan' -> 'zoom-out' -> 'done'
-  const [introPhase, setIntroPhase] = useState(activeMissionIndex === null ? 'init' : 'done');
+  const [introPhase, setIntroPhase] = useState((activeMissionIndex === null && !skipIntro) ? 'init' : 'done');
   
   // Determine starting transform based on phase
   const [mapTransform, setMapTransform] = useState(() => {
-    if (activeMissionIndex === null) return 'scale(3) translate(-25%, -15%)';
+    if (activeMissionIndex === null && !skipIntro) return 'scale(3) translate(-25%, -15%)';
     return 'scale(1) translate(0, 0)';
   });
 
   // Cinematic sequence logic
   useEffect(() => {
-    if (activeMissionIndex !== null) return;
+    if (activeMissionIndex !== null || skipIntro) return;
     
     // Start sequence
     const t1 = setTimeout(() => {
@@ -96,6 +96,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
 
     const t3 = setTimeout(() => {
       setIntroPhase('done');
+      if (onIntroComplete) onIntroComplete();
     }, 9500);
 
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
