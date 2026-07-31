@@ -27,6 +27,7 @@ export default function Dashboard({ xp, hearts, rank, absoluteHighestIndex, tota
             onClick={() => {
               if (window.confirm("CRITICAL WARNING: This will format your employee database and wipe all mission progress. Proceed?")) {
                 localStorage.clear();
+                sessionStorage.clear();
                 window.location.reload();
               }
             }}
