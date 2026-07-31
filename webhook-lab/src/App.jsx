@@ -186,11 +186,11 @@ function App() {
           <h1 
             style={{ fontFamily: 'monospace', letterSpacing: '0.08em', fontSize: '0.95rem', textTransform: 'uppercase', flex: 1, cursor: 'pointer' }}
             onDoubleClick={() => {
-              setHighestUnlockedIndex(14); // Unlock up to Mission 15 (index 14)
-              setAbsoluteHighestIndex(15);
-              setXp(prev => prev + 1500);
+              setHighestUnlockedIndex(curriculum.length - 1);
+              setAbsoluteHighestIndex(curriculum.length);
+              setXp(prev => prev + 15000);
             }}
-            title="Double-click to unlock Developer Mode (Missions 1-15)"
+            title="Double-click to unlock Developer Mode (All Missions)"
           >
             MEI_Cloud_OS <span style={{ color: 'var(--text-muted)' }}>//</span> Mission Control
           </h1>
