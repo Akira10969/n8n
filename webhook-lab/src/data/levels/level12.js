@@ -4,7 +4,7 @@ export const level12 = {
   type: "theory",
   briefing: {
     recap: "An attacker exploited the lack of webhook authentication to forge billing payloads and grant themselves Premium Administrator access. You implemented a shared secret to block them.",
-    incident: "The fraudulent account upgrades have returned. The saboteur is bypassing your 401 Unauthorized block. Somehow, they acquired the 'super_secret_token_123' used to authenticate webhooks.",
+    incident: "The fraudulent account upgrades have returned. the rogue entity is bypassing your 401 Unauthorized block. Somehow, they acquired the 'super_secret_token_123' used to authenticate webhooks.",
     task: "Implement a secure API Key management strategy. You must rotate the compromised keys without taking the production systems offline, and transition away from hardcoded secrets.",
     rewards: { xp: 100, badge: 'None' }
   },
@@ -23,7 +23,7 @@ How did they get it? You check the MEI_Cloud_OS source code repository and reali
 const WEBHOOK_TOKEN = "super_secret_token_123";
 \`\`\`
 
-The saboteur likely compromised a developer's machine or found an exposed git repository. Hardcoded secrets are a massive security vulnerability.
+the rogue entity likely compromised a developer's machine or found an exposed git repository. Hardcoded secrets are a massive security vulnerability.
 
 ## Concept Explanation: API Keys and Secrets Management
 

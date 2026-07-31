@@ -30,7 +30,7 @@ The webhook looks completely legitimate. However, when you cross-reference this 
 
 Because webhooks are just HTTP requests sent to a public-facing URL (like \`/webhook/account-upgrade\`), **anyone on the internet who knows the URL can send a request to it.**
 
-The saboteur discovered the URL for the Account Upgrader Service. They bypassed the billing system entirely and simply sent a fake HTTP POST request directly to the webhook receiver, pretending to be the Billing Service. 
+the rogue entity discovered the URL for the Account Upgrader Service. They bypassed the billing system entirely and simply sent a fake HTTP POST request directly to the webhook receiver, pretending to be the Billing Service. 
 
 Because our receiver had zero authentication in place, it blindly trusted the request and upgraded the attacker's accounts.
 
@@ -56,7 +56,7 @@ if (request.headers['x-webhook-token'] !== 'super_secret_token_123') {
 }
 \`\`\`
 
-The fraudulent upgrades stop immediately. The attacker's requests are now bouncing off the 401 Unauthorized block. However, hardcoding a single token is a weak defense. It's only a matter of time before the saboteur finds another way in.
+The fraudulent upgrades stop immediately. The attacker's requests are now bouncing off the 401 Unauthorized block. However, hardcoding a single token is a weak defense. It's only a matter of time before the rogue entity finds another way in.
 
 > **SYSTEM ALERT:** A rogue subnet is forging requests. Use iptables to drop all traffic from \`10.4.99.0/24\`.
 `

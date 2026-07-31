@@ -3,7 +3,7 @@ export const level23 = {
   "title": "Holding the Floodgates",
   "type": "theory",
   "briefing": {
-    "recap": "The Fan-Out lockdown worked. The grid is sealed. But The Void is furious. It has initiated a massive, brute-force DDoS against the perimeter.",
+    "recap": "The Fan-Out lockdown worked. The grid is sealed. But The Anomaly is furious. It has initiated a massive, brute-force DDoS against the perimeter.",
     "incident": "ALERT: Incoming traffic has spiked by 10,000%. They are trying to overwhelm the webhook gateways with sheer volume.",
     "task": "Implement strict Rate Limiting to protect the core infrastructure from being crushed by the onslaught.",
     "rewards": {
@@ -19,7 +19,7 @@ export const level23 = {
       {
         command: /^nginx\s+-s\s+reload$/i,
         instruction: "Rate limiting configuration has been written. Send the reload signal to the Nginx reverse proxy to apply the changes.",
-        successMessage: "[OK] Nginx configuration reloaded. Rate limiting active at 50 req/sec.\n[UNIT-7]: Floodgates holding. The Void is bottlenecked.",
+        successMessage: "[OK] Nginx configuration reloaded. Rate limiting active at 50 req/sec.\n[UNIT-7]: Floodgates holding. The Anomaly is bottlenecked.",
         errorMessage: "Invalid syntax. Try `nginx -s reload`"
       }
     ]

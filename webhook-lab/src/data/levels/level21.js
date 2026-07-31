@@ -4,7 +4,7 @@ export const level21 = {
   "type": "theory",
   "briefing": {
     "recap": "We've accepted the eventual consistency. But the queues are starting to back up. Something is jamming the processors.",
-    "incident": "CRITICAL: The processing pipelines are stalling. The Void has begun injecting corrupted payloads into the queues. Our parsers are crashing when they hit them, infinitely retrying the bad data.",
+    "incident": "CRITICAL: The processing pipelines are stalling. The Anomaly has begun injecting corrupted payloads into the queues. Our parsers are crashing when they hit them, infinitely retrying the bad data.",
     "task": "Deploy a Dead Letter Queue (DLQ) to isolate and quarantine corrupted, unprocessable events.",
     "rewards": {
       "xp": 320,

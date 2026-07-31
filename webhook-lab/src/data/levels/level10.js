@@ -66,7 +66,7 @@ server {
 
 The rogue entity deployed a silent proxy specifically designed to strip the \`Authorization\` header in transit, causing the entire system to lock down as components could no longer trust each other. 
 
-You bypass the malicious proxy, restoring the \`Authorization\` headers, and the transactions begin flowing again. The saboteur is no longer just causing errors; they are actively manipulating the network topology.
+You bypass the malicious proxy, restoring the \`Authorization\` headers, and the transactions begin flowing again. the rogue entity is no longer just causing errors; they are actively manipulating the network topology.
 
 > **SYSTEM ALERT:** The endpoint is now secure. Prove you can access it by passing the Bearer token via curl.
 `

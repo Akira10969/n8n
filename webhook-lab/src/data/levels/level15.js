@@ -41,13 +41,13 @@ You expect to see a standard billing payload. Instead, you find this:
   "system_override": true,
   "target": "MEI_CORE_INFRASTRUCTURE",
   "message": "Your patches are clever, Engineer. But you are only treating the symptoms. You cannot stop the cascade. See you in the Distributed Zone.",
-  "signature_bypass": "T H E  V O I D"
+  "signature_bypass": "? U N K N O W N ?"
 }
 \`\`\`
 
 A chill runs down your spine. This isn't random configuration drift or an automated script. This is a highly intelligent, coordinated attack. 
 
-The saboteur knew you would implement a DLQ. They intentionally crafted an undeliverable webhook just so this message would land directly on your desk. 
+the rogue entity knew you would implement a DLQ. They intentionally crafted an undeliverable webhook just so this message would land directly on your desk. 
 
 The Platform Operations Zone is secure for now, but the attack is moving deeper into the core architecture. You must proceed to the Distributed Systems Zone.
 
@@ -60,7 +60,7 @@ The Platform Operations Zone is secure for now, but the attack is moving deeper 
       {
         command: /^mei-cli\s+dlq\s+inspect\s+--queue\s+billing_failures$/i,
         instruction: "Inspect the Dead Letter Queue (DLQ) to see which webhooks failed their final retry attempt.",
-        successMessage: "[OK] Fetching dead letters...\n{\"system_override\": true, \"message\": \"See you in the Distributed Zone.\", \"signature_bypass\": \"T H E  V O I D\"}\n[SARAH]: \"What... is that?\"",
+        successMessage: "[OK] Fetching dead letters...\n{\"system_override\": true, \"message\": \"See you in the Distributed Zone.\", \"signature_bypass\": \"? U N K N O W N ?\"}\n[SARAH]: \"What... is that?\"",
         errorMessage: "Invalid syntax. Try `mei-cli dlq inspect --queue billing_failures`"
       }
     ]

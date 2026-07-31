@@ -15,6 +15,7 @@ import RewardScreen from './components/RewardScreen';
 import TerminalSimulator from './components/TerminalSimulator';
 import BootSequence from './components/BootSequence';
 import EpisodeCard from './components/EpisodeCard';
+import TheVoidReveal from './components/TheVoidReveal';
 import './App.css';
 import './game.css';
 
@@ -30,6 +31,7 @@ function App() {
   const [hasBooted, setHasBooted] = useState(() => sessionStorage.getItem('webhook_has_booted') === 'true');
   const [hasStarted, setHasStarted] = useState(() => sessionStorage.getItem('webhook_has_started') === 'true');
   const [hasSeenMapIntro, setHasSeenMapIntro] = useState(() => sessionStorage.getItem('webhook_has_seen_map_intro') === 'true');
+  const [hasSeenVoidReveal, setHasSeenVoidReveal] = useState(() => localStorage.getItem('webhook_has_seen_void_reveal') === 'true');
 
   const currentStep = curriculum[currentIndex];
 
@@ -39,10 +41,20 @@ function App() {
     localStorage.setItem('webhook_absolute_highest_index', absoluteHighestIndex);
     localStorage.setItem('webhook_xp', xp);
     localStorage.setItem('webhook_hearts', hearts);
+    localStorage.setItem('webhook_has_seen_void_reveal', hasSeenVoidReveal);
     sessionStorage.setItem('webhook_has_booted', hasBooted);
     sessionStorage.setItem('webhook_has_started', hasStarted);
     sessionStorage.setItem('webhook_has_seen_map_intro', hasSeenMapIntro);
-  }, [currentIndex, highestUnlockedIndex, absoluteHighestIndex, xp, hearts, hasBooted, hasStarted, hasSeenMapIntro]);
+  }, [currentIndex, highestUnlockedIndex, absoluteHighestIndex, xp, hearts, hasBooted, hasStarted, hasSeenMapIntro, hasSeenVoidReveal]);
+
+  // Check if we need to apply corrupted mode
+  useEffect(() => {
+    if (currentIndex >= 24 && hasSeenVoidReveal) {
+      document.body.classList.add('corrupted-mode');
+    } else {
+      document.body.classList.remove('corrupted-mode');
+    }
+  }, [currentIndex, hasSeenVoidReveal]);
 
   const getRank = (currentXp) => {
     if (currentXp < 500) return 'IT Intern';
@@ -148,6 +160,12 @@ function App() {
         </div>
       ) : !hasBooted ? (
         <BootSequence highestUnlockedIndex={highestUnlockedIndex} onBootComplete={() => setHasBooted(true)} />
+      ) : currentIndex >= 24 && !hasSeenVoidReveal ? (
+        <TheVoidReveal onRevealComplete={() => {
+          setHasSeenVoidReveal(true);
+          setCurrentView('learning');
+          setMissionState('episode-card');
+        }} />
       ) : (
         <>
     <div className="particle-container">

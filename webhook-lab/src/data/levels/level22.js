@@ -3,7 +3,7 @@ export const level22 = {
   "title": "The Scatter Protocol",
   "type": "theory",
   "briefing": {
-    "recap": "The poisoned payloads are safely quarantined in the DLQ. But The Void is moving faster. A single node breach needs to alert the entire grid instantly.",
+    "recap": "The poisoned payloads are safely quarantined in the DLQ. But The Anomaly is moving faster. A single node breach needs to alert the entire grid instantly.",
     "incident": "WARNING: Node 7 has fallen. We need to broadcast the lockdown signal to 50 independent security subsystems simultaneously.",
     "task": "Implement the Fan-Out architectural pattern using webhooks and Pub/Sub.",
     "rewards": {

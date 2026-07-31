@@ -54,7 +54,7 @@ You realize that the Analytics Engine's JSON parser wasn't built to handle corru
 
 You immediately push a patch to the Analytics Engine to safely try-catch JSON parsing errors and gracefully return a \`400 Bad Request\` instead of crashing. 
 
-The 502s disappear. The servers stabilize. You've stopped the bleeding, but the saboteur is still out there, actively modifying our systems.
+The 502s disappear. The servers stabilize. You've stopped the bleeding, but the rogue entity is still out there, actively modifying our systems.
 
 > **SYSTEM ALERT:** Use curl to inspect the HTTP response headers of our receiver to see what error code it is throwing.
 `

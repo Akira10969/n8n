@@ -4,7 +4,7 @@ export const level14 = {
   type: "theory",
   briefing: {
     recap: "The attacker intercepted the new API key over the network. You deployed HMAC SHA-256 signatures to cryptographically guarantee the authenticity of every webhook.",
-    incident: "Unable to forge webhooks, the saboteur has initiated a localized Denial of Service (DoS) attack. Intermittent network partitions are causing the receiving servers to go offline randomly for 10-20 seconds at a time. Webhooks sent during these micro-outages are lost forever.",
+    incident: "Unable to forge webhooks, the rogue entity has initiated a localized Denial of Service (DoS) attack. Intermittent network partitions are causing the receiving servers to go offline randomly for 10-20 seconds at a time. Webhooks sent during these micro-outages are lost forever.",
     task: "Design a resilient webhook delivery pipeline. Implement Retry Logic and Exponential Backoff to ensure that webhooks are stored and re-transmitted if the receiver is temporarily unavailable.",
     rewards: { xp: 120, badge: 'None' }
   },
@@ -44,7 +44,7 @@ This gives the receiving server time to recover, reboot, or shed load before the
 
 You re-architect the Billing Service to decouple webhook sending from the main application thread. Instead of sending webhooks directly, the Billing Service now places the webhook payload into a background job processor. 
 
-The job processor attempts delivery. If the receiver is experiencing a micro-outage caused by the saboteur, the job processor detects the timeout, applies an exponential backoff formula, and schedules a retry for the future.
+The job processor attempts delivery. If the receiver is experiencing a micro-outage caused by the rogue entity, the job processor detects the timeout, applies an exponential backoff formula, and schedules a retry for the future.
 
 You watch the dashboard as a wave of DoS traffic hits. The receivers go offline. The webhooks fail. But this time, they aren't lost. The retries queue up, wait patiently, and as soon as the network stabilizes 12 seconds later, all the queued webhooks are successfully delivered. 
 

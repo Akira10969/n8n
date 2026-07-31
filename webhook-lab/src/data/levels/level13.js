@@ -14,7 +14,7 @@ export const level13 = {
 **Service:** Account_Upgrader_Service
 **Status:** COMPROMISED (LEVEL 3)
 
-The saboteur has proven they have network-level visibility. If they can intercept the API key in transit, they can impersonate the Billing Service indefinitely. 
+the rogue entity has proven they have network-level visibility. If they can intercept the API key in transit, they can impersonate the Billing Service indefinitely. 
 
 Sending a static password (API Key) over the network is like sending a wax-sealed envelope where anyone can copy the seal. We need a way to prove who sent the message without actually sending the password.
 

@@ -4,7 +4,7 @@ export const level24 = {
   "type": "theory",
   "briefing": {
     "recap": "The floodgates held. The DDoS failed. But the adversary has changed tactics. They are already inside.",
-    "incident": "CRITICAL: The Billing service just received an 'invoice.paid' webhook... but it didn't come from Stripe. The Void is forging webhooks to grant itself administrative access.",
+    "incident": "CRITICAL: The Billing service just received an 'invoice.paid' webhook... but it didn't come from Stripe. The Anomaly is forging webhooks to grant itself administrative access.",
     "task": "The final defense. Implement Cryptographic Webhook Signatures to verify the authenticity of all incoming payloads.",
     "rewards": {
       "xp": 400,
