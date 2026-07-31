@@ -3,15 +3,16 @@ import React, { useState, useEffect } from 'react';
 export default function PostGameSequence({ onComplete }) {
   // sequence state
   // 0: Initial Map Bloom (3s)
-  // 1: UNIT-7 Message (3.5s)
-  // 2: Sarah Message 1 (4s)
-  // 3: Sarah Message 2 (4s)
-  // 4: Celebration Message (Waiting for Acknowledge)
-  // 5: Post-Credits Teaser Booting...
-  // 6: Post-Credits Teaser Scanning...
-  // 7: Post-Credits Teaser Glitch/Warning
-  // 8: Post-Credits Teaser Connection Lost
-  // 9: Fade out and Complete
+  // 1: UNIT-7 Message (5s)
+  // 2: Sarah Message 1 (5s)
+  // 3: Sarah Message 2 (6s)
+  // 4: Pause (2s)
+  // 5: Celebration Message (Waiting for Acknowledge)
+  // 6: Post-Credits Teaser Booting...
+  // 7: Post-Credits Teaser Scanning...
+  // 8: Post-Credits Teaser Glitch/Warning
+  // 9: Post-Credits Teaser Connection Lost
+  // 10: Fade out and Complete
   const [seq, setSeq] = useState(0);
   const [terminalLines, setTerminalLines] = useState([]);
   
@@ -22,24 +23,27 @@ export default function PostGameSequence({ onComplete }) {
       timer = setTimeout(() => setSeq(1), 3000);
     } else if (seq === 1) {
       playBeep();
-      timer = setTimeout(() => setSeq(2), 3500);
+      timer = setTimeout(() => setSeq(2), 5000);
     } else if (seq === 2) {
       playBeep();
-      timer = setTimeout(() => setSeq(3), 4000);
+      timer = setTimeout(() => setSeq(3), 5000);
     } else if (seq === 3) {
       playBeep();
-      timer = setTimeout(() => setSeq(4), 4000);
+      timer = setTimeout(() => setSeq(4), 6000);
+    } else if (seq === 4) {
+      // Pause
+      timer = setTimeout(() => setSeq(5), 2000);
     }
-    // seq === 4 waits for user click
+    // seq === 5 waits for user click
     return () => clearTimeout(timer);
   }, [seq]);
 
   useEffect(() => {
     let timer;
-    if (seq === 5) {
+    if (seq === 6) {
       // Terminal booting
-      timer = setTimeout(() => setSeq(6), 2000);
-    } else if (seq === 6) {
+      timer = setTimeout(() => setSeq(7), 2000);
+    } else if (seq === 7) {
       const lines = [
         "Running final system integrity scan...",
         "100%",
@@ -54,18 +58,18 @@ export default function PostGameSequence({ onComplete }) {
           i++;
         } else {
           clearInterval(interval);
-          setTimeout(() => setSeq(7), 2000);
+          setTimeout(() => setSeq(8), 2000);
         }
       }, 1000);
       return () => clearInterval(interval);
-    } else if (seq === 7) {
+    } else if (seq === 8) {
       // WARNING
       playGlitch();
-      timer = setTimeout(() => setSeq(8), 3000);
-    } else if (seq === 8) {
-      // Connection Lost
-      timer = setTimeout(() => setSeq(9), 4000);
+      timer = setTimeout(() => setSeq(9), 3000);
     } else if (seq === 9) {
+      // Connection Lost
+      timer = setTimeout(() => setSeq(10), 4000);
+    } else if (seq === 10) {
       timer = setTimeout(() => onComplete(), 2000);
     }
     return () => clearTimeout(timer);
@@ -90,7 +94,7 @@ export default function PostGameSequence({ onComplete }) {
       {seq === 0 && <div className="map-restore-bloom"></div>}
 
       {/* NPC Dialogue Overlay */}
-      {seq >= 1 && seq <= 4 && (
+      {seq >= 1 && seq <= 3 && (
         <div style={{ position: 'absolute', bottom: '50px', left: '50%', transform: 'translateX(-50%)', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '1rem', width: '80%', maxWidth: '600px' }}>
           
           <div className="npc-message animate-fade-in" style={{ opacity: seq >= 1 ? 1 : 0, transition: 'opacity 0.5s', background: 'rgba(11, 15, 25, 0.9)', borderLeft: '4px solid #0ea5e9', padding: '1rem', borderRadius: '4px', display: 'flex', gap: '1rem', alignItems: 'center' }}>
@@ -120,9 +124,9 @@ export default function PostGameSequence({ onComplete }) {
       )}
 
       {/* Celebration Screen */}
-      {seq === 4 && (
+      {seq === 5 && (
         <div className="celebration-overlay animate-fade-in" style={{
-          position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)',
+          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
           background: 'rgba(11, 15, 25, 0.95)', border: '2px solid var(--accent-cyan)', padding: '3rem',
           textAlign: 'center', zIndex: 100, boxShadow: '0 0 50px rgba(6, 182, 212, 0.5)',
           borderRadius: '8px'
@@ -135,7 +139,7 @@ export default function PostGameSequence({ onComplete }) {
           <button 
             className="btn btn-primary" 
             style={{ padding: '0.8rem 2rem', fontSize: '1.1rem' }}
-            onClick={() => setSeq(5)}
+            onClick={() => setSeq(6)}
           >
             Acknowledge
           </button>
@@ -143,22 +147,22 @@ export default function PostGameSequence({ onComplete }) {
       )}
 
       {/* Post Credits Teaser Overlay */}
-      {seq >= 5 && (
+      {seq >= 6 && (
         <div className="post-credits-overlay" style={{
           position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
           background: '#000', zIndex: 999, padding: '4rem',
           display: 'flex', flexDirection: 'column', color: '#fff', fontFamily: 'monospace',
-          opacity: seq === 9 ? 0 : 1, transition: 'opacity 2s ease-in-out'
+          opacity: seq === 10 ? 0 : 1, transition: 'opacity 2s ease-in-out'
         }}>
           {/* Scan Text */}
-          {seq >= 6 && terminalLines.map((line, i) => (
+          {seq >= 7 && terminalLines.map((line, i) => (
             <div key={i} style={{ marginBottom: '1rem', color: line === '100%' || line.includes('No active threats') ? '#39ff14' : 'var(--text-muted)', fontSize: '1.2rem' }}>
               {line}
             </div>
           ))}
 
           {/* Warning Block */}
-          {seq >= 7 && (
+          {seq >= 8 && (
             <div style={{ marginTop: '2rem', color: '#ff003c', fontSize: '1.2rem' }}>
               <div className="animate-jitter" style={{ marginBottom: '1rem', fontWeight: 'bold' }}>WARNING</div>
               <div>Unknown process detected.</div>
@@ -168,7 +172,7 @@ export default function PostGameSequence({ onComplete }) {
           )}
 
           {/* Mini Singularity Glitch */}
-          {seq === 7 && (
+          {seq === 8 && (
             <div className="mini-singularity-glitch" style={{
               position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
               width: '100px', height: '100px', background: '#000', borderRadius: '50%',
@@ -178,7 +182,7 @@ export default function PostGameSequence({ onComplete }) {
           )}
 
           {/* Connection Lost */}
-          {seq >= 8 && (
+          {seq >= 9 && (
             <div className="animate-fade-in" style={{
               position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
               color: '#fff', fontSize: '2rem', fontWeight: 'bold'
