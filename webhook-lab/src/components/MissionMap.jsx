@@ -166,9 +166,10 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
       )}
 
       <div className="map-viewport">
-        <div className="map-layer" style={{ transform: mapTransform, transition: transitionStyle }}>
+        <div className={hasCompletedGame && !hasAcknowledged ? "map-cinematic-pan" : ""} style={{ width: '100%', height: '100%' }}>
+          <div className="map-layer" style={{ transform: mapTransform, transition: transitionStyle }}>
 
-          <img src="/mission-map-bg.jpg" alt="Mission Map" className="map-bg-image" />
+            <img src="/mission-map-bg.jpg" alt="Mission Map" className="map-bg-image" />
           
           {/* Dynamic Void Overlay */}
           {highestUnlockedIndex >= 24 && !hasCompletedGame && (
@@ -304,16 +305,17 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
               </div>
             );
           })}
-          {/* FINAL POST-GAME SEQUENCE */}
-          {hasCompletedGame && activeMissionIndex === null && !hasAcknowledged && (
-            <PostGameSequence 
-              onComplete={() => {
-                setHasAcknowledged(true);
-                localStorage.setItem('webhook_has_seen_post_credits', 'true');
-              }} 
-            />
-          )}
+            {/* FINAL POST-GAME SEQUENCE */}
+            {hasCompletedGame && activeMissionIndex === null && !hasAcknowledged && (
+              <PostGameSequence 
+                onComplete={() => {
+                  setHasAcknowledged(true);
+                  localStorage.setItem('webhook_has_seen_post_credits', 'true');
+                }} 
+              />
+            )}
 
+          </div>
         </div>
       </div>
     </div>

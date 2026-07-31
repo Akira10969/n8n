@@ -8,13 +8,14 @@ export default function PostGameSequence({ onComplete }) {
   // 3: Sarah Message 2 (6s)
   // 4: Pause (2s)
   // 5: Celebration Message (Waiting for Acknowledge)
-  // 6: Post-Credits Teaser Booting...
-  // 7: Post-Credits Teaser Scanning...
-  // 8: Post-Credits Teaser Glitch/Warning
-  // 9: Post-Credits Teaser Connection Lost
-  // 10: Fade out and Complete
+  // 6: Player regains control, enjoying peaceful map (10s delay)
+  // 7: Mini singularity blinks in, UNIT-7 terminal slides in
+  // 8: UNIT-7 scanning lines appear
+  // 9: Anomaly detected, Monitoring...
+  // 10: Singularity disappears, Threat level Minimal, complete.
   const [seq, setSeq] = useState(0);
   const [terminalLines, setTerminalLines] = useState([]);
+  const [isInteractive, setIsInteractive] = useState(false);
   
   useEffect(() => {
     let timer;
@@ -33,22 +34,20 @@ export default function PostGameSequence({ onComplete }) {
     } else if (seq === 4) {
       // Pause
       timer = setTimeout(() => setSeq(5), 2000);
-    }
-    // seq === 5 waits for user click
-    return () => clearTimeout(timer);
-  }, [seq]);
-
-  useEffect(() => {
-    let timer;
-    if (seq === 6) {
-      // Terminal booting
-      timer = setTimeout(() => setSeq(7), 2000);
+    } else if (seq === 6) {
+      // 10s of peace before the anomaly hits
+      setIsInteractive(true);
+      timer = setTimeout(() => setSeq(7), 10000);
     } else if (seq === 7) {
+      playGlitch();
+      timer = setTimeout(() => setSeq(8), 2000);
+    } else if (seq === 8) {
       const lines = [
-        "Running final system integrity scan...",
+        "Running final integrity scan...",
         "100%",
         "No active threats detected.",
-        "Archiving residual system artifacts...",
+        "...",
+        "Analyzing archived sectors...",
         "..."
       ];
       let i = 0;
@@ -58,19 +57,19 @@ export default function PostGameSequence({ onComplete }) {
           i++;
         } else {
           clearInterval(interval);
-          setTimeout(() => setSeq(8), 2000);
+          setTimeout(() => setSeq(9), 1000);
         }
-      }, 1000);
+      }, 800);
       return () => clearInterval(interval);
-    } else if (seq === 8) {
-      // WARNING
-      playGlitch();
-      timer = setTimeout(() => setSeq(9), 3000);
     } else if (seq === 9) {
-      // Connection Lost
+      // Show anomaly detected
       timer = setTimeout(() => setSeq(10), 4000);
     } else if (seq === 10) {
-      timer = setTimeout(() => onComplete(), 2000);
+      // Singularity vanishes, Threat Minimal
+      timer = setTimeout(() => {
+        setSeq(11);
+        setTimeout(() => onComplete(), 1000);
+      }, 4000);
     }
     return () => clearTimeout(timer);
   }, [seq, onComplete]);
@@ -83,19 +82,19 @@ export default function PostGameSequence({ onComplete }) {
 
   const playGlitch = () => {
     const a = new Audio('/error.webm');
-    a.volume = 0.5;
+    a.volume = 0.1;
     a.playbackRate = 1.5;
     a.play().catch(()=>{});
   };
 
   return (
-    <>
+    <div style={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh', pointerEvents: isInteractive ? 'none' : 'auto', zIndex: 100 }}>
       {/* Bloom Effect */}
       {seq === 0 && <div className="map-restore-bloom"></div>}
 
       {/* NPC Dialogue Overlay */}
       {seq >= 1 && seq <= 3 && (
-        <div style={{ position: 'absolute', bottom: '50px', left: '50%', transform: 'translateX(-50%)', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '1rem', width: '80%', maxWidth: '600px' }}>
+        <div style={{ position: 'absolute', bottom: '50px', left: '50%', transform: 'translateX(-50%)', zIndex: 100, display: 'flex', flexDirection: 'column', gap: '1rem', width: '80%', maxWidth: '600px', pointerEvents: 'none' }}>
           
           <div className="npc-message animate-fade-in" style={{ opacity: seq >= 1 ? 1 : 0, transition: 'opacity 0.5s', background: 'rgba(11, 15, 25, 0.9)', borderLeft: '4px solid #0ea5e9', padding: '1rem', borderRadius: '4px', display: 'flex', gap: '1rem', alignItems: 'center' }}>
             <div style={{ width: '40px', height: '40px', background: '#0ea5e9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>U7</div>
@@ -129,7 +128,7 @@ export default function PostGameSequence({ onComplete }) {
           position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
           background: 'rgba(11, 15, 25, 0.95)', border: '2px solid var(--accent-cyan)', padding: '3rem',
           textAlign: 'center', zIndex: 100, boxShadow: '0 0 50px rgba(6, 182, 212, 0.5)',
-          borderRadius: '8px'
+          borderRadius: '8px', pointerEvents: 'auto'
         }}>
           <h2 style={{ color: 'var(--accent-cyan)', fontSize: '2rem', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Congratulations.</h2>
           <p style={{ color: 'var(--text-main)', fontSize: '1.2rem', marginBottom: '1rem' }}>You didn't just complete a course.</p>
@@ -139,59 +138,68 @@ export default function PostGameSequence({ onComplete }) {
           <button 
             className="btn btn-primary" 
             style={{ padding: '0.8rem 2rem', fontSize: '1.1rem' }}
-            onClick={() => setSeq(6)}
+            onClick={() => {
+              // Trigger the peaceful map phase
+              setSeq(6);
+            }}
           >
             Acknowledge
           </button>
         </div>
       )}
 
-      {/* Post Credits Teaser Overlay */}
-      {seq >= 6 && (
-        <div className="post-credits-overlay" style={{
-          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-          background: '#000', zIndex: 999, padding: '4rem',
-          display: 'flex', flexDirection: 'column', color: '#fff', fontFamily: 'monospace',
-          opacity: seq === 10 ? 0 : 1, transition: 'opacity 2s ease-in-out'
-        }}>
-          {/* Scan Text */}
-          {seq >= 7 && terminalLines.map((line, i) => (
-            <div key={i} style={{ marginBottom: '1rem', color: line === '100%' || line.includes('No active threats') ? '#39ff14' : 'var(--text-muted)', fontSize: '1.2rem' }}>
-              {line}
-            </div>
-          ))}
-
-          {/* Warning Block */}
-          {seq >= 8 && (
-            <div style={{ marginTop: '2rem', color: '#ff003c', fontSize: '1.2rem' }}>
-              <div className="animate-jitter" style={{ marginBottom: '1rem', fontWeight: 'bold' }}>WARNING</div>
-              <div>Unknown process detected.</div>
-              <div>Status: Dormant</div>
-              <div>Location: Unknown</div>
-            </div>
-          )}
-
-          {/* Mini Singularity Glitch */}
-          {seq === 8 && (
-            <div className="mini-singularity-glitch" style={{
-              position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-              width: '100px', height: '100px', background: '#000', borderRadius: '50%',
-              boxShadow: '0 0 50px #ff003c, inset 0 0 20px #fff',
-              animation: 'jitter 0.1s infinite', zIndex: 1000
+      {/* Map Integrated Teaser UI */}
+      {seq >= 7 && seq <= 10 && (
+        <>
+          {/* Mini Singularity Glitch on Map */}
+          {seq < 10 && (
+            <div className="mini-singularity-glitch animate-fade-in" style={{
+              position: 'absolute', top: '15%', right: '15%',
+              width: '40px', height: '40px', background: '#000', borderRadius: '50%',
+              boxShadow: '0 0 20px #ff003c, inset 0 0 10px #fff',
+              animation: 'jitter 0.1s infinite', zIndex: 10,
+              pointerEvents: 'none'
             }}></div>
           )}
 
-          {/* Connection Lost */}
-          {seq >= 9 && (
-            <div className="animate-fade-in" style={{
-              position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-              color: '#fff', fontSize: '2rem', fontWeight: 'bold'
-            }}>
-              Connection Lost...
+          {/* UNIT-7 Scanning Terminal */}
+          <div className="post-credits-terminal animate-slide-up" style={{
+            position: 'absolute', bottom: '20px', right: '20px', width: '350px',
+            background: 'rgba(11, 15, 25, 0.85)', border: '1px solid #0ea5e9',
+            borderRadius: '4px', padding: '1rem', fontFamily: 'monospace',
+            color: '#0ea5e9', fontSize: '0.85rem', zIndex: 100, pointerEvents: 'none',
+            boxShadow: '0 0 15px rgba(14, 165, 233, 0.3)'
+          }}>
+            <div style={{ borderBottom: '1px solid #0ea5e9', paddingBottom: '0.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>
+              UNIT-7 [AUTO-SCAN]
             </div>
-          )}
-        </div>
+
+            {/* Scan Text */}
+            {seq >= 8 && terminalLines.map((line, i) => (
+              <div key={i} style={{ marginBottom: '0.5rem', color: line.includes('100%') || line.includes('No active threats') ? '#22c55e' : 'var(--text-muted)' }}>
+                {line}
+              </div>
+            ))}
+
+            {/* Warning Block */}
+            {seq >= 9 && (
+              <div style={{ marginTop: '1rem', color: '#ff003c' }}>
+                <div style={{ fontWeight: 'bold' }}>Unknown anomaly detected.</div>
+                <div>Status: Dormant</div>
+                {seq === 9 && <div className="animate-pulse" style={{ marginTop: '0.5rem' }}>Monitoring...</div>}
+              </div>
+            )}
+
+            {/* Final Status */}
+            {seq >= 10 && (
+              <div className="animate-fade-in" style={{ marginTop: '1rem', color: '#22c55e', fontWeight: 'bold', borderTop: '1px dashed #22c55e', paddingTop: '1rem' }}>
+                <div>Threat level: Minimal</div>
+                <div>Continuous monitoring enabled.</div>
+              </div>
+            )}
+          </div>
+        </>
       )}
-    </>
+    </div>
   );
 }
