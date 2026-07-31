@@ -1,89 +1,26 @@
 export const level16 = {
-  id: "level-16",
-  title: "Level 16 – Event-Driven Architecture",
-  type: "theory",
-  content: `
-## Learning Objectives
-By the end of this level, you will understand the fundamentals of Event-Driven Architecture (EDA) and how webhooks facilitate communication between decoupled microservices.
-
-## Prerequisites
-- Level 15 (Reliability)
-
-## Concept Explanation
-Historically, applications were built as giant "Monoliths." If the Billing module needed to tell the Shipping module that an order was paid, it just called a function in the same codebase. 
-Modern applications are built using **Microservices**. The Billing API and the Shipping API might be written in different languages and hosted on different servers. How do they communicate?
-
-**Event-Driven Architecture (EDA)** solves this. In EDA:
-1. **Producer**: A service that detects an event and broadcasts it (e.g., Stripe detects a payment).
-2. **Event**: A record of what happened (e.g., "Payment Success").
-3. **Consumer**: A service that listens for events and reacts to them (e.g., Your Shipping API).
-
-Webhooks are the glue in EDA. The Producer sends a webhook to the Consumer to notify them that the Event occurred. 
-
-## Real-World Analogy
-Think of a hospital. 
-- **Monolith**: A doctor walks down 5 flights of stairs to tell the pharmacist to prepare medication, waits for it, and walks back up.
-- **EDA**: The doctor hits a "Code Blue" button (the Event). A pager on the pharmacist's belt beeps (the Webhook). The pharmacist prepares the meds while the doctor stays with the patient. The systems are completely decoupled.
-
-## Visual Diagram
-\`\`\`mermaid
-graph TD
-    A[Stripe Billing Service] -- POST Webhook: Invoice Paid --> B(Webhook Gateway)
-    B -- Forwards Event --> C[Shipping Microservice]
-    B -- Forwards Event --> D[Email Microservice]
-    B -- Forwards Event --> E[Analytics Microservice]
-\`\`\`
-
-## Technical Deep Dive: Decoupling
-The primary benefit of EDA is **Decoupling**. The Producer (Stripe) knows absolutely nothing about your internal Shipping, Email, or Analytics microservices. It just yells into the void, "An invoice was paid!" Any system that cares can "subscribe" to that event via a webhook. If you decide to completely rewrite your Email Microservice in a new language, Stripe doesn't care. The architectural separation is perfect.
-
-## Code Example
-In a decoupled system, the receiver only cares about its own domain logic:
-
-\`\`\`javascript
-// Shipping Microservice Webhook Receiver
-app.post('/webhooks/billing', (req, res) => {
-  const event = req.body;
-  
-  if (event.type === 'invoice.paid') {
-    // The Shipping service doesn't care how the payment happened.
-    // It only cares that it's time to ship the box!
-    ShippingService.generateLabel(event.customer_id);
-  }
-  
-  res.status(200).send();
-});
-\`\`\`
-
-## Common Mistakes
-- **Creating tight coupling via webhooks:** If your Billing service sends a webhook payload specifically formatted for your Shipping service (e.g., containing box dimensions), they are no longer decoupled. Events should be generic (e.g., "Invoice Paid"), and the Consumer should fetch the extra details it needs.
-
-## Troubleshooting
-- **An event happened, but a service didn't react?** In EDA, you must trace the event. Did the Producer send it? Did the Gateway route it? Did the Consumer fail to parse it? Centralized logging is critical here.
-
-## Best Practices
-- **Use standard event naming conventions:** Format your events clearly, like \`resource.action\` (e.g., \`user.created\`, \`order.shipped\`).
-
-## Hands-On Lab
-*This level is purely conceptual. Think about how many decoupled systems interact when you order an Uber (Payment, Driver Routing, Push Notifications, Analytics).*
-
-## Key Takeaways
-1. Webhooks facilitate communication between separated systems (Microservices).
-2. The Producer creates the event, and the Consumer reacts to it.
-3. Event-Driven Architecture creates highly scalable, decoupled software.
-
-## What's Next
-If your Producer yells "Event!" 10,000 times a second, your Consumer will crash. Next, we learn how to buffer those events using **Message Queues**.
-`,
-  quiz: {
-    question: "What is the primary architectural benefit of an Event-Driven Architecture (EDA)?",
-    options: [
-      "It allows all code to run on a single monolithic server.",
-      "It completely decouples the Producer from the Consumers, allowing services to be built, scaled, and modified independently.",
-      "It encrypts database passwords automatically.",
-      "It guarantees that webhooks will never fail."
+  "id": "level-16",
+  "title": "The Severed Monolith",
+  "type": "theory",
+  "briefing": {
+    "recap": "The mid-tier systems have stabilized, but the anomalies are no longer random. Something is actively tracing our direct API connections.",
+    "incident": "URGENT: Central Database Alpha is under siege. Direct synchronous connections are being weaponized against us. The monolithic core is failing.",
+    "task": "Analyze the Event-Driven Architecture (EDA) paradigm. We must decouple the remaining surviving microservices before the infection spreads through tight coupling.",
+    "rewards": {
+      "xp": 200,
+      "badge": "None"
+    }
+  },
+  "content": "## Communications Intercept\n**[Sarah]** \"Engineers, listen to me. Whatever this is, it's smart. It's following the synchronous API calls back to our core database. If Service A waits for Service B to respond, they are tied together. If one dies, they both die.\"\n\n**[UNIT-7]** \"ANALYSIS: Tight coupling detected in 84% of surviving systems. Recommendation: Sever all direct connections.\"\n\n**[Sarah]** \"Exactly. We need to move to an **Event-Driven Architecture (EDA)** immediately. No more waiting. Services will broadcast events into the void, and anyone who needs to listen, will listen.\"\n\n## Event-Driven Architecture (EDA)\nIn a traditional monolith, if a user pays an invoice, the Billing service directly calls the Shipping service to print a label. \n\nIn **EDA**, we completely decouple them:\n1. **Producer:** The Billing service simply broadcasts an event: `invoice.paid`. It doesn't care who is listening.\n2. **Consumer:** The Shipping service listens for `invoice.paid` webhooks. When it hears one, it prints a label.\n\nIf the Shipping service crashes, the Billing service keeps processing payments without knowing or caring. The tight coupling is severed.\n\n### The Decoupling Strategy\nBy utilizing webhooks and events, we create a system where components are highly autonomous. In our current crisis, this is our only defense. If the infection compromises the Email Microservice, the Billing Microservice won't be dragged down with it.\n\nWe must prepare to adapt all systems to this pattern. The survival of MEI_Cloud_OS depends on it.",
+  "quiz": {
+    "question": "Why is Event-Driven Architecture critical for system resilience?",
+    "options": [
+      "It forces all code into a single, highly optimized monolith.",
+      "It decouples services, preventing a failure in one system from directly crashing another.",
+      "It prevents database injection attacks.",
+      "It makes API responses instantaneous by bypassing the network."
     ],
-    correctAnswerIndex: 1,
-    explanation: "Decoupling is the core of EDA. Stripe doesn't need to know how your email system works; it just broadcasts the event, and your email system reacts independently."
+    "correctAnswerIndex": 1,
+    "explanation": "EDA severs tight coupling. Producers emit events without depending on the Consumers, meaning failures are isolated."
   }
 };
