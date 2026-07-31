@@ -29,7 +29,7 @@ I need you to open your terminal and ping the marketing server's internal IP add
     tasks: [
       {
         command: /^ping\s+(.*?)10\.4\.12\.88(.*)$/i,
-        instruction: 'Type `ping 10.4.12.88` and press Enter to verify connectivity to the marketing server.',
+        instruction: 'Verify network connectivity to the marketing server (10.4.12.88) using ICMP echo requests.',
         successMessage: 'PING 10.4.12.88 (10.4.12.88): 56 data bytes\n64 bytes from 10.4.12.88: icmp_seq=0 ttl=64 time=42.1 ms\n64 bytes from 10.4.12.88: icmp_seq=1 ttl=64 time=45.3 ms\nRequest timeout for icmp_seq 2\n64 bytes from 10.4.12.88: icmp_seq=3 ttl=64 time=41.9 ms\n\n--- 10.4.12.88 ping statistics ---\n4 packets transmitted, 3 packets received, 25.0% packet loss\n[SARAH]: "25% packet loss? That\'s weird. Let\'s dig deeper."',
         errorMessage: 'Validation Failed. Hint: You must use the ping command followed by the exact IP address: `ping 10.4.12.88`'
       }
