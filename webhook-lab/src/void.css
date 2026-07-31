@@ -361,6 +361,15 @@ body.corrupted-mode .terminal-simulator {
   100% { opacity: 1; transform: translateY(0); }
 }
 
+.animate-scale-up-center {
+  animation: scale-up-fade-center 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scale-up-fade-center {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
 .map-cinematic-pan {
   animation: cinematic-pan 25s ease-in-out infinite alternate;
 }

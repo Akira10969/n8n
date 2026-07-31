@@ -154,7 +154,7 @@ export default function PostGameSequence({ onComplete }) {
           {/* Mini Singularity Glitch on Map */}
           {seq < 10 && (
             <div className="mini-singularity-glitch animate-fade-in" style={{
-              position: 'absolute', top: '15%', right: '15%',
+              position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
               width: '40px', height: '40px', background: '#000', borderRadius: '50%',
               boxShadow: '0 0 20px #ff003c, inset 0 0 10px #fff',
               animation: 'jitter 0.1s infinite', zIndex: 10,
@@ -163,8 +163,8 @@ export default function PostGameSequence({ onComplete }) {
           )}
 
           {/* UNIT-7 Scanning Terminal */}
-          <div className="post-credits-terminal animate-slide-up" style={{
-            position: 'absolute', bottom: '20px', right: '20px', width: '350px',
+          <div className="post-credits-terminal animate-scale-up-center" style={{
+            position: 'absolute', top: '50%', left: '50%', width: '350px',
             background: 'rgba(11, 15, 25, 0.85)', border: '1px solid #0ea5e9',
             borderRadius: '4px', padding: '1rem', fontFamily: 'monospace',
             color: '#0ea5e9', fontSize: '0.85rem', zIndex: 100, pointerEvents: 'none',
