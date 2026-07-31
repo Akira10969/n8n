@@ -18,7 +18,7 @@ Run the final deployment sequence to purge The Void from MEI_Cloud_OS.",
   "simulator": {
     "tasks": [
       {
-        "command": /^\\.\/deploy_final_architecture\.sh$/i,
+        "command": /^\.\/deploy_final_architecture\.sh$/i,
         "instruction": "Execute the final deployment sequence using ./deploy_final_architecture.sh.",
         "successMessage": "[SUCCESS] The Void has been purged. MEI_Cloud_OS is secure. You are a true Architect.",
         "errorMessage": "Invalid command. Read the instructions carefully."
