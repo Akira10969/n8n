@@ -71,7 +71,7 @@ function getZoneColor(index) {
 export default function MissionMap({ curriculum, highestUnlockedIndex, activeMissionIndex, onSelectMission, skipIntro, onIntroComplete, hasCompletedGame }) {
   const wrapperRef = useRef(null);
   
-  const [hasAcknowledged, setHasAcknowledged] = useState(() => localStorage.getItem('webhook_has_acknowledged_ending') === 'true');
+  const [hasAcknowledged, setHasAcknowledged] = useState(() => localStorage.getItem('webhook_has_seen_post_credits') === 'true');
   
   // Intro cinematic phases: 'init' -> 'pan' -> 'zoom-out' -> 'done'
   const [introPhase, setIntroPhase] = useState((activeMissionIndex === null && !skipIntro) ? 'init' : 'done');
@@ -309,7 +309,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
             <PostGameSequence 
               onComplete={() => {
                 setHasAcknowledged(true);
-                localStorage.setItem('webhook_has_acknowledged_ending', 'true');
+                localStorage.setItem('webhook_has_seen_post_credits', 'true');
               }} 
             />
           )}

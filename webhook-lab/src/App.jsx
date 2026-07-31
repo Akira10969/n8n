@@ -253,6 +253,7 @@ function App() {
             onSelectMission={selectStep}
             skipIntro={hasSeenMapIntro}
             onIntroComplete={() => setHasSeenMapIntro(true)}
+            hasCompletedGame={hasCompletedGame}
           />
         </div>
       )}
