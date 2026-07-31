@@ -36,10 +36,10 @@ function Typewriter({ text, delay = 18, onDone }) {
 // ─── Step definitions ────────────────────────────────────────────────────────
 // We build the steps dynamically from the mission data
 function buildSteps(mission, missionIndex, rewardBadge) {
-  const b = mission.briefing;
+  const b = mission?.briefing;
   const steps = [];
   
-  if (b.recap) {
+  if (b?.recap) {
     steps.push({
       id: 'recap',
       label: 'PREVIOUSLY ON MEI_CLOUD_OS',
@@ -85,7 +85,7 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission 
   const [animIn, setAnimIn] = useState(true);
   const panelRef = useRef(null);
 
-  const briefing = mission.briefing;
+  const briefing = mission?.briefing;
 
   // Reset state when mission changes
   useEffect(() => {
@@ -157,7 +157,7 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission 
               <span>PREVIOUSLY ON MEI_CLOUD_OS...</span>
             </div>
             <p className="mb-body-text" style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>
-              <Typewriter text={briefing.recap} delay={18} onDone={() => setTypewriterDone(true)} />
+              <Typewriter text={briefing?.recap || ''} delay={18} onDone={() => setTypewriterDone(true)} />
             </p>
           </div>
         )}
@@ -171,7 +171,7 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission 
               <span className="mb-blink-dot"></span>
             </div>
             <p className="mb-body-text">
-              <Typewriter text={briefing.incident} delay={18} onDone={() => setTypewriterDone(true)} />
+              <Typewriter text={briefing?.incident || ''} delay={18} onDone={() => setTypewriterDone(true)} />
             </p>
           </div>
         )}
@@ -184,7 +184,7 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission 
               <span>MISSION DIRECTIVE</span>
             </div>
             <p className="mb-body-text">
-              <Typewriter text={briefing.task} delay={14} onDone={() => setTypewriterDone(true)} />
+              <Typewriter text={briefing?.task || ''} delay={14} onDone={() => setTypewriterDone(true)} />
             </p>
           </div>
         )}
@@ -200,7 +200,7 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission 
               <div className="mb-reward-chip" style={{ borderColor: '#facc15', color: '#facc15' }}>
                 <span className="mb-reward-icon">⭐</span>
                 <div>
-                  <div className="mb-reward-value">{briefing.rewards?.xp || 50} XP</div>
+                  <div className="mb-reward-value">{briefing?.rewards?.xp || 50} XP</div>
                   <div className="mb-reward-label">Experience Points</div>
                 </div>
               </div>
