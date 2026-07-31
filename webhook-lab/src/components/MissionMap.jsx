@@ -136,9 +136,6 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
 
   return (
     <div className={`interactive-map-wrapper ${activeMissionIndex !== null ? 'sidebar-mode' : ''}`} ref={wrapperRef}>
-      
-      {/* Cinematic Ambient Background Music */}
-      <audio autoPlay loop src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=cinematic-atmosphere-score-2-22136.mp3" />
 
       {/* Cinematic Fog & Dust Overlay */}
       <div className={`map-fog-overlay ${isFogHeavy ? 'heavy' : 'light'}`}></div>
