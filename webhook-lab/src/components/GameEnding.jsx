@@ -1,64 +1,100 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Database, Webhook, Cloud, Server, Lock } from 'lucide-react';
+
+const metricLines = [
+  "BOOTING MEI_CLOUD_OS KERNEL...",
+  "SYSTEM HEALTH: 100% (OPTIMAL)",
+  "WEBHOOK INGESTION: ACTIVE (Zero Dropped Events)",
+  "MESSAGE QUEUES: HEALTHY",
+  "VOID CORRUPTION: 0%",
+  " ",
+  "ARCHITECTURE RESTORED BY: MEI",
+  "ENGINEERING AND EXECUTION BY: YOU"
+];
 
 export default function GameEnding({ onEndingComplete, xp }) {
   const [phase, setPhase] = useState(0);
   
-  // Phase 0: Singularity collapse
-  // Phase 1: Explosion (white screen)
+  // Phase 0: Singularity collapse (8s)
+  // Phase 1: Explosion (white screen) (4s)
   // Phase 2: System Dashboard
-  // Phase 3: Certificate
-  // Phase 4: Post-Credits Anomaly
+  // Phase 3: Certificate (Manual Continue)
 
   const [metrics, setMetrics] = useState([]);
+  const [metricIndex, setMetricIndex] = useState(0);
   const [anomalyVisible, setAnomalyVisible] = useState(false);
+  
+  const audioRef = useRef(null);
 
   useEffect(() => {
     if (phase === 0) {
       document.body.classList.add('void-active');
-      const timer = setTimeout(() => setPhase(1), 5000);
-      return () => clearTimeout(timer);
+      
+      // Deep rumble sound
+      const audio = new Audio('/error.webm');
+      audio.volume = 0.6;
+      audio.loop = true;
+      audio.playbackRate = 0.5;
+      audio.play().catch(e => console.log(e));
+      audioRef.current = audio;
+
+      const timer = setTimeout(() => {
+        setPhase(1);
+      }, 8000);
+      
+      return () => {
+        clearTimeout(timer);
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
+      };
     } else if (phase === 1) {
       document.body.classList.remove('void-active');
-      const timer = setTimeout(() => setPhase(2), 2000);
-      return () => clearTimeout(timer);
-    } else if (phase === 2) {
-      const metricLines = [
-        "BOOTING MEI_CLOUD_OS KERNEL...",
-        "SYSTEM HEALTH: 100% (OPTIMAL)",
-        "WEBHOOK INGESTION: ACTIVE (Zero Dropped Events)",
-        "MESSAGE QUEUES: HEALTHY",
-        "VOID CORRUPTION: 0%",
-        " ",
-        "ARCHITECTURE RESTORED BY: MEI",
-        "ENGINEERING AND EXECUTION BY: YOU"
-      ];
       
-      let currentLine = 0;
-      const interval = setInterval(() => {
-        if (currentLine < metricLines.length) {
-          setMetrics(prev => [...prev, metricLines[currentLine]]);
-          currentLine++;
-        } else {
-          clearInterval(interval);
-          setTimeout(() => setPhase(3), 4000);
-        }
-      }, 800);
-      return () => clearInterval(interval);
+      // Flashbang sound
+      const audio = new Audio('/mission-start.webm');
+      audio.volume = 0.8;
+      audio.play().catch(e => console.log(e));
+
+      const timer = setTimeout(() => setPhase(2), 4000);
+      return () => clearTimeout(timer);
     } else if (phase === 3) {
+      // Certificate phase - wait 5s to show anomaly
       const timer = setTimeout(() => {
         setAnomalyVisible(true);
-        setTimeout(() => {
-          setAnomalyVisible(false);
-          setTimeout(() => onEndingComplete(), 3000);
-        }, 4000);
-      }, 5000);
+        // Play subtle glitch sound
+        const glitch = new Audio('/error.webm');
+        glitch.volume = 0.1;
+        glitch.playbackRate = 1.5;
+        glitch.play().catch(e => console.log(e));
+
+        setTimeout(() => setAnomalyVisible(false), 4000);
+      }, 6000);
       return () => clearTimeout(timer);
     }
-  }, [phase, onEndingComplete]);
+  }, [phase]);
+
+  // Terminal typing logic
+  useEffect(() => {
+    if (phase === 2) {
+      if (metricIndex < metricLines.length) {
+        // 2 second initial pause, 1.5s between lines
+        const delay = metricIndex === 0 ? 2000 : 1500;
+        const timer = setTimeout(() => {
+          setMetrics(prev => prev.includes(metricLines[metricIndex]) ? prev : [...prev, metricLines[metricIndex]]);
+          setMetricIndex(prev => prev + 1);
+        }, delay);
+        return () => clearTimeout(timer);
+      } else if (metricIndex === metricLines.length) {
+        // Wait 6 seconds before certificate
+        const timer = setTimeout(() => setPhase(3), 6000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [phase, metricIndex]);
 
   return (
-    <div className="game-ending-container" style={{ background: phase === 1 ? '#fff' : '#050002' }}>
+    <div className="game-ending-container" style={{ background: phase === 1 ? '#fff' : '#050002', transition: 'background 4s ease-out' }}>
       
       {phase === 0 && (
         <div className="void-singularity-container reverse-collapse">
@@ -81,7 +117,8 @@ export default function GameEnding({ onEndingComplete, xp }) {
                 style={{
                   '--target-x': `${tx}vw`,
                   '--target-y': `${ty}vh`,
-                  animationDelay: `${Math.random()}s`
+                  animationDelay: `${Math.random()}s`,
+                  animationDuration: '5s'
                 }}
               >
                 <Icon size={32} />
@@ -92,39 +129,51 @@ export default function GameEnding({ onEndingComplete, xp }) {
       )}
 
       {phase === 1 && (
-        <div className="flashbang"></div>
+        <div className="flashbang-extended">
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'rgba(255,0,60,0.5)', fontSize: '2rem', fontFamily: 'monospace', opacity: 0, animation: 'fade-out-text 3s forwards' }}>
+            CRITICAL ERROR... FATAL...
+          </div>
+        </div>
       )}
 
       {phase === 2 && (
-        <div className="system-dashboard terminal-simulator" style={{ width: '80%', maxWidth: '800px', margin: 'auto', border: '1px solid var(--accent-cyan)' }}>
+        <div className="system-dashboard terminal-simulator animate-fade-in" style={{ width: '80%', maxWidth: '800px', margin: 'auto', border: '1px solid var(--accent-cyan)' }}>
           <div className="terminal-header" style={{ borderBottom: '1px solid var(--accent-cyan)', color: 'var(--accent-cyan)' }}>
             MEI_Cloud_OS // Final_Status.sh
           </div>
           <div className="terminal-body" style={{ padding: '2rem', fontSize: '1.2rem', lineHeight: '2' }}>
             {metrics.map((line, i) => (
-              <div key={i} style={{ color: line.includes('100%') || line.includes('HEALTHY') || line.includes('ACTIVE') || line.includes('0%') ? '#39ff14' : 'var(--text-main)' }}>
+              <div key={i} style={{ color: line?.includes('100%') || line?.includes('HEALTHY') || line?.includes('ACTIVE') || line?.includes('0%') ? '#39ff14' : 'var(--text-main)' }}>
                 {line}
               </div>
             ))}
-            {metrics.length < 8 && <span className="blinking-cursor">█</span>}
+            {metricIndex < metricLines.length && <span className="blinking-cursor">█</span>}
           </div>
         </div>
       )}
 
       {phase === 3 && (
-        <div className="certificate-container animate-fade-in" style={{ textAlign: 'center' }}>
+        <div className="certificate-container animate-fade-in" style={{ textAlign: 'center', position: 'relative' }}>
           <div className="certificate" style={{ border: '2px solid var(--accent-purple)', padding: '4rem', background: 'rgba(139, 92, 246, 0.1)', boxShadow: '0 0 50px rgba(139, 92, 246, 0.3)' }}>
             <h1 style={{ color: 'var(--accent-cyan)', fontSize: '3rem', marginBottom: '1rem', textShadow: '0 0 20px var(--accent-cyan)' }}>MEI Certified Platform Engineer</h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '3rem' }}>This certifies that you have successfully restored MEI_Cloud_OS.</p>
             
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', fontSize: '1.5rem', color: 'var(--text-main)' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', fontSize: '1.5rem', color: 'var(--text-main)', marginBottom: '3rem' }}>
               <div><strong>FINAL XP:</strong> {xp}</div>
               <div><strong>STATUS:</strong> LEGENDARY</div>
             </div>
+            
+            <button 
+              className="btn btn-primary" 
+              style={{ fontSize: '1.2rem', padding: '1rem 2rem' }}
+              onClick={onEndingComplete}
+            >
+              Return to World Map
+            </button>
           </div>
           
           {anomalyVisible && (
-            <div className="post-credits-anomaly" style={{ position: 'absolute', bottom: '20px', right: '20px', textAlign: 'right', color: '#ff003c', fontSize: '0.8rem', fontFamily: 'monospace', opacity: 0.8, animation: 'jitter-mild 0.2s infinite' }}>
+            <div className="post-credits-anomaly" style={{ position: 'absolute', bottom: '-80px', right: '0', textAlign: 'right', color: '#ff003c', fontSize: '0.8rem', fontFamily: 'monospace', opacity: 0.8, animation: 'jitter-mild 0.2s infinite' }}>
               <div>[SYSTEM_WARN]</div>
               <div>Unknown archived process detected.</div>
               <div>Status: Dormant</div>

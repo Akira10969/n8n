@@ -236,11 +236,11 @@ body.corrupted-mode .terminal-simulator {
 }
 
 .reverse-collapse .collapsing {
-  animation: collapse-singularity 2s ease-in forwards !important;
+  animation: collapse-singularity 8s ease-in forwards !important;
 }
 
 .reverse-collapse .exploding {
-  animation: explode-disk 2s ease-in forwards !important;
+  animation: explode-disk 8s ease-in forwards !important;
 }
 
 @keyframes collapse-singularity {
@@ -292,8 +292,32 @@ body.corrupted-mode .terminal-simulator {
   animation: flash 2s ease-out forwards;
 }
 
+.flashbang-extended {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #fff;
+  z-index: 100;
+  animation: flash-extended 4s ease-out forwards;
+}
+
 @keyframes flash {
   0% { opacity: 0; }
   10% { opacity: 1; }
   100% { opacity: 0; display: none; }
+}
+
+@keyframes flash-extended {
+  0% { opacity: 0; }
+  5% { opacity: 1; }
+  100% { opacity: 0; display: none; }
+}
+
+@keyframes fade-out-text {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+  10% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  90% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); filter: blur(0); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); filter: blur(10px); }
 }

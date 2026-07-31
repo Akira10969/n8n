@@ -70,6 +70,8 @@ function getZoneColor(index) {
 export default function MissionMap({ curriculum, highestUnlockedIndex, activeMissionIndex, onSelectMission, skipIntro, onIntroComplete, hasCompletedGame }) {
   const wrapperRef = useRef(null);
   
+  const [hasAcknowledged, setHasAcknowledged] = useState(() => localStorage.getItem('webhook_has_acknowledged_ending') === 'true');
+  
   // Intro cinematic phases: 'init' -> 'pan' -> 'zoom-out' -> 'done'
   const [introPhase, setIntroPhase] = useState((activeMissionIndex === null && !skipIntro) ? 'init' : 'done');
   
@@ -303,7 +305,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
           })}
           
           {/* FINAL CELEBRATION MESSAGE */}
-          {hasCompletedGame && activeMissionIndex === null && (
+          {hasCompletedGame && activeMissionIndex === null && !hasAcknowledged && (
             <div className="celebration-overlay" style={{
               position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
               background: 'rgba(11, 15, 25, 0.95)', border: '2px solid var(--accent-cyan)', padding: '3rem',
@@ -313,7 +315,18 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
               <h2 style={{ color: 'var(--accent-cyan)', fontSize: '2rem', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Congratulations.</h2>
               <p style={{ color: 'var(--text-main)', fontSize: '1.2rem', marginBottom: '1rem' }}>You didn't just complete a course.</p>
               <p style={{ color: 'var(--text-main)', fontSize: '1.2rem', marginBottom: '2rem' }}>You restored an entire platform.</p>
-              <h3 style={{ color: 'var(--accent-purple)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Welcome, Platform Engineer.</h3>
+              <h3 style={{ color: 'var(--accent-purple)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '2.5rem' }}>Welcome, Platform Engineer.</h3>
+              
+              <button 
+                className="btn btn-primary" 
+                style={{ padding: '0.8rem 2rem', fontSize: '1.1rem' }}
+                onClick={() => {
+                  setHasAcknowledged(true);
+                  localStorage.setItem('webhook_has_acknowledged_ending', 'true');
+                }}
+              >
+                Acknowledge
+              </button>
             </div>
           )}
 
