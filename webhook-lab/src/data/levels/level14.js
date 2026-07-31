@@ -49,5 +49,19 @@ The job processor attempts delivery. If the receiver is experiencing a micro-out
 You watch the dashboard as a wave of DoS traffic hits. The receivers go offline. The webhooks fail. But this time, they aren't lost. The retries queue up, wait patiently, and as soon as the network stabilizes 12 seconds later, all the queued webhooks are successfully delivered. 
 
 You have thwarted the network attack. But what happens to the webhooks that *never* succeed, even after 10 retries?
+
+> **SYSTEM ALERT:** The network is flapping. Send a 10-count ping to verify the packet loss.
 `
+
+  ,
+  simulator: {
+    tasks: [
+      {
+        command: /^ping\s+-c\s+10\s+10\.4\.88\.9$/i,
+        instruction: "Test network stability to the remote node. Send exactly 10 ping packets to 10.4.88.9.",
+        successMessage: "10 packets transmitted, 4 received, 60% packet loss, time 9014ms\n[SARAH]: \"60% packet loss! The connection is flapping. We need retries.\"",
+        errorMessage: "Invalid syntax. Use `ping -c 10 10.4.88.9`"
+      }
+    ]
+  }
 };

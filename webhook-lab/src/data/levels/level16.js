@@ -11,16 +11,17 @@ export const level16 = {
       "badge": "None"
     }
   },
-  "content": "## Communications Intercept\n**[Sarah]** \"Engineers, listen to me. Whatever this is, it's smart. It's following the synchronous API calls back to our core database. If Service A waits for Service B to respond, they are tied together. If one dies, they both die.\"\n\n**[UNIT-7]** \"ANALYSIS: Tight coupling detected in 84% of surviving systems. Recommendation: Sever all direct connections.\"\n\n**[Sarah]** \"Exactly. We need to move to an **Event-Driven Architecture (EDA)** immediately. No more waiting. Services will broadcast events into the void, and anyone who needs to listen, will listen.\"\n\n## Event-Driven Architecture (EDA)\nIn a traditional monolith, if a user pays an invoice, the Billing service directly calls the Shipping service to print a label. \n\nIn **EDA**, we completely decouple them:\n1. **Producer:** The Billing service simply broadcasts an event: `invoice.paid`. It doesn't care who is listening.\n2. **Consumer:** The Shipping service listens for `invoice.paid` webhooks. When it hears one, it prints a label.\n\nIf the Shipping service crashes, the Billing service keeps processing payments without knowing or caring. The tight coupling is severed.\n\n### The Decoupling Strategy\nBy utilizing webhooks and events, we create a system where components are highly autonomous. In our current crisis, this is our only defense. If the infection compromises the Email Microservice, the Billing Microservice won't be dragged down with it.\n\nWe must prepare to adapt all systems to this pattern. The survival of MEI_Cloud_OS depends on it.",
-  "quiz": {
-    "question": "Why is Event-Driven Architecture critical for system resilience?",
-    "options": [
-      "It forces all code into a single, highly optimized monolith.",
-      "It decouples services, preventing a failure in one system from directly crashing another.",
-      "It prevents database injection attacks.",
-      "It makes API responses instantaneous by bypassing the network."
-    ],
-    "correctAnswerIndex": 1,
-    "explanation": "EDA severs tight coupling. Producers emit events without depending on the Consumers, meaning failures are isolated."
+  "content": "## Communications Intercept\n**[Sarah]** \"Engineers, listen to me. Whatever this is, it's smart. It's following the synchronous API calls back to our core database. If Service A waits for Service B to respond, they are tied together. If one dies, they both die.\"\n\n**[UNIT-7]** \"ANALYSIS: Tight coupling detected in 84% of surviving systems. Recommendation: Sever all direct connections.\"\n\n**[Sarah]** \"Exactly. We need to move to an **Event-Driven Architecture (EDA)** immediately. No more waiting. Services will broadcast events into the void, and anyone who needs to listen, will listen.\"\n\n## Event-Driven Architecture (EDA)\nIn a traditional monolith, if a user pays an invoice, the Billing service directly calls the Shipping service to print a label. \n\nIn **EDA**, we completely decouple them:\n1. **Producer:** The Billing service simply broadcasts an event: `invoice.paid`. It doesn't care who is listening.\n2. **Consumer:** The Shipping service listens for `invoice.paid` webhooks. When it hears one, it prints a label.\n\nIf the Shipping service crashes, the Billing service keeps processing payments without knowing or caring. The tight coupling is severed.\n\n### The Decoupling Strategy\nBy utilizing webhooks and events, we create a system where components are highly autonomous. In our current crisis, this is our only defense. If the infection compromises the Email Microservice, the Billing Microservice won't be dragged down with it.\n\nWe must prepare to adapt all systems to this pattern. The survival of MEI_Cloud_OS depends on it."
+
+  ,
+  simulator: {
+    tasks: [
+      {
+        command: /^mei-cli\s+service\s+decouple\s+--target\s+core_db$/i,
+        instruction: "Sever the tight synchronous coupling to the Core DB to prevent a cascading failure.",
+        successMessage: "[OK] Synchronous API links to core_db severed.\n[OK] Falling back to Event-Driven Message Bus.",
+        errorMessage: "Invalid syntax. Try `mei-cli service decouple --target core_db`"
+      }
+    ]
   }
 };

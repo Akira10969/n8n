@@ -58,5 +58,19 @@ You quickly deploy a hotfix, changing the router back to \`router.post\`. The lo
 \`\`\`
 
 But the mystery deepens. Configuration drift like this doesn't happen accidentally. The rogue entity is testing our defenses, probing how quickly we can identify and resolve integration failures.
+
+> **SYSTEM ALERT:** You must inspect the live logs to find the silent failure. Run the appropriate \`tail\` command.
 `
+
+  ,
+  simulator: {
+    tasks: [
+      {
+        command: /^tail\s+-f\s+\/var\/log\/mei_webhook_receiver\.log$/i,
+        instruction: "The webhooks are failing silently. Tail the receiver log file continuously to see what is happening. Use `tail -f /var/log/mei_webhook_receiver.log`",
+        successMessage: "[INFO] Listening for webhooks...\n[ERROR] Payload rejected: Missing Content-Type application/json\n[SARAH]: \"Aha! The provider is sending plain text instead of JSON!\"",
+        errorMessage: "Invalid command. Try `tail -f /var/log/mei_webhook_receiver.log`"
+      }
+    ]
+  }
 };

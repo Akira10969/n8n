@@ -55,5 +55,19 @@ You realize that the Analytics Engine's JSON parser wasn't built to handle corru
 You immediately push a patch to the Analytics Engine to safely try-catch JSON parsing errors and gracefully return a \`400 Bad Request\` instead of crashing. 
 
 The 502s disappear. The servers stabilize. You've stopped the bleeding, but the saboteur is still out there, actively modifying our systems.
+
+> **SYSTEM ALERT:** Use curl to inspect the HTTP response headers of our receiver to see what error code it is throwing.
 `
+
+  ,
+  simulator: {
+    tasks: [
+      {
+        command: /^curl\s+-I\s+-X\s+POST\s+(http:\/\/)?10\.4\.55\.2\/webhook\/?$/i,
+        instruction: "Send a HEAD/Headers-only POST request to the webhook receiver to inspect its HTTP response codes. Use `curl -I -X POST http://10.4.55.2/webhook`",
+        successMessage: "HTTP/1.1 500 Internal Server Error\nContent-Type: text/plain\n\n[SARAH]: \"A 500 error! Our receiver is crashing when it parses the payload!\"",
+        errorMessage: "Invalid syntax. Try `curl -I -X POST http://10.4.55.2/webhook`"
+      }
+    ]
+  }
 };

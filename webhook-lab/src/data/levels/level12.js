@@ -53,5 +53,19 @@ if (!validTokens.includes(request.headers['x-api-key'])) {
 5. Once you verify all legitimate traffic is using the new key, you remove the old compromised key from the valid list.
 
 The fraudulent upgrades stop again. But as you monitor the logs, you realize that if the attacker can read network traffic, they can just steal the new API key as it flies across the wire. We need something mathematically unbreakable.
+
+> **SYSTEM ALERT:** Compromise detected. Use the MEI CLI to rotate the secrets for the \`billing_webhook\` service.
 `
+
+  ,
+  simulator: {
+    tasks: [
+      {
+        command: /^mei-cli\s+secrets\s+rotate\s+--service\s+billing_webhook$/i,
+        instruction: "The API keys have been compromised. Immediately rotate the secrets for the billing service.",
+        successMessage: "[OK] Generating new 256-bit entropy keys...\n[OK] Keys rotated for billing_webhook. Old keys invalidated.",
+        errorMessage: "Invalid syntax. Try `mei-cli secrets rotate --service billing_webhook`"
+      }
+    ]
+  }
 };

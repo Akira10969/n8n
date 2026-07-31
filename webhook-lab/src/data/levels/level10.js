@@ -67,5 +67,19 @@ server {
 The rogue entity deployed a silent proxy specifically designed to strip the \`Authorization\` header in transit, causing the entire system to lock down as components could no longer trust each other. 
 
 You bypass the malicious proxy, restoring the \`Authorization\` headers, and the transactions begin flowing again. The saboteur is no longer just causing errors; they are actively manipulating the network topology.
+
+> **SYSTEM ALERT:** The endpoint is now secure. Prove you can access it by passing the Bearer token via curl.
 `
+
+  ,
+  simulator: {
+    tasks: [
+      {
+        command: /^curl\s+-H\s+["']Authorization:\s+Bearer\s+secret_token["']\s+(http:\/\/)?10\.4\.55\.2\/webhook\/?$/i,
+        instruction: "Test the authenticated endpoint by passing the Bearer token in the headers. Use `curl -H \"Authorization: Bearer secret_token\" http://10.4.55.2/webhook`",
+        successMessage: "HTTP/1.1 200 OK\n{\"status\": \"Authorized\"}\n[SARAH]: \"Perfect. The endpoint is locked down. Only those with the token can enter.\"",
+        errorMessage: "Invalid syntax. Ensure you are passing the Authorization header exactly as shown."
+      }
+    ]
+  }
 };

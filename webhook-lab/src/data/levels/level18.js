@@ -11,16 +11,17 @@ export const level18 = {
       "badge": "None"
     }
   },
-  "content": "## Communications Intercept\n**[Sarah]** \"We're losing connections. Sector 4 just went dark for 10 seconds. Webhooks are failing to deliver. If we just retry them all immediately, we'll accidentally DDoS ourselves when the network comes back up.\"\n\n**[UNIT-7]** \"SUGGESTION: Implement Exponential Backoff algorithm for all retry mechanisms.\"\n\n## Handling Retries Intelligently\nWhen a webhook fails to deliver (e.g., the receiving server returns a `503 Service Unavailable` or times out), the sender must retry. But *how* you retry is critical.\n\n### The Thundering Herd Problem\nIf a server goes down, and 1,000 webhooks fail, and you configure them to all retry exactly 5 seconds later... you will hit the server with 1,000 simultaneous requests the moment it boots up, immediately crashing it again.\n\n### Exponential Backoff\nInstead of a fixed delay, you increase the wait time exponentially after each failure:\n- Retry 1: Wait 2 seconds\n- Retry 2: Wait 4 seconds\n- Retry 3: Wait 8 seconds\n- Retry 4: Wait 16 seconds\n\n### Jitter\nTo prevent multiple retries from syncing up (everyone waiting exactly 8 seconds), we add **Jitter**—a small amount of randomness to the delay (e.g., waiting 8.3 seconds instead of 8.0).\n\nBy implementing Exponential Backoff with Jitter, we allow struggling systems time to breathe and recover.",
-  "quiz": {
-    "question": "Why is 'Jitter' added to an Exponential Backoff strategy?",
-    "options": [
-      "To increase the payload size of the webhook.",
-      "To introduce randomness so that multiple retries don't happen at the exact same millisecond and crash the server.",
-      "To bypass firewall restrictions.",
-      "To make the webhooks process faster."
-    ],
-    "correctAnswerIndex": 1,
-    "explanation": "Jitter prevents the 'Thundering Herd' problem by desynchronizing retry attempts."
+  "content": "## Communications Intercept\n**[Sarah]** \"We're losing connections. Sector 4 just went dark for 10 seconds. Webhooks are failing to deliver. If we just retry them all immediately, we'll accidentally DDoS ourselves when the network comes back up.\"\n\n**[UNIT-7]** \"SUGGESTION: Implement Exponential Backoff algorithm for all retry mechanisms.\"\n\n## Handling Retries Intelligently\nWhen a webhook fails to deliver (e.g., the receiving server returns a `503 Service Unavailable` or times out), the sender must retry. But *how* you retry is critical.\n\n### The Thundering Herd Problem\nIf a server goes down, and 1,000 webhooks fail, and you configure them to all retry exactly 5 seconds later... you will hit the server with 1,000 simultaneous requests the moment it boots up, immediately crashing it again.\n\n### Exponential Backoff\nInstead of a fixed delay, you increase the wait time exponentially after each failure:\n- Retry 1: Wait 2 seconds\n- Retry 2: Wait 4 seconds\n- Retry 3: Wait 8 seconds\n- Retry 4: Wait 16 seconds\n\n### Jitter\nTo prevent multiple retries from syncing up (everyone waiting exactly 8 seconds), we add **Jitter**—a small amount of randomness to the delay (e.g., waiting 8.3 seconds instead of 8.0).\n\nBy implementing Exponential Backoff with Jitter, we allow struggling systems time to breathe and recover."
+
+  ,
+  simulator: {
+    tasks: [
+      {
+        command: /^cat\s+\/etc\/mei\/backoff_config\.yaml\s+\|\s+grep\s+max_retries$/i,
+        instruction: "Check the backoff configuration. Pipe the config file into grep to find the 'max_retries' value.",
+        successMessage: "max_retries: 10\nexponential_multiplier: 2.0\n[SARAH]: \"Alright, 10 retries with an exponential backoff. That will stop the DoS loop.\"",
+        errorMessage: "Invalid syntax. Try `cat /etc/mei/backoff_config.yaml | grep max_retries`"
+      }
+    ]
   }
 };

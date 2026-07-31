@@ -11,16 +11,17 @@ export const level17 = {
       "badge": "None"
     }
   },
-  "content": "## Communications Intercept\n**[UNIT-7]** \"WARNING: Duplicate webhook payloads detected on the billing endpoint. Account balance for ID #88492 has been deducted 412 times in the last 4 seconds.\"\n\n**[Sarah]** \"Shut it down! It's flooding the network with replays of the exact same event. If we don't fix this, the entire economic grid of Megacity-01 is going to collapse.\"\n\n## The Concept of Idempotency\nIn mathematics and computer science, an operation is **idempotent** if applying it multiple times has the same result as applying it exactly once.\n\nIn the context of webhooks, you cannot trust that an event will only be sent once. Network retries, bad code, or in this case, malicious entities, might send the exact same `invoice.paid` webhook multiple times.\n\n### How to achieve Idempotency\n1. **Idempotency Keys:** Every webhook payload should contain a unique ID (e.g., `event_id: \"evt_9983\"`).\n2. **The Ledger:** Before your consumer processes an event, it checks a database: *\"Have I seen 'evt_9983' before?\"*\n3. **The Block:** If yes, immediately return a `200 OK` without doing anything. If no, process the event and save the ID to the database.\n\nBy making our webhook receivers idempotent, The Void's replay attacks become completely useless. It can send a million duplicate signals; our system will only process the first one.",
-  "quiz": {
-    "question": "What is the primary purpose of an Idempotency Key in a webhook payload?",
-    "options": [
-      "To encrypt the data in transit.",
-      "To uniquely identify an event so the consumer knows if it has already been processed.",
-      "To guarantee that the webhook is delivered successfully on the first try.",
-      "To sort webhooks alphabetically."
-    ],
-    "correctAnswerIndex": 1,
-    "explanation": "An Idempotency Key allows the receiver to recognize and safely ignore duplicate events."
+  "content": "## Communications Intercept\n**[UNIT-7]** \"WARNING: Duplicate webhook payloads detected on the billing endpoint. Account balance for ID #88492 has been deducted 412 times in the last 4 seconds.\"\n\n**[Sarah]** \"Shut it down! It's flooding the network with replays of the exact same event. If we don't fix this, the entire economic grid of Megacity-01 is going to collapse.\"\n\n## The Concept of Idempotency\nIn mathematics and computer science, an operation is **idempotent** if applying it multiple times has the same result as applying it exactly once.\n\nIn the context of webhooks, you cannot trust that an event will only be sent once. Network retries, bad code, or in this case, malicious entities, might send the exact same `invoice.paid` webhook multiple times.\n\n### How to achieve Idempotency\n1. **Idempotency Keys:** Every webhook payload should contain a unique ID (e.g., `event_id: \"evt_9983\"`).\n2. **The Ledger:** Before your consumer processes an event, it checks a database: *\"Have I seen 'evt_9983' before?\"*\n3. **The Block:** If yes, immediately return a `200 OK` without doing anything. If no, process the event and save the ID to the database.\n\nBy making our webhook receivers idempotent, The Void's replay attacks become completely useless. It can send a million duplicate signals; our system will only process the first one."
+
+  ,
+  simulator: {
+    tasks: [
+      {
+        command: /^redis-cli\s+setnx\s+event_8891\s+["']processed["']$/i,
+        instruction: "Ensure idempotency by setting a distributed lock for event_8891. Use Redis SETNX (Set if Not eXists).",
+        successMessage: "(integer) 1\n[SARAH]: \"Lock acquired. The event is processing. If a duplicate webhook arrives, SETNX will return 0 and we can safely ignore it.\"",
+        errorMessage: "Invalid syntax. Try `redis-cli setnx event_8891 \"processed\"`"
+      }
+    ]
   }
 };

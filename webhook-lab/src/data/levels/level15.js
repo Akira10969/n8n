@@ -50,5 +50,19 @@ A chill runs down your spine. This isn't random configuration drift or an automa
 The saboteur knew you would implement a DLQ. They intentionally crafted an undeliverable webhook just so this message would land directly on your desk. 
 
 The Platform Operations Zone is secure for now, but the attack is moving deeper into the core architecture. You must proceed to the Distributed Systems Zone.
+
+> **SYSTEM ALERT:** Some webhooks failed their maximum retries. Inspect the DLQ for the \`billing_failures\` queue.
 `
+
+  ,
+  simulator: {
+    tasks: [
+      {
+        command: /^mei-cli\s+dlq\s+inspect\s+--queue\s+billing_failures$/i,
+        instruction: "Inspect the Dead Letter Queue (DLQ) to see which webhooks failed their final retry attempt.",
+        successMessage: "[OK] Fetching dead letters...\n{\"system_override\": true, \"message\": \"See you in the Distributed Zone.\", \"signature_bypass\": \"T H E  V O I D\"}\n[SARAH]: \"What... is that?\"",
+        errorMessage: "Invalid syntax. Try `mei-cli dlq inspect --queue billing_failures`"
+      }
+    ]
+  }
 };

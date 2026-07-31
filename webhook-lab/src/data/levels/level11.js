@@ -57,5 +57,19 @@ if (request.headers['x-webhook-token'] !== 'super_secret_token_123') {
 \`\`\`
 
 The fraudulent upgrades stop immediately. The attacker's requests are now bouncing off the 401 Unauthorized block. However, hardcoding a single token is a weak defense. It's only a matter of time before the saboteur finds another way in.
+
+> **SYSTEM ALERT:** A rogue subnet is forging requests. Use iptables to drop all traffic from \`10.4.99.0/24\`.
 `
+
+  ,
+  simulator: {
+    tasks: [
+      {
+        command: /^iptables\s+-A\s+INPUT\s+-s\s+10\.4\.99\.0\/24\s+-j\s+DROP$/i,
+        instruction: "Block the rogue subnet from sending forged webhooks. Drop all traffic from 10.4.99.0/24 using iptables.",
+        successMessage: "iptables: rule added.\n[UNIT-7]: Rogue traffic dropping. Network stabilizing.\n[SARAH]: \"Good riddance. That stops the IP spoofing.\"",
+        errorMessage: "Invalid command. Use `iptables -A INPUT -s 10.4.99.0/24 -j DROP`"
+      }
+    ]
+  }
 };
