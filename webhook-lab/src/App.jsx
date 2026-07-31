@@ -114,7 +114,7 @@ function App() {
     return (
       <>
         {/* Cinematic Ambient Background Music */}
-        <audio autoPlay loop src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=cinematic-atmosphere-score-2-22136.mp3" />
+        <audio autoPlay loop src="/mission-start.webm" ref={(el) => { if (el) el.volume = 0.5; }} />
         <BootSequence highestUnlockedIndex={highestUnlockedIndex} onBootComplete={() => setHasBooted(true)} />
       </>
     );
@@ -127,7 +127,7 @@ function App() {
     <>
       
       {/* Cinematic Ambient Background Music */}
-      <audio autoPlay loop src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=cinematic-atmosphere-score-2-22136.mp3" />
+      <audio autoPlay loop src="/mission-start.webm" ref={(el) => { if (el) el.volume = 0.5; }} />
     <div className="particle-container">
       {[...Array(20)].map((_, i) => (
         <div key={i} className="particle" style={{
