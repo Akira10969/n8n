@@ -28,6 +28,7 @@ function App() {
   const [currentView, setCurrentView] = useState('map'); // 'map', 'learning', 'dashboard'
   const [missionState, setMissionState] = useState('episode-card'); // 'episode-card', 'briefing', 'content', 'reward'
   const [hasBooted, setHasBooted] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
 
   const currentStep = curriculum[currentIndex];
 
@@ -109,6 +110,24 @@ function App() {
   const unlockCheat = () => {
     setHighestUnlockedIndex(curriculum.length - 1);
   };
+
+  if (!hasStarted) {
+    return (
+      <div 
+        onClick={() => setHasStarted(true)} 
+        style={{ 
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
+          display: 'flex', alignItems: 'center', justifyContent: 'center', 
+          background: '#050505', color: '#22c55e', fontFamily: 'monospace', 
+          cursor: 'pointer', zIndex: 99999 
+        }}
+      >
+        <p style={{ fontSize: '1.2rem' }}>
+          [ CLICK TO INITIATE CONNECTION ] <span style={{ animation: 'blink 1s step-end infinite' }}>█</span>
+        </p>
+      </div>
+    );
+  }
 
   if (!hasBooted) {
     return (
