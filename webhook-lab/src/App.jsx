@@ -16,6 +16,7 @@ import TerminalSimulator from './components/TerminalSimulator';
 import BootSequence from './components/BootSequence';
 import EpisodeCard from './components/EpisodeCard';
 import TheVoidReveal from './components/TheVoidReveal';
+import GameEnding from './components/GameEnding';
 import './App.css';
 import './game.css';
 
