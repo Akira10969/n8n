@@ -8,9 +8,16 @@ const Typewriter = ({ text, delay = 20, onComplete }) => {
   useEffect(() => {
     if (idx < text.length) {
       // Randomize delay to simulate realistic, tense AI typing
-      const currentDelay = Math.random() * 50 + delay;
+      let currentDelay = Math.random() * 80 + delay;
+      
+      // Pause longer on punctuation for dramatic effect
+      const char = text[idx];
+      if (char === '.' || char === ',' || char === '!' || char === '?') {
+        currentDelay += 400; // Add almost half a second pause on punctuation
+      }
+      
       const t = setTimeout(() => {
-        setDisplayed(p => p + text[idx]);
+        setDisplayed(p => p + char);
         setIdx(i => i + 1);
       }, currentDelay);
       return () => clearTimeout(t);
@@ -184,7 +191,7 @@ export default function BootSequence({ highestUnlockedIndex, onBootComplete }) {
       {step >= 6 && (
         <div className={`boot-narrative-centered ${fadeStatus === 'in' ? 'fade-in' : 'fade-out'}`}>
           <p className={narrativeText[narrativeIndex].includes('Warning') || narrativeText[narrativeIndex].includes('EMERGENCY') || narrativeText[narrativeIndex].includes('FAILURE') ? 'text-warn' : ''}>
-            <Typewriter key={narrativeIndex} text={narrativeText[narrativeIndex]} onComplete={handleLineComplete} delay={40} />
+            <Typewriter key={narrativeIndex} text={narrativeText[narrativeIndex]} onComplete={handleLineComplete} delay={120} />
           </p>
         </div>
       )}
