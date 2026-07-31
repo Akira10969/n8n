@@ -27,9 +27,9 @@ function App() {
   const [quizKey, setQuizKey] = useState(0);
   const [currentView, setCurrentView] = useState('map'); // 'map', 'learning', 'dashboard'
   const [missionState, setMissionState] = useState('episode-card'); // 'episode-card', 'briefing', 'content', 'reward'
-  const [hasBooted, setHasBooted] = useState(false);
-  const [hasStarted, setHasStarted] = useState(false);
-  const [hasSeenMapIntro, setHasSeenMapIntro] = useState(false);
+  const [hasBooted, setHasBooted] = useState(() => sessionStorage.getItem('webhook_has_booted') === 'true');
+  const [hasStarted, setHasStarted] = useState(() => sessionStorage.getItem('webhook_has_started') === 'true');
+  const [hasSeenMapIntro, setHasSeenMapIntro] = useState(() => sessionStorage.getItem('webhook_has_seen_map_intro') === 'true');
 
   const currentStep = curriculum[currentIndex];
 
@@ -39,7 +39,10 @@ function App() {
     localStorage.setItem('webhook_absolute_highest_index', absoluteHighestIndex);
     localStorage.setItem('webhook_xp', xp);
     localStorage.setItem('webhook_hearts', hearts);
-  }, [currentIndex, highestUnlockedIndex, absoluteHighestIndex, xp, hearts]);
+    sessionStorage.setItem('webhook_has_booted', hasBooted);
+    sessionStorage.setItem('webhook_has_started', hasStarted);
+    sessionStorage.setItem('webhook_has_seen_map_intro', hasSeenMapIntro);
+  }, [currentIndex, highestUnlockedIndex, absoluteHighestIndex, xp, hearts, hasBooted, hasStarted, hasSeenMapIntro]);
 
   const getRank = (currentXp) => {
     if (currentXp < 500) return 'IT Intern';
