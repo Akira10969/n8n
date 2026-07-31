@@ -3,11 +3,12 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/webhook-lab/dist/',
   plugins: [react()],
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost/webhook-lab/backend',
+        target: 'http://127.0.0.1/webhook-lab/backend',
         changeOrigin: true,
       }
     }
