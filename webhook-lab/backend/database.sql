@@ -1,5 +1,8 @@
 -- MEI_Cloud_OS Database Schema
 
+CREATE DATABASE IF NOT EXISTS mei_cloud_os;
+USE mei_cloud_os;
+
 CREATE TABLE IF NOT EXISTS players (
     id INT AUTO_INCREMENT PRIMARY KEY,
     engineer_id VARCHAR(20) NOT NULL UNIQUE,
