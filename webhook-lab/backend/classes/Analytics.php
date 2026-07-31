@@ -1,36 +1,50 @@
 <?php
-require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/../classes/Response.php';
-require_once __DIR__ . '/../classes/Player.php';
-require_once __DIR__ . '/../classes/Analytics.php';
+// classes/Analytics.php
+require_once __DIR__ . '/Database.php';
 
-$input = json_decode(file_get_contents('php://input'), true);
-
-if (!isset($input['engineer_id']) || !isset($input['player_token'])) {
-    Response::error('Authentication required', 401);
-}
-
-$playerModel = new Player();
-$player = $playerModel->authenticate($input['engineer_id'], $input['player_token']);
-
-if (!$player) {
-    Response::error('Invalid credentials', 401);
-}
-
-if (!isset($input['event_type'])) {
-    Response::error('Event type required', 400);
-}
-
-$analytics = new Analytics();
-$success = $analytics->logEvent(
-    $player['id'], 
-    $input['event_type'], 
-    $input['mission_index'] ?? null, 
-    $input['event_data'] ?? null
-);
-
-if ($success) {
-    Response::success(['message' => 'Event logged']);
-} else {
-    Response::error('Failed to log event', 500);
+class Analytics {
+    private $db;
+    
+    public function __construct() {
+        $this->db = Database::getInstance();
+    }
+    
+    public function logEvent($playerId, $eventType, $missionIndex = null, $eventData = null) {
+        $stmt = $this->db->prepare("INSERT INTO analytics_events (player_id, event_type, mission_index, event_data) VALUES (?, ?, ?, ?)");
+        return $stmt->execute([
+            $playerId, 
+            $eventType, 
+            $missionIndex, 
+            $eventData ? json_encode($eventData) : null
+        ]);
+    }
+    
+    public function getAdminStats() {
+        $stats = [];
+        
+        // Total players
+        $stmt = $this->db->query("SELECT COUNT(*) as total FROM players");
+        $stats['total_engineers'] = $stmt->fetch()['total'];
+        
+        // Online players (active in last 5 minutes)
+        $stmt = $this->db->query("SELECT COUNT(*) as online FROM players WHERE last_active_at >= NOW() - INTERVAL 5 MINUTE");
+        $stats['online_engineers'] = $stmt->fetch()['online'];
+        
+        // Certified platform engineers
+        $stmt = $this->db->query("SELECT COUNT(*) as certified FROM players WHERE has_completed_game = 1");
+        $stats['certified_engineers'] = $stmt->fetch()['certified'];
+        
+        // Mission drop-off (how many players unlocked vs completed each mission)
+        $stmt = $this->db->query("
+            SELECT mission_index, 
+                   SUM(CASE WHEN status IN ('unlocked', 'completed') THEN 1 ELSE 0 END) as started,
+                   SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed
+            FROM mission_progress 
+            GROUP BY mission_index 
+            ORDER BY mission_index ASC
+        ");
+        $stats['mission_stats'] = $stmt->fetchAll();
+        
+        return $stats;
+    }
 }
