@@ -5,6 +5,7 @@ import { ChevronRight, ChevronLeft, Menu, X, BookOpen, CheckCircle2, Lock, Heart
 import confetti from 'canvas-confetti';
 
 import { curriculum } from './data/curriculum';
+import { badges, toolbox } from './data/achievements';
 import VisualWorkflow from './components/VisualWorkflow';
 import HandsOnLab from './components/HandsOnLab';
 import Quiz from './components/Quiz';
@@ -18,7 +19,7 @@ import EpisodeCard from './components/EpisodeCard';
 import TheVoidReveal from './components/TheVoidReveal';
 import GameEnding from './components/GameEnding';
 import AdminDashboard from './components/AdminDashboard';
-import { registerPlayer, syncProgress, sendHeartbeat, getAuthTokens } from './api';
+import { registerPlayer, syncProgress, sendHeartbeat, getAuthTokens, logEvent } from './api';
 import './App.css';
 import './game.css';
 
@@ -60,17 +61,27 @@ function App() {
   // 3. Debounced Autosave for Progress Sync
   useEffect(() => {
     const timeoutId = setTimeout(() => {
+      const unlockedAchievements = [
+        ...badges.filter(b => absoluteHighestIndex > b.unlockIndex).map(b => b.id),
+        ...toolbox.filter(t => absoluteHighestIndex > t.unlockIndex).map(t => t.id)
+      ];
+
+      // Create an array of completed missions up to absoluteHighestIndex
+      const completedMissions = Array.from({ length: absoluteHighestIndex }, (_, i) => i);
+
       syncProgress({
         highestUnlockedIndex,
         xp,
         rank: getRank(xp),
         hearts,
-        hasCompletedGame
+        hasCompletedGame,
+        achievements: unlockedAchievements,
+        completedMissions
       });
     }, 2000); // 2 second debounce
 
     return () => clearTimeout(timeoutId);
-  }, [highestUnlockedIndex, xp, hearts, hasCompletedGame]);
+  }, [highestUnlockedIndex, absoluteHighestIndex, xp, hearts, hasCompletedGame]);
 
   useEffect(() => {
     localStorage.setItem('webhook_current_index', currentIndex);
@@ -108,6 +119,7 @@ function App() {
   };
 
   const handleQuizSuccess = () => {
+    logEvent('mission_complete', currentIndex);
     // Award XP if this is a new mission completion
     if (currentIndex >= absoluteHighestIndex) {
       const earnedXp = currentStep.briefing?.rewards?.xp || 50;
@@ -124,6 +136,7 @@ function App() {
   };
 
   const handleQuizFail = () => {
+    logEvent('mission_fail', currentIndex);
     if (hearts > 1) {
       setHearts(prev => prev - 1);
     } else {
@@ -161,6 +174,7 @@ function App() {
     setCurrentIndex(index);
     setMissionState('episode-card');
     setCurrentView('learning');
+    logEvent('mission_start', index);
   };
 
   const unlockCheat = () => {
