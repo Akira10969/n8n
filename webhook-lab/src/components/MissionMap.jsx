@@ -234,7 +234,14 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
                   opacity: isUIVisible ? 1 : 0,
                   transition: `opacity 2s ease ${1.5 + (index * 0.05)}s, transform 0.3s ease`
                 }}
-                onClick={() => isUnlocked && onSelectMission(index)}
+                onClick={() => {
+                  if (isUnlocked) {
+                    const audio = new Audio('/mission-start.webm');
+                    audio.volume = 0.3;
+                    audio.play();
+                    onSelectMission(index);
+                  }
+                }}
               >
                 {/* Pulse ring for current mission */}
                 {isNext && <div className="pulse-ring" style={{ borderColor: zoneColor, boxShadow: `0 0 12px ${zoneColor}` }}></div>}

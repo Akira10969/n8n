@@ -7,17 +7,19 @@ const Typewriter = ({ text, delay = 20, onComplete }) => {
 
   useEffect(() => {
     if (idx < text.length) {
+      // Randomize delay to simulate realistic, tense AI typing
+      const currentDelay = Math.random() * 50 + delay;
       const t = setTimeout(() => {
         setDisplayed(p => p + text[idx]);
         setIdx(i => i + 1);
-      }, delay);
+      }, currentDelay);
       return () => clearTimeout(t);
     } else {
       if (onComplete) onComplete();
     }
   }, [idx, text, delay, onComplete]);
 
-  return <span>{displayed}</span>;
+  return <span>{displayed}<span className="cursor-block">█</span></span>;
 };
 
 const LoadingBar = ({ targetPercent, onComplete }) => {
