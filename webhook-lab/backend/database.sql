@@ -1,7 +1,5 @@
 -- MEI_Cloud_OS Database Schema
-
-CREATE DATABASE IF NOT EXISTS mei_cloud_os;
-USE mei_cloud_os;
+-- Compatible with cPanel phpMyAdmin (select your database first before importing)
 
 CREATE TABLE IF NOT EXISTS players (
     id INT AUTO_INCREMENT PRIMARY KEY,

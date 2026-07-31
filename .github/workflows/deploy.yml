@@ -32,6 +32,28 @@ jobs:
         # Copy backend folder to deploy package
         cp -R webhook-lab/backend deploy_package/backend
         
+    - name: Generate Production Config
+      run: |
+        cat << 'EOF' > deploy_package/backend/config/config.php
+        <?php
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        header("Content-Type: application/json; charset=UTF-8");
+        
+        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+            exit(0);
+        }
+        
+        define('DB_HOST', '${{ secrets.DB_HOST }}');
+        define('DB_NAME', '${{ secrets.DB_NAME }}');
+        define('DB_USER', '${{ secrets.DB_USER }}'); 
+        define('DB_PASS', '${{ secrets.DB_PASS }}');     
+        
+        define('GAME_VERSION', '1.0.0');
+        EOF
+
+        
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
