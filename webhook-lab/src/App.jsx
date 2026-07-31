@@ -58,16 +58,18 @@ function App() {
   };
 
   const handleQuizSuccess = () => {
-    if (highestUnlockedIndex === currentIndex) {
-      if (currentIndex >= absoluteHighestIndex) {
-        const earnedXp = currentStep.briefing?.rewards?.xp || 50;
-        setXp(prev => prev + earnedXp);
-        setAbsoluteHighestIndex(currentIndex + 1);
-      }
-      if (currentIndex < curriculum.length - 1) {
-        setHighestUnlockedIndex(currentIndex + 1);
-      }
+    // Award XP if this is a new mission completion
+    if (currentIndex >= absoluteHighestIndex) {
+      const earnedXp = currentStep.briefing?.rewards?.xp || 50;
+      setXp(prev => prev + earnedXp);
+      setAbsoluteHighestIndex(currentIndex + 1);
     }
+    
+    // Unlock next node on the map if they are at the frontier
+    if (currentIndex === highestUnlockedIndex && currentIndex < curriculum.length - 1) {
+      setHighestUnlockedIndex(currentIndex + 1);
+    }
+    
     setMissionState('reward');
   };
 
