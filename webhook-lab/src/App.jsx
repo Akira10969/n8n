@@ -115,47 +115,41 @@ function App() {
     setHighestUnlockedIndex(curriculum.length - 1);
   };
 
-  if (!hasStarted) {
-    return (
-      <div 
-        onClick={() => setHasStarted(true)} 
-        style={{ 
-          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
-          display: 'flex', alignItems: 'center', justifyContent: 'center', 
-          background: '#050505', color: '#22c55e', fontFamily: 'monospace', 
-          cursor: 'pointer', zIndex: 99999 
-        }}
-      >
-        <p style={{ fontSize: '1.2rem' }}>
-          [ CLICK TO INITIATE CONNECTION ] <span style={{ animation: 'blink 1s step-end infinite' }}>█</span>
-        </p>
-      </div>
-    );
-  }
+  return (
+    <>
+      {/* Global Background Music Manager - Only ONE instance to prevent overlap */}
+      {hasStarted && (
+        <audio 
+          autoPlay 
+          loop 
+          src={!hasBooted || currentView !== 'learning' ? "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3" : "/mission-music.webm"} 
+          ref={(el) => { if (el) el.volume = (hasBooted && currentView === 'learning') ? 0.3 : 0.5; }} 
+        />
+      )}
 
-  if (!hasBooted) {
-    return (
-      <>
-        {/* Cinematic Ambient Background Music */}
-        <audio autoPlay loop src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3" ref={(el) => { if (el) el.volume = 0.5; }} />
+      {!hasStarted ? (
+        <div 
+          onClick={() => setHasStarted(true)} 
+          style={{ 
+            position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
+            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+            background: '#050505', color: '#22c55e', fontFamily: 'monospace', 
+            cursor: 'pointer', zIndex: 99999 
+          }}
+        >
+          <p style={{ fontSize: '1.2rem' }}>
+            [ CLICK TO INITIATE CONNECTION ] <span style={{ animation: 'blink 1s step-end infinite' }}>█</span>
+          </p>
+        </div>
+      ) : !hasBooted ? (
         <BootSequence highestUnlockedIndex={highestUnlockedIndex} onBootComplete={() => setHasBooted(true)} />
-      </>
-    );
-  }
+      ) : (
+        <>
 
   // Progress percentage
   const progress = ((currentIndex + 1) / curriculum.length) * 100;
 
   return (
-    <>
-      
-      {/* Global Background Music Manager */}
-      <audio 
-        autoPlay 
-        loop 
-        src={currentView === 'learning' ? "/mission-music.webm" : "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3"} 
-        ref={(el) => { if (el) el.volume = currentView === 'learning' ? 0.3 : 0.5; }} 
-      />
     <div className="particle-container">
       {[...Array(20)].map((_, i) => (
         <div key={i} className="particle" style={{
@@ -361,6 +355,8 @@ function App() {
       </div>
       )}
     </div>
+        </>
+      )}
     </>
   );
 }
