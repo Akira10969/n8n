@@ -115,6 +115,9 @@ function App() {
     setHighestUnlockedIndex(curriculum.length - 1);
   };
 
+  // Progress percentage
+  const progress = ((currentIndex + 1) / curriculum.length) * 100;
+
   return (
     <>
       {/* Global Background Music Manager - Only ONE instance to prevent overlap */}
@@ -145,11 +148,6 @@ function App() {
         <BootSequence highestUnlockedIndex={highestUnlockedIndex} onBootComplete={() => setHasBooted(true)} />
       ) : (
         <>
-
-  // Progress percentage
-  const progress = ((currentIndex + 1) / curriculum.length) * 100;
-
-  return (
     <div className="particle-container">
       {[...Array(20)].map((_, i) => (
         <div key={i} className="particle" style={{
