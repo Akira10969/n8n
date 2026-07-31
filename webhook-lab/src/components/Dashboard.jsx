@@ -2,7 +2,7 @@ import React from 'react';
 import { badges, toolbox } from '../data/achievements';
 import { Trophy, Star, Heart, Activity, CheckCircle2, Lock } from 'lucide-react';
 
-export default function Dashboard({ xp, hearts, rank, absoluteHighestIndex, totalMissions, hasCompletedGame }) {
+export default function Dashboard({ xp, hearts, rank, absoluteHighestIndex, totalMissions, hasCompletedGame, onOpenAdmin }) {
   
   const completionPercentage = Math.round((absoluteHighestIndex / totalMissions) * 100);
 
@@ -20,26 +20,39 @@ export default function Dashboard({ xp, hearts, rank, absoluteHighestIndex, tota
         </div>
         <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
           <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-            ID: MEI-{Math.floor(Math.random() * 90000) + 10000}<br/>
+            ID: {localStorage.getItem('webhook_engineer_id') || 'MEI-ENG-PENDING'}<br/>
             STATUS: ACTIVE
           </div>
-          <button 
-            onClick={() => {
-              if (window.confirm("CRITICAL WARNING: This will format your employee database and wipe all mission progress. Proceed?")) {
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.reload();
-              }
-            }}
-            style={{ 
-              background: 'transparent', border: '1px solid var(--accent-red)', color: 'var(--accent-red)', 
-              padding: '4px 8px', fontSize: '0.7rem', cursor: 'pointer', fontFamily: 'monospace', textTransform: 'uppercase' 
-            }}
-            onMouseOver={(e) => { e.target.style.background = 'rgba(239, 68, 68, 0.2)'; }}
-            onMouseOut={(e) => { e.target.style.background = 'transparent'; }}
-          >
-            [ FORMAT DATABASE ]
-          </button>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button 
+              onClick={onOpenAdmin}
+              style={{ 
+                background: 'transparent', border: '1px solid var(--accent-cyan)', color: 'var(--accent-cyan)', 
+                padding: '4px 8px', fontSize: '0.7rem', cursor: 'pointer', fontFamily: 'monospace', textTransform: 'uppercase' 
+              }}
+              onMouseOver={(e) => { e.target.style.background = 'rgba(6, 182, 212, 0.2)'; }}
+              onMouseOut={(e) => { e.target.style.background = 'transparent'; }}
+            >
+              [ SYSTEM ADMIN ]
+            </button>
+            <button 
+              onClick={() => {
+                if (window.confirm("CRITICAL WARNING: This will format your employee database and wipe all mission progress. Proceed?")) {
+                  localStorage.clear();
+                  sessionStorage.clear();
+                  window.location.reload();
+                }
+              }}
+              style={{ 
+                background: 'transparent', border: '1px solid var(--accent-red)', color: 'var(--accent-red)', 
+                padding: '4px 8px', fontSize: '0.7rem', cursor: 'pointer', fontFamily: 'monospace', textTransform: 'uppercase' 
+              }}
+              onMouseOver={(e) => { e.target.style.background = 'rgba(239, 68, 68, 0.2)'; }}
+              onMouseOut={(e) => { e.target.style.background = 'transparent'; }}
+            >
+              [ FORMAT DATABASE ]
+            </button>
+          </div>
         </div>
       </div>
 

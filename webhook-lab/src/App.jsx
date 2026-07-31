@@ -17,6 +17,8 @@ import BootSequence from './components/BootSequence';
 import EpisodeCard from './components/EpisodeCard';
 import TheVoidReveal from './components/TheVoidReveal';
 import GameEnding from './components/GameEnding';
+import AdminDashboard from './components/AdminDashboard';
+import { registerPlayer, syncProgress, sendHeartbeat, getAuthTokens } from './api';
 import './App.css';
 import './game.css';
 
@@ -36,6 +38,39 @@ function App() {
   const [hasCompletedGame, setHasCompletedGame] = useState(() => localStorage.getItem('webhook_has_completed_game') === 'true');
 
   const currentStep = curriculum[currentIndex];
+
+  // 1. Initialize Player Identity
+  useEffect(() => {
+    const initPlayer = async () => {
+      const auth = getAuthTokens();
+      if (!auth.engineer_id) {
+        await registerPlayer();
+      }
+    };
+    initPlayer();
+  }, []);
+
+  // 2. Heartbeat (Every 30s)
+  useEffect(() => {
+    sendHeartbeat(); // Fire immediately on mount
+    const interval = setInterval(sendHeartbeat, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // 3. Debounced Autosave for Progress Sync
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      syncProgress({
+        highestUnlockedIndex,
+        xp,
+        rank: getRank(xp),
+        hearts,
+        hasCompletedGame
+      });
+    }, 2000); // 2 second debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [highestUnlockedIndex, xp, hearts, hasCompletedGame]);
 
   useEffect(() => {
     localStorage.setItem('webhook_current_index', currentIndex);
@@ -241,6 +276,7 @@ function App() {
           absoluteHighestIndex={absoluteHighestIndex} 
           totalMissions={curriculum.length} 
           hasCompletedGame={hasCompletedGame}
+          onOpenAdmin={() => setCurrentView('admin')}
         />
       )}
 
@@ -271,20 +307,23 @@ function App() {
             skipIntro={true}
           />
         </aside>
-
-        {/* MAIN CONTENT AREA */}
+      {/* MAIN CONTENT AREA */}
         <main className="main-content-area" style={{ width: '65%', maxWidth: 'none' }}>
           
           <div className="content-container slide-up">
-            {missionState === 'episode-card' && (
+            {currentView === 'learning' && missionState === 'episode-card' && (
               <EpisodeCard 
                 mission={currentStep} 
                 missionIndex={currentIndex} 
                 onComplete={() => setMissionState('briefing')} 
               />
             )}
+
+            {currentView === 'admin' && (
+              <AdminDashboard onBack={() => setCurrentView('dashboard')} />
+            )}
             
-            {missionState === 'briefing' && (
+            {currentView === 'learning' && missionState === 'briefing' && (
               <MissionBriefing 
                 mission={currentStep} 
                 missionIndex={currentIndex} 
