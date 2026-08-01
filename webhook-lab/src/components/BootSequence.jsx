@@ -11,12 +11,27 @@ const Typewriter = ({ text, delay = 20, onComplete }) => {
     if ('speechSynthesis' in window && text) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.pitch = 0.2; // Low pitch for robotic feel
-      utterance.rate = 0.9;
+      utterance.pitch = 1.2; // Higher pitch for a more natural, female tone with feeling
+      utterance.rate = 0.95; // Slightly slower for expressiveness
       
       const voices = window.speechSynthesis.getVoices();
-      const voice = voices.find(v => v.name.includes('Google') || v.name.includes('Zira') || v.name.includes('David')) || voices[0];
+      const voice = voices.find(v => 
+        v.name.includes('Female') || 
+        v.name.includes('Zira') || 
+        v.name.includes('Samantha') || 
+        v.name.includes('Victoria')
+      ) || voices.find(v => v.name.includes('Google')) || voices[0];
+      
       if (voice) utterance.voice = voice;
+      
+      // Lower background music to 20% when speaking
+      const bgMusic = document.querySelector('audio');
+      if (bgMusic) bgMusic.volume = 0.2;
+      
+      utterance.onend = () => {
+        // Restore volume when speaking ends
+        if (bgMusic) bgMusic.volume = 0.5;
+      };
       
       window.speechSynthesis.speak(utterance);
     }
