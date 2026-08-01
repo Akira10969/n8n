@@ -41,7 +41,7 @@ Webhooks are almost universally sent using the **POST** method because they cont
 You check the routing configuration for the Billing System:
 
 \`\`\`javascript
-// MEI_Cloud_OS Billing Router (Current State)
+// Business Cloud OS Billing Router (Current State)
 router.get('/webhooks/billing', function(req, res) {
   // Process payment...
 });

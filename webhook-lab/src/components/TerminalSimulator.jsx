@@ -4,7 +4,7 @@ import './TerminalSimulator.css';
 
 export default function TerminalSimulator({ simulatorData, onSuccess, onFail }) {
   const [history, setHistory] = useState([
-    { type: 'system', text: 'MEI_Cloud_OS Terminal v2.4.1 initialized.' },
+    { type: 'system', text: 'Business Cloud OS Terminal v2.4.1 initialized.' },
     { type: 'system', text: 'Establishing secure connection... DONE.' },
     { type: 'system', text: 'Type commands to execute operations.' }
   ]);
@@ -80,7 +80,7 @@ export default function TerminalSimulator({ simulatorData, onSuccess, onFail }) 
       <div className="term-hud-header">
         <div className="term-hud-title">
           <Terminal size={18} />
-          <span>MEI_Cloud_OS // LIVE TERMINAL</span>
+          <span>Business Cloud OS // LIVE TERMINAL</span>
         </div>
         <div className="term-hud-task-count">
           TASK {currentTaskIndex + 1} OF {tasks.length}

@@ -108,7 +108,7 @@ export default function PostGameSequence({ onComplete }) {
             <div style={{ width: '40px', height: '40px', background: '#8b5cf6', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>SH</div>
             <div>
               <div style={{ color: '#8b5cf6', fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>SARAH [SENIOR ENGINEER]</div>
-              <div style={{ color: 'var(--text-main)' }}>You actually did it... The Void is completely purged. MEI_Cloud_OS is running perfectly.</div>
+              <div style={{ color: 'var(--text-main)' }}>You actually did it... The Void is completely purged. Business Cloud OS is running perfectly.</div>
             </div>
           </div>
 

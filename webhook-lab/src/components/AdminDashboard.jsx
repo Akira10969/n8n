@@ -26,7 +26,7 @@ export default function AdminDashboard({ onBack }) {
   }, []);
 
   if (loading) return <div style={{ color: 'white', padding: '2rem' }}>Loading Telemetry...</div>;
-  if (!stats) return <div style={{ color: 'red', padding: '2rem' }}>Connection to MEI_Cloud_OS Admin Backend Failed.</div>;
+  if (!stats) return <div style={{ color: 'red', padding: '2rem' }}>Connection to Business Cloud OS Admin Backend Failed.</div>;
 
   return (
     <div className="dashboard-container animate-fade-in" style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto', fontFamily: 'monospace' }}>
@@ -34,7 +34,7 @@ export default function AdminDashboard({ onBack }) {
       <div style={{ marginBottom: '2.5rem', borderBottom: '2px solid var(--accent-red)', paddingBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
           <div style={{ color: 'var(--accent-red)', fontSize: '0.9rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-            &gt; MEI_Cloud_OS // ADMINISTRATOR OVERRIDE
+            &gt; Business Cloud OS // ADMINISTRATOR OVERRIDE
           </div>
           <h1 style={{ fontSize: '2.5rem', margin: '0', color: 'var(--text-main)', letterSpacing: '0.05em' }}>
             GLOBAL TELEMETRY

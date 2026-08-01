@@ -55,7 +55,7 @@ While the Fulfillment Service's polling has stopped, there is still a high volum
 [WARN] Rate limit exceeded for IP: 192.168.99.114
 \`\`\`
 
-You run a quick WHOIS lookup on the internal IP \`192.168.99.114\`. It doesn't belong to the Fulfillment Service. It doesn't belong to any known MEI_Cloud_OS infrastructure service.
+You run a quick WHOIS lookup on the internal IP \`192.168.99.114\`. It doesn't belong to the Fulfillment Service. It doesn't belong to any known Business Cloud OS infrastructure service.
 
 Someone—or something—was masking their traffic behind the Fulfillment Service's polling loop. Now that the polling has stopped, their unauthorized access is glaringly obvious. 
 

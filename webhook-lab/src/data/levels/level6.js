@@ -4,7 +4,7 @@ export const level6 = {
   type: "theory",
   briefing: {
     recap: "You successfully configured JSON payloads in the Foundation Zone. The basics are complete. Now, a live incident requires your attention.",
-    incident: "CRITICAL ALERT: The Core Inventory Service is experiencing 99% CPU utilization. Memory is rapidly depleting. The service is on the verge of a cascading failure that will halt all MEI_Cloud_OS commerce operations.",
+    incident: "CRITICAL ALERT: The Core Inventory Service is experiencing 99% CPU utilization. Memory is rapidly depleting. The service is on the verge of a cascading failure that will halt all Business Cloud OS commerce operations.",
     task: "Analyze the incoming traffic to the Inventory Service. Identify the source of the load spike and propose an architectural shift from continuous API polling to an event-driven model.",
     rewards: { xp: 100, badge: 'None' }
   },
@@ -62,7 +62,7 @@ As a Lead Operations Engineer, you must recognize when synchronous polling is cr
       },
       {
         command: 'mei-cli service stop fulfillment_polling',
-        instruction: 'Terminate the rogue service using the MEI Cloud OS custom CLI. Command: mei-cli service stop fulfillment_polling',
+        instruction: 'Terminate the rogue service using the Business Cloud OS custom CLI. Command: mei-cli service stop fulfillment_polling',
         successMessage: '[OK] Signal SIGTERM sent to fulfillment_polling... Process terminated. CPU load dropping.',
         errorMessage: 'Invalid command. Use `mei-cli service stop <service_name>`'
       }

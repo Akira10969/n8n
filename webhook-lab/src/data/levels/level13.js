@@ -37,7 +37,7 @@ If the attacker alters even a single comma in the JSON payload, the math changes
 
 ### Deploying the Cryptographic Seal
 
-You implement the HMAC verification middleware across all MEI_Cloud_OS webhook receivers. 
+You implement the HMAC verification middleware across all Business Cloud OS webhook receivers. 
 
 \`\`\`javascript
 const crypto = require('crypto');

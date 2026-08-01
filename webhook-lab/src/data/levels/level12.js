@@ -16,7 +16,7 @@ export const level12 = {
 
 The security token you implemented in the last mission (\`super_secret_token_123\`) worked for exactly 5 hours. Now, the attacker is sending webhooks with the correct token.
 
-How did they get it? You check the MEI_Cloud_OS source code repository and realize the token was hardcoded directly into the JavaScript files. 
+How did they get it? You check the Business Cloud OS source code repository and realize the token was hardcoded directly into the JavaScript files. 
 
 \`\`\`javascript
 // BAD PRACTICE: Hardcoded Secret

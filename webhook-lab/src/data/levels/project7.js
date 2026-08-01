@@ -14,13 +14,13 @@ export const project7 = {
 **[Sarah]** \"Not anymore. Deploy the final architecture! Idempotency keys, HMAC signatures, Queues, DLQs, and Rate Limiting all in one!\"\
 \
 ## Objective\
-Run the final deployment sequence to purge The Void from MEI_Cloud_OS.",
+Run the final deployment sequence to purge The Void from Business Cloud OS.",
   "simulator": {
     "tasks": [
       {
         "command": /^\.\/deploy_final_architecture\.sh$/i,
         "instruction": "Execute the final deployment sequence using ./deploy_final_architecture.sh.",
-        "successMessage": "[SUCCESS] The Void has been purged. MEI_Cloud_OS is secure. You are a true Architect.",
+        "successMessage": "[SUCCESS] The Void has been purged. Business Cloud OS is secure. You are a true Architect.",
         "errorMessage": "Invalid command. Read the instructions carefully."
       }
     ]

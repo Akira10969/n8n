@@ -12,7 +12,7 @@ export default function Dashboard({ xp, hearts, rank, absoluteHighestIndex, tota
       <div style={{ marginBottom: '2.5rem', borderBottom: '2px solid var(--accent-cyan)', paddingBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
           <div style={{ color: 'var(--accent-cyan)', fontSize: '0.9rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-            &gt; MEI_Cloud_OS v2.4.1 // Secure Connection Established
+            &gt; Business Cloud OS v2.4.1 // Secure Connection Established
           </div>
           <h1 style={{ fontSize: '2.5rem', margin: '0', color: 'var(--text-main)', letterSpacing: '0.05em' }}>
             EMPLOYEE PERSONNEL FILE
@@ -64,7 +64,7 @@ export default function Dashboard({ xp, hearts, rank, absoluteHighestIndex, tota
             MEI Certified Platform Engineer
           </h2>
           <p style={{ color: 'var(--text-main)', fontSize: '1.1rem', margin: '0' }}>
-            Awarded for the successful restoration of MEI_Cloud_OS. All core infrastructure systems are optimal.
+            Awarded for the successful restoration of Business Cloud OS. All core infrastructure systems are optimal.
           </p>
           <button 
             className="btn"

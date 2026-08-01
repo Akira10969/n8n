@@ -3,7 +3,7 @@ export const level1 = {
   title: "Level 1 – The Ping Drop",
   type: "theory",
   briefing: {
-    recap: "Welcome to MEI_Cloud_OS. You have been assigned to the Foundation Operations Zone. Your clearance level is: JUNIOR ENGINEER.",
+    recap: "Welcome to Business Cloud OS. You have been assigned to the Foundation Operations Zone. Your clearance level is: JUNIOR ENGINEER.",
     incident: "[UNIT-7 NOC-BOT]: Automated monitoring has detected intermittent packet loss on legacy asset 'MKT-01' (Marketing Web Server). Current uptime SLA is at risk.",
     task: "[SARAH - SENIOR PLATFORM ENGINEER]: Hey new kid. Looks like one of the old marketing servers is acting up. Probably just a dusty network cable or a routing glitch. Can you verify basic connectivity before we escalate?",
     rewards: { xp: 50, badge: 'None' }

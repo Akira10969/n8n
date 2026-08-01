@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Database, Webhook, Cloud, Server, Lock } from 'lucide-react';
 
 const metricLines = [
-  "BOOTING MEI_CLOUD_OS KERNEL...",
+  "BOOTING Business Cloud OS KERNEL...",
   "SYSTEM HEALTH: 100% (OPTIMAL)",
   "WEBHOOK INGESTION: ACTIVE (Zero Dropped Events)",
   "MESSAGE QUEUES: HEALTHY",
@@ -127,7 +127,7 @@ export default function GameEnding({ onEndingComplete, xp }) {
       {phase === 2 && (
         <div className="system-dashboard terminal-simulator animate-fade-in" style={{ width: '80%', maxWidth: '800px', margin: 'auto', border: '1px solid var(--accent-cyan)' }}>
           <div className="terminal-header" style={{ borderBottom: '1px solid var(--accent-cyan)', color: 'var(--accent-cyan)' }}>
-            MEI_Cloud_OS // Final_Status.sh
+            Business Cloud OS // Final_Status.sh
           </div>
           <div className="terminal-body" style={{ padding: '2rem', fontSize: '1.2rem', lineHeight: '2' }}>
             {metrics.map((line, i) => (
@@ -144,7 +144,7 @@ export default function GameEnding({ onEndingComplete, xp }) {
         <div className="certificate-container animate-fade-in" style={{ textAlign: 'center', position: 'relative' }}>
           <div className="certificate" style={{ border: '2px solid var(--accent-purple)', padding: '4rem', background: 'rgba(139, 92, 246, 0.1)', boxShadow: '0 0 50px rgba(139, 92, 246, 0.3)' }}>
             <h1 style={{ color: 'var(--accent-cyan)', fontSize: '3rem', marginBottom: '1rem', textShadow: '0 0 20px var(--accent-cyan)' }}>MEI Certified Platform Engineer</h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '3rem' }}>This certifies that you have successfully restored MEI_Cloud_OS.</p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '3rem' }}>This certifies that you have successfully restored Business Cloud OS.</p>
             
             <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', fontSize: '1.5rem', color: 'var(--text-main)', marginBottom: '3rem' }}>
               <div><strong>FINAL XP:</strong> {xp}</div>

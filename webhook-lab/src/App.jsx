@@ -12,13 +12,16 @@ import Quiz from './components/Quiz';
 import Dashboard from './components/Dashboard';
 import MissionMap from './components/MissionMap';
 import MissionBriefing from './components/MissionBriefing';
-import RewardScreen from './components/RewardScreen';
+import MissionDebrief from './components/MissionDebrief';
 import TerminalSimulator from './components/TerminalSimulator';
 import BootSequence from './components/BootSequence';
 import EpisodeCard from './components/EpisodeCard';
 import TheVoidReveal from './components/TheVoidReveal';
+import PostGameSequence from './components/PostGameSequence';
 import GameEnding from './components/GameEnding';
 import AdminDashboard from './components/AdminDashboard';
+import SettingsModal from './components/SettingsModal';
+import { updateAudioSettings, setMusicPhase } from './utils/audioUtils';
 import { registerPlayer, syncProgress, sendHeartbeat, getAuthTokens, logEvent } from './api';
 import './App.css';
 import './game.css';
@@ -37,6 +40,39 @@ function App() {
   const [hasSeenMapIntro, setHasSeenMapIntro] = useState(() => sessionStorage.getItem('webhook_has_seen_map_intro') === 'true');
   const [hasSeenVoidReveal, setHasSeenVoidReveal] = useState(() => localStorage.getItem('webhook_has_seen_void_reveal') === 'true');
   const [hasCompletedGame, setHasCompletedGame] = useState(() => localStorage.getItem('webhook_has_completed_game') === 'true');
+  const [showSettings, setShowSettings] = useState(false);
+  const [settings, setSettings] = useState(() => JSON.parse(localStorage.getItem('webhook_settings') || '{"voiceEnabled":true, "musicVolume":0.5, "sfxVolume":0.5, "autoPlayBriefings":true, "reduceMotion":false}'));
+  const [failedAttempts, setFailedAttempts] = useState(0);
+
+  // Sync initial settings to audioUtils
+  useEffect(() => {
+    updateAudioSettings(settings);
+  }, [settings]);
+
+  // Handle global background music state
+  useEffect(() => {
+    if (!hasStarted) return;
+    
+    if (!hasBooted) {
+      setMusicPhase('VOID');
+    } else if (currentView === 'map') {
+      setMusicPhase('MAP');
+    } else if (currentView === 'learning') {
+      if (missionState === 'episode-card') {
+        setMusicPhase('MAP');
+      } else if (missionState === 'content') {
+        if (currentIndex >= 24) {
+          setMusicPhase('CRITICAL');
+        } else {
+          setMusicPhase('GAMEPLAY');
+        }
+      } else if (missionState === 'reward') {
+        setMusicPhase('DEBRIEF');
+      } else if (missionState === 'game-ending') {
+        setMusicPhase('DEBRIEF');
+      }
+    }
+  }, [hasStarted, hasBooted, currentView, missionState, currentIndex]);
 
   const currentStep = curriculum[currentIndex];
 
@@ -94,7 +130,8 @@ function App() {
     sessionStorage.setItem('webhook_has_booted', hasBooted);
     sessionStorage.setItem('webhook_has_started', hasStarted);
     sessionStorage.setItem('webhook_has_seen_map_intro', hasSeenMapIntro);
-  }, [currentIndex, highestUnlockedIndex, absoluteHighestIndex, xp, hearts, hasBooted, hasStarted, hasSeenMapIntro, hasSeenVoidReveal, hasCompletedGame]);
+    localStorage.setItem('webhook_settings', JSON.stringify(settings));
+  }, [currentIndex, highestUnlockedIndex, absoluteHighestIndex, xp, hearts, hasBooted, hasStarted, hasSeenMapIntro, hasSeenVoidReveal, hasCompletedGame, settings]);
 
   // Check if we need to apply corrupted mode
   useEffect(() => {
@@ -137,6 +174,7 @@ function App() {
 
   const handleQuizFail = () => {
     logEvent('mission_fail', currentIndex);
+    setFailedAttempts(prev => prev + 1);
     if (hearts > 1) {
       setHearts(prev => prev - 1);
     } else {
@@ -147,6 +185,7 @@ function App() {
       setQuizKey(prev => prev + 1);
       setMissionState('episode-card');
       setCurrentView('map');
+      setFailedAttempts(0);
     }
   };
 
@@ -174,6 +213,7 @@ function App() {
     setCurrentIndex(index);
     setMissionState('episode-card');
     setCurrentView('learning');
+    setFailedAttempts(0);
     logEvent('mission_start', index);
   };
 
@@ -182,16 +222,6 @@ function App() {
 
   return (
     <>
-      {/* Global Background Music Manager - Only ONE instance to prevent overlap */}
-      {hasStarted && (
-        <audio 
-          autoPlay 
-          loop 
-          src={!hasBooted || currentView !== 'learning' ? "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3" : "/mission-music.webm"} 
-          ref={(el) => { if (el) el.volume = (hasBooted && currentView === 'learning') ? 0.3 : 0.5; }} 
-        />
-      )}
-
       {!hasStarted ? (
         <div 
           onClick={() => setHasStarted(true)} 
@@ -234,7 +264,7 @@ function App() {
           <h1 
             style={{ fontFamily: 'monospace', letterSpacing: '0.08em', fontSize: '0.95rem', textTransform: 'uppercase', flex: 1 }}
           >
-            MEI_Cloud_OS <span style={{ color: 'var(--text-muted)' }}>//</span> Mission Control
+            Business Cloud OS <span style={{ color: 'var(--text-muted)' }}>//</span> Mission Control
           </h1>
           <div className="gamification-stats" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginLeft: 'auto' }}>
             <button 
@@ -253,6 +283,13 @@ function App() {
                 padding: '0.35rem 0.9rem', color: currentView === 'dashboard' ? 'var(--accent-purple)' : 'var(--text-muted)', 
                 cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem', fontFamily: 'monospace', letterSpacing: '0.06em'
               }}>PROFILE</button>
+            <button 
+              onClick={() => setShowSettings(true)}
+              style={{ 
+                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', 
+                padding: '0.35rem 0.9rem', color: 'var(--text-muted)', 
+                cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem', fontFamily: 'monospace', letterSpacing: '0.06em'
+              }}>SETTINGS</button>
             <div style={{ width: '1px', height: '20px', background: 'var(--glass-border)', margin: '0 0.25rem' }}></div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--accent-red)', fontWeight: 'bold', fontSize: '0.85rem' }}>
               <Heart fill="currentColor" size={16} /> {hearts}
@@ -302,6 +339,10 @@ function App() {
         </div>
       )}
 
+      {showSettings && (
+        <SettingsModal settings={settings} setSettings={setSettings} onClose={() => setShowSettings(false)} />
+      )}
+
       {currentView === 'learning' && (
       <div className="module-layout" style={{ display: 'flex', gap: '2rem', padding: '0 2rem', alignItems: 'flex-start' }}>
         
@@ -336,20 +377,22 @@ function App() {
             )}
 
             {missionState === 'reward' && (
-              <RewardScreen 
-                mission={currentStep}
-                missionIndex={currentIndex}
-                xpGained={currentIndex === absoluteHighestIndex - 1 ? (currentStep.briefing?.rewards?.xp || 50) : 0}
+              <MissionDebrief 
+                xpGained={currentStep.briefing?.rewards?.xp || 50} 
                 newRank={getRank(xp)}
                 newAbsoluteIndex={absoluteHighestIndex}
-                unlockedBadgeId={currentStep.briefing?.rewards?.badge && currentStep.briefing?.rewards?.badge !== 'None' ? currentStep.briefing.rewards.badge : null}
+                unlockedBadgeId={
+                  badges.find(b => b.unlockIndex === currentIndex)?.id
+                }
+                failedAttempts={failedAttempts}
                 onContinue={() => {
+                  setFailedAttempts(0);
                   if (currentIndex === curriculum.length - 1 && !hasCompletedGame) {
                     setMissionState('game-ending');
                   } else {
-                    goToNext();
-                    setMissionState('episode-card');
+                    if (currentIndex >= 30) setHasCompletedGame(true);
                     setCurrentView('map');
+                    setMissionState('episode-card');
                   }
                 }}
               />

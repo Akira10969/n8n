@@ -20,27 +20,55 @@ export default function TheVoidReveal({ onRevealComplete }) {
   ];
 
   useEffect(() => {
-    // Play glitch sound on mount
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    oscillator.type = 'sawtooth';
-    oscillator.frequency.setValueAtTime(50, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(10, audioContext.currentTime + 1);
+    // Mute global background music
+    const globalAudio = document.getElementById('global-bg-music');
+    if (globalAudio) globalAudio.volume = 0;
+
+    // Start a low, unsettling drone
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
     
-    const gainNode = audioContext.createGain();
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(40, audioCtx.currentTime); // Very low drone
     
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 3); // Fade in drone
     
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 1);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+
+    // Glitch sound on mount
+    const glitchOsc = audioCtx.createOscillator();
+    glitchOsc.type = 'sawtooth';
+    glitchOsc.frequency.setValueAtTime(150, audioCtx.currentTime);
+    glitchOsc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.5);
+    
+    const glitchGain = audioCtx.createGain();
+    glitchGain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    glitchGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+    
+    glitchOsc.connect(glitchGain);
+    glitchGain.connect(audioCtx.destination);
+    glitchOsc.start();
+    glitchOsc.stop(audioCtx.currentTime + 0.5);
 
     document.body.classList.add('void-active');
 
+    // Save context and nodes to window so phase 1 can access them or clean them up
+    window.voidAudio = { ctx: audioCtx, drone: osc, droneGain: gain };
+
     return () => {
       document.body.classList.remove('void-active');
+      if (globalAudio) globalAudio.volume = 0.5; // Restore music when done
+      if (window.voidAudio) {
+        try {
+          window.voidAudio.droneGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+          setTimeout(() => window.voidAudio.drone.stop(), 1000);
+          setTimeout(() => window.voidAudio.ctx.close(), 1100);
+        } catch(e) {}
+      }
     };
   }, []);
 
@@ -55,10 +83,57 @@ export default function TheVoidReveal({ onRevealComplete }) {
         }, delay);
         return () => clearTimeout(timer);
       } else {
-        const timer = setTimeout(() => setPhase(1), 3000);
+        // Moment of near silence before the reveal
+        if (window.voidAudio) {
+          window.voidAudio.droneGain.gain.linearRampToValueAtTime(0.01, window.voidAudio.ctx.currentTime + 2);
+        }
+        const timer = setTimeout(() => setPhase(1), 3500); // 3.5s pause of near silence
         return () => clearTimeout(timer);
       }
     } else if (phase === 1) {
+      // Trigger the singularity with powerful cinematic impact
+      if (window.voidAudio) {
+        const ctx = window.voidAudio.ctx;
+        
+        // Massive bass drop
+        const bass = ctx.createOscillator();
+        const bassGain = ctx.createGain();
+        bass.type = 'sine';
+        bass.frequency.setValueAtTime(150, ctx.currentTime);
+        bass.frequency.exponentialRampToValueAtTime(20, ctx.currentTime + 2); // Drop to sub-bass
+        
+        bassGain.gain.setValueAtTime(1, ctx.currentTime);
+        bassGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 4);
+        
+        bass.connect(bassGain);
+        bassGain.connect(ctx.destination);
+        bass.start();
+        bass.stop(ctx.currentTime + 4);
+
+        // Distortion / Static Blast
+        const bufferSize = ctx.sampleRate * 2; // 2 seconds of noise
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1; // White noise
+        }
+        const noiseSource = ctx.createBufferSource();
+        noiseSource.buffer = buffer;
+        
+        const noiseFilter = ctx.createBiquadFilter();
+        noiseFilter.type = 'lowpass';
+        noiseFilter.frequency.setValueAtTime(1000, ctx.currentTime);
+        noiseFilter.frequency.linearRampToValueAtTime(100, ctx.currentTime + 2);
+
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.5, ctx.currentTime);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 2);
+        
+        noiseSource.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(ctx.destination);
+        noiseSource.start();
+      }
       // Trigger the singularity
       document.body.classList.add('screen-tearing-active'); // Minimal jitter now
       

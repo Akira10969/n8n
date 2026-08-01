@@ -5,9 +5,26 @@ const Typewriter = ({ text, delay = 20, onComplete }) => {
   const [displayed, setDisplayed] = useState('');
   const [idx, setIdx] = useState(0);
 
-  const hasCompleted = React.useRef(false);
+  const isTypingComplete = React.useRef(false);
+  const isVoiceComplete = React.useRef(false);
+  const hasCalledComplete = React.useRef(false);
+
+  const checkCompletion = () => {
+    if (isTypingComplete.current && isVoiceComplete.current && !hasCalledComplete.current) {
+      hasCalledComplete.current = true;
+      setTimeout(() => {
+        if (onComplete) onComplete();
+      }, 750); // 0.75s pause before next line
+    }
+  };
 
   useEffect(() => {
+    isTypingComplete.current = false;
+    isVoiceComplete.current = false;
+    hasCalledComplete.current = false;
+    setDisplayed('');
+    setIdx(0);
+
     if ('speechSynthesis' in window && text) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
@@ -29,12 +46,19 @@ const Typewriter = ({ text, delay = 20, onComplete }) => {
       if (bgMusic) bgMusic.volume = 0.2;
       
       utterance.onend = () => {
-        // Restore volume when speaking ends
         if (bgMusic) bgMusic.volume = 0.5;
+        isVoiceComplete.current = true;
+        checkCompletion();
       };
       
       window.speechSynthesis.speak(utterance);
+    } else {
+      isVoiceComplete.current = true;
     }
+
+    return () => {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    };
   }, [text]);
 
   useEffect(() => {
@@ -54,12 +78,10 @@ const Typewriter = ({ text, delay = 20, onComplete }) => {
       }, currentDelay);
       return () => clearTimeout(t);
     } else {
-      if (onComplete && !hasCompleted.current) {
-        hasCompleted.current = true;
-        onComplete();
-      }
+      isTypingComplete.current = true;
+      checkCompletion();
     }
-  }, [idx, text, delay, onComplete]);
+  }, [idx, text, delay]);
 
   return <span>{displayed}<span className="cursor-block">█</span></span>;
 };
@@ -95,7 +117,7 @@ export default function BootSequence({ highestUnlockedIndex, onBootComplete }) {
       "Priority: LOW",
       "Good morning, Engineer.",
       "Your first day begins today.",
-      "MEI_Cloud_OS powers thousands of services across the city, processing millions of requests every minute.",
+      "Business Cloud OS powers thousands of services across the city, processing millions of requests every minute.",
       "Most days are routine. Monitor systems. Resolve incidents. Keep the platform online.",
       "At least... that's what everyone believes.",
       "... ... ...",
@@ -137,7 +159,7 @@ export default function BootSequence({ highestUnlockedIndex, onBootComplete }) {
       "Multiple core services have failed.",
       "The Void has penetrated the core infrastructure.",
       "If you fail here...",
-      "MEI_Cloud_OS will never recover."
+      "Business Cloud OS will never recover."
     ];
   }
 
@@ -153,6 +175,43 @@ export default function BootSequence({ highestUnlockedIndex, onBootComplete }) {
     
     return () => timers.forEach(clearTimeout);
   }, []);
+
+  useEffect(() => {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = 'sawtooth';
+    // Slightly lower frequency for higher levels to make it more menacing
+    const baseFreq = highestUnlockedIndex >= 24 ? 40 : 45;
+    osc.frequency.setValueAtTime(baseFreq, audioCtx.currentTime); 
+    
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    
+    let targetVolume = 0.03;
+    if (highestUnlockedIndex >= 5) targetVolume = 0.05;
+    if (highestUnlockedIndex >= 15) targetVolume = 0.08;
+    if (highestUnlockedIndex >= 24) targetVolume = 0.12;
+    
+    // Slow build up over 8 seconds
+    gain.gain.linearRampToValueAtTime(targetVolume, audioCtx.currentTime + 8);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    osc.start();
+    
+    return () => {
+      try {
+        gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+        setTimeout(() => osc.stop(), 1000);
+        setTimeout(() => audioCtx.close(), 1100);
+      } catch (e) {}
+    };
+  }, [highestUnlockedIndex]);
 
   const [narrativeIndex, setNarrativeIndex] = useState(0);
   const [fadeStatus, setFadeStatus] = useState('in');
@@ -177,7 +236,7 @@ export default function BootSequence({ highestUnlockedIndex, onBootComplete }) {
       <div className={`boot-text ${step >= 6 ? 'fade-out' : 'fade-in'}`}>
         <div className="boot-header">
           <p>══════════════════════════════════════</p>
-          <p>MEI_Cloud_OS</p>
+          <p>Business Cloud OS</p>
           <p>Platform Operations Division</p>
           <br/>
           <p>Year 2042</p>

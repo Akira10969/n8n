@@ -30,7 +30,7 @@ When a webhook exhausts all of its retry attempts, instead of being deleted, it 
 
 ### Inspecting the Dead Letters
 
-You configure the job processor to route all exhausted retries into a secure DLQ bucket in the MEI_Cloud_OS storage array. 
+You configure the job processor to route all exhausted retries into a secure DLQ bucket in the Business Cloud OS storage array. 
 
 Almost immediately, the DLQ alarm triggers. A message has failed all 10 retries and been quarantined. You pull the raw JSON of the dead letter to investigate why it couldn't be delivered.
 
