@@ -3,7 +3,7 @@ export const project1 = {
   "title": "Project 1 - The Monolith",
   "type": "lab",
   "briefing": {
-    "recap": "The UI is shattered. The map is bleeding. The Void has breached the outer defenses.",
+    "recap": "The outer defenses have fallen. The map is corrupted. We must establish a foothold before The Void consumes everything.",
     "incident": "CRITICAL: The Void has established a massive monolithic Webhook ingestion server (The Monolith) to swallow all incoming traffic.",
     "task": "Build a local Webhook receiver to siphon traffic away from The Monolith.",
     "rewards": { "xp": 500, "badge": "Receiver Badge" }

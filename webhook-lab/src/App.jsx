@@ -36,6 +36,7 @@ function App() {
   const [hasBooted, setHasBooted] = useState(() => sessionStorage.getItem('webhook_has_booted') === 'true');
   const [hasStarted, setHasStarted] = useState(false); // Always false on hard load to ensure audio interaction
   const [hasSeenMapIntro, setHasSeenMapIntro] = useState(() => sessionStorage.getItem('webhook_has_seen_map_intro') === 'true');
+  const [hasSeenMapCorruption, setHasSeenMapCorruption] = useState(() => localStorage.getItem('webhook_has_seen_map_corruption') === 'true');
   const [hasSeenVoidReveal, setHasSeenVoidReveal] = useState(() => localStorage.getItem('webhook_has_seen_void_reveal') === 'true');
   const [hasCompletedGame, setHasCompletedGame] = useState(() => localStorage.getItem('webhook_has_completed_game') === 'true');
   const [showSettings, setShowSettings] = useState(false);
@@ -135,12 +136,25 @@ function App() {
     localStorage.setItem('webhook_absolute_highest_index', absoluteHighestIndex);
     localStorage.setItem('webhook_xp', xp);
     localStorage.setItem('webhook_hearts', hearts);
+    localStorage.setItem('webhook_has_seen_map_corruption', hasSeenMapCorruption);
     localStorage.setItem('webhook_has_seen_void_reveal', hasSeenVoidReveal);
     localStorage.setItem('webhook_has_completed_game', hasCompletedGame);
     sessionStorage.setItem('webhook_has_booted', hasBooted);
     sessionStorage.setItem('webhook_has_seen_map_intro', hasSeenMapIntro);
     localStorage.setItem('webhook_settings', JSON.stringify(settings));
-  }, [currentIndex, highestUnlockedIndex, absoluteHighestIndex, xp, hearts, hasBooted, hasSeenMapIntro, hasSeenVoidReveal, hasCompletedGame, settings]);
+  }, [currentIndex, highestUnlockedIndex, absoluteHighestIndex, xp, hearts, hasBooted, hasSeenMapIntro, hasSeenMapCorruption, hasSeenVoidReveal, hasCompletedGame, settings]);
+
+  // Derive Global World State
+  let worldState = 'NORMAL';
+  if (hasCompletedGame) {
+    worldState = 'RESTORED';
+  } else if (highestUnlockedIndex >= 10 && hasSeenMapCorruption) {
+    worldState = 'RECOVERING';
+  } else if (highestUnlockedIndex >= 5 && hasSeenMapCorruption) {
+    worldState = 'CORRUPTED';
+  } else if (highestUnlockedIndex >= 5 && !hasSeenMapCorruption) {
+    worldState = 'UNDER_ATTACK';
+  }
 
   // Check if we need to apply corrupted mode
   useEffect(() => {
@@ -361,10 +375,17 @@ function App() {
             curriculum={curriculum}
             highestUnlockedIndex={highestUnlockedIndex}
             activeMissionIndex={null}
-            onSelectMission={selectStep}
+            onSelectMission={(idx) => {
+              playUIBeep();
+              setCurrentIndex(idx);
+              setMissionState('episode-card');
+              setCurrentView('learning');
+            }}
             skipIntro={hasSeenMapIntro}
             onIntroComplete={() => setHasSeenMapIntro(true)}
             hasCompletedGame={hasCompletedGame}
+            worldState={worldState}
+            onCorruptionCinematicComplete={() => setHasSeenMapCorruption(true)}
           />
         </div>
       )}
@@ -384,6 +405,8 @@ function App() {
             activeMissionIndex={currentIndex}
             onSelectMission={selectStep}
             skipIntro={true}
+            worldState={worldState}
+            onCorruptionCinematicComplete={() => setHasSeenMapCorruption(true)}
           />
         </aside>
       {/* MAIN CONTENT AREA */}
