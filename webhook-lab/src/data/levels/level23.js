@@ -18,7 +18,13 @@ export const level23 = {
     tasks: [
       {
         command: /^nginx\s+-s\s+reload$/i,
-        instruction: "Rate limiting configuration has been written. Send the reload signal to the Nginx reverse proxy to apply the changes.",
+        instruction: 'The rate limiting configuration has been updated. Send a signal to the web server to reload its configuration gracefully.',
+        hints: [
+          "You need to use the 'systemctl' command.",
+          "The action is 'reload'.",
+          "The service name is 'nginx'."
+        ],
+        solution: 'systemctl reload nginx',
         successMessage: "[OK] Nginx configuration reloaded. Rate limiting active at 50 req/sec.\n[UNIT-7]: Floodgates holding. The Anomaly is bottlenecked.",
         errorMessage: "Invalid syntax. Try `nginx -s reload`"
       }

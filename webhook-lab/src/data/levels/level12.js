@@ -61,10 +61,16 @@ The fraudulent upgrades stop again. But as you monitor the logs, you realize tha
   simulator: {
     tasks: [
       {
-        command: /^mei-cli\s+secrets\s+rotate\s+--service\s+billing_webhook$/i,
-        instruction: "The API keys have been compromised. Immediately rotate the secrets for the billing service.",
+        command: /^aws\s+secretsmanager\s+rotate-secret\s+--secret-id\s+billing_webhook$/i,
+        instruction: 'The API keys have been compromised. Use the system CLI to immediately rotate the secrets for the billing service.',
+        hints: [
+          "Use the AWS CLI (`aws secretsmanager`) to rotate the secret.",
+          "The subsystem is 'secrets'.",
+          "The action is 'rotate' and the target is 'billing'."
+        ],
+        solution: 'aws secretsmanager rotate-secret',
         successMessage: "[OK] Generating new 256-bit entropy keys...\n[OK] Keys rotated for billing_webhook. Old keys invalidated.",
-        errorMessage: "Invalid syntax. Try `mei-cli secrets rotate --service billing_webhook`"
+        errorMessage: "Invalid syntax. Try `aws secretsmanager rotate-secret --secret-id billing_webhook`"
       }
     ]
   }

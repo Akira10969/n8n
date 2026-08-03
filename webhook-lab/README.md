@@ -44,20 +44,37 @@ Guided by your NOC-BOT, **UNIT-7**, and Senior Engineer, **Sarah**, you must com
 Follow these steps to run Business Cloud OS locally on your machine.
 
 ### Prerequisites
-- Node.js (v18 or higher recommended)
-- PHP & MySQL (XAMPP/MAMP or similar for the backend API)
+- **Node.js** (v18 or higher recommended)
+- **Local Web Server Stack** (XAMPP, MAMP, WAMP, or similar)
+  - **Apache** (Must be running on port 80 to match the Vite Proxy)
+  - **MySQL** (Required for progress saving)
+  - **PHP 8+** (Required for the backend API)
 
-### Installation
+### 🚀 Setup Guide
 
-1. Clone the repository:
+To run Business Cloud OS locally, you must start the backend database and API *before* running the frontend.
+
+1. **Start Local Services:**
+   - Open your XAMPP/MAMP Control Panel.
+   - Start the **Apache** service.
+   - Start the **MySQL** service.
+
+2. **Database Setup:**
+   - Open phpMyAdmin (usually `http://localhost/phpmyadmin`).
+   - Create a new MySQL database named `n8n_lab` (or similar).
+   - Import the `backend/database.sql` file into your new database.
+   - Update your database credentials inside `backend/config/config.php` to match your local setup.
+
+3. **Clone & Install:**
    ```bash
    git clone https://github.com/Akira10969/n8n.git
    cd n8n/webhook-lab
+   npm install
    ```
 
-2. Set up the Database:
-   - Create a MySQL database and import the `backend/database.sql` file.
-   - Update your database credentials inside `backend/config/config.php`.
+4. **Verify Vite Proxy (Crucial):**
+   - Open `vite.config.js`.
+   - Ensure the `/backend/api` proxy target matches the exact path where your Apache server is serving the PHP files (e.g., `http://localhost/n8n/webhook-lab/`).
 
 3. Install frontend dependencies:
    ```bash

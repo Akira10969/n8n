@@ -38,13 +38,24 @@ Let's test this manually. Instead of \`ping\`, I want you to act as a web client
     tasks: [
       {
         command: /^curl\s+(HTTP:\/\/)?10\.4\.12\.88(:80)?\/?$/i,
-        instruction: 'Retrieve the webpage from the marketing server (10.4.12.88) on port 80 to verify that the web service is responding.',
+        instruction: 'Attempt to retrieve the webpage from the marketing server to verify the web service is responding.',
+        hints: [
+          "You can make HTTP requests directly from the terminal.",
+          "The tool you need sounds like something you do with your hair (curl).",
+          "Provide the IP address as the argument."
+        ],
+        solution: 'curl 10.4.12.88',
         successMessage: 'curl: (7) Failed to connect to 10.4.12.88 port 80: Connection refused\n[SARAH]: "Exactly as I suspected. The web process crashed. Let me reboot the Nginx service real quick..."\n[SARAH]: "Okay, try it again."',
         errorMessage: 'Validation Failed. Hint: Use `curl http://10.4.12.88:80` to make the request.'
       },
       {
         command: /^curl\s+(HTTP:\/\/)?10\.4\.12\.88(:80)?\/?$/i,
-        instruction: 'Sarah rebooted the web service. Run the same command again to verify that the webpage is now accessible.',
+        instruction: 'The service was rebooted. Attempt to fetch the webpage again to confirm it is accessible.',
+        hints: [
+          "Just run the exact same command you used before.",
+          "Press the UP arrow to access your terminal history."
+        ],
+        solution: 'curl 10.4.12.88',
         successMessage: 'HTTP/1.1 200 OK\nContent-Type: text/html\n\n<html><body><h1>MEI Marketing v1.0</h1></body></html>\n[SARAH]: "Boom. We have HTML. Good job, kid."',
         errorMessage: 'Validation Failed. Hint: Use `curl http://10.4.12.88:80` to make the request.'
       }

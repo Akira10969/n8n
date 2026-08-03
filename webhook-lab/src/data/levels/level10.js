@@ -74,7 +74,13 @@ You bypass the malicious proxy, restoring the 'Authorization' headers, and the t
     tasks: [
       {
         command: /^curl\s+-H\s+["']Authorization:\s+Bearer\s+secret_token["']\s+(HTTP:\/\/)?10\.4\.55\.2\/Webhook\/?$/i,
-        instruction: "Test the authenticated endpoint by passing the Bearer token in the headers. Use `curl -H \"Authorization: Bearer secret_token\" http://10.4.55.2/webhook`",
+        instruction: 'Send a test payload to the secure endpoint, ensuring you include the required authentication token in the request headers.',
+        hints: [
+          "You need to add a custom header to your request.",
+          "Use the '-H' flag.",
+          "The header format is 'Authorization: Bearer <token>'."
+        ],
+        solution: 'curl -H "Authorization: Bearer secret_token" http://10.4.55.2/webhook',
         successMessage: "HTTP/1.1 200 OK\n{\"status\": \"Authorized\"}\n[SARAH]: \"Perfect. The endpoint is locked down. Only those with the token can enter.\"",
         errorMessage: "Invalid syntax. Ensure you are passing the Authorization header exactly as shown."
       }

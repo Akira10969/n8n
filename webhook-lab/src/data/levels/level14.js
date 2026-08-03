@@ -58,7 +58,13 @@ You have thwarted the network attack. But what happens to the Webhooks that *nev
     tasks: [
       {
         command: /^ping\s+-c\s+10\s+10\.4\.88\.9$/i,
-        instruction: "Test network stability to the remote node. Send exactly 10 ping packets to 10.4.88.9.",
+        instruction: 'Test the network stability to the remote node by sending a specific, limited number of ping packets.',
+        hints: [
+          "You need to use the 'ping' command.",
+          "Use a flag to limit the number of packets (count).",
+          "The flag is '-c 10'."
+        ],
+        solution: 'ping -c 10 10.4.88.9',
         successMessage: "10 packets transmitted, 4 received, 60% packet loss, time 9014ms\n[SARAH]: \"60% packet loss! The connection is flapping. We need retries.\"",
         errorMessage: "Invalid syntax. Use `ping -c 10 10.4.88.9`"
       }

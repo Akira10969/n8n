@@ -80,15 +80,27 @@ As a Lead Operations Engineer, you must recognize when synchronous polling is cr
     tasks: [
       {
         command: 'ps aux | grep polling',
-        instruction: 'Find the rogue polling process. Use the standard Linux command to list processes and filter for "polling".',
+        instruction: 'Inspect the running processes on the server to locate the rogue polling script.',
+        hints: [
+          "You need to list the processes and search through them.",
+          "Use the 'ps aux' command to list processes.",
+          "Pipe the output to 'grep' to filter for the word 'polling'."
+        ],
+        solution: 'ps aux | grep polling',
         successMessage: 'root      1204  99.0  2.1  fulfillment_polling_loop.sh',
         errorMessage: 'Invalid command. Try `ps aux | grep polling`'
       },
       {
-        command: 'mei-cli service stop fulfillment_polling',
-        instruction: 'Terminate the rogue service using the Business Cloud OS custom CLI. Command: mei-cli service stop fulfillment_polling',
+        command: 'systemctl stop fulfillment_polling',
+        instruction: 'Use the Business Cloud OS custom CLI to forcefully terminate the rogue fulfillment polling service.',
+        hints: [
+          "Use the standard Linux systemd command `systemctl`.",
+          "You need to interact with a 'service'.",
+          "The action is 'stop' and the target is 'fulfillment_polling'."
+        ],
+        solution: 'systemctl stop fulfillment_polling',
         successMessage: '[OK] Signal SIGTERM sent to fulfillment_polling... Process terminated. CPU load dropping.',
-        errorMessage: 'Invalid command. Use `mei-cli service stop <service_name>`'
+        errorMessage: 'Invalid command. Try `systemctl stop <service_name>`'
       }
     ]
   }

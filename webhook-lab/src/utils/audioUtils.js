@@ -43,13 +43,13 @@ let currentEnvOsc = null;
 let currentEnvGain = null;
 
 const MUSIC_TRACKS = {
-  MAP: "https://cdn.pixabay.com/download/audio/2022/11/22/audio_febc508520.mp3",
-  BRIEFING: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3",
-  DEPLOYMENT: "https://cdn.pixabay.com/download/audio/2021/11/24/audio_33895e7c8f.mp3",
-  GAMEPLAY: "https://cdn.pixabay.com/download/audio/2021/10/08/audio_2448375e0c.mp3",
-  CRITICAL: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c89e2c694a.mp3",
-  DEBRIEF: "https://cdn.pixabay.com/download/audio/2021/11/23/audio_732a3d0fb1.mp3",
-  VOID: "https://cdn.pixabay.com/download/audio/2022/02/10/audio_5fb6660fc6.mp3"
+  MAP: "/audio/ambience/map.mp3",
+  BRIEFING: "/audio/briefing/briefing.mp3",
+  DEPLOYMENT: "/audio/deployment/deployment.mp3",
+  GAMEPLAY: "/audio/gameplay/gameplay.mp3",
+  CRITICAL: "/audio/gameplay/critical.mp3",
+  DEBRIEF: "/audio/debrief/debrief.mp3",
+  VOID: "/audio/ending/void.mp3"
 };
 
 // Utility to track and clear intervals

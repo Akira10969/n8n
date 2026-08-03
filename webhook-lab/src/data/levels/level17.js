@@ -18,7 +18,13 @@ export const level17 = {
     tasks: [
       {
         command: /^redis-cli\s+setnx\s+event_8891\s+["']processed["']$/i,
-        instruction: "Ensure idempotency by setting a distributed lock for event_8891. Use Redis SETNX (Set if Not eXists).",
+        instruction: 'Ensure the system processes the event exactly once by acquiring a distributed lock in Redis before proceeding.',
+        hints: [
+          "You need to use the 'redis-cli' command.",
+          "The command to set a key only if it doesn't exist is 'SETNX'.",
+          "The key is 'event_8891' and the value can be 'locked'."
+        ],
+        solution: 'redis-cli SETNX event_8891 locked',
         successMessage: "(integer) 1\n[SARAH]: \"Lock acquired. The event is processing. If a duplicate Webhook arrives, SETNX will return 0 and we can safely ignore it.\"",
         errorMessage: "Invalid syntax. Try `redis-cli setnx event_8891 \"processed\"`"
       }

@@ -377,6 +377,11 @@ class VoiceEngineManager {
     this.currentPlayId++;
     const playId = this.currentPlayId;
 
+    // Intelligent Audio Management: Interruption logic
+    // Stop any currently playing utterance and background effects
+    // to prevent overlapping audio when a skip or scene change occurs.
+    this.stop();
+
     if (import.meta.env.DEV) {
       console.log(`[AUDIO] Narration Started: ${character}`);
     }

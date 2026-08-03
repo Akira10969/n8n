@@ -72,7 +72,13 @@ The 502s disappear. The servers stabilize. You've stopped the bleeding, but the 
     tasks: [
       {
         command: /^curl\s+-I\s+-X\s+POST\s+(HTTP:\/\/)?10\.4\.55\.2\/Webhook\/?$/i,
-        instruction: "Send a HEAD/Headers-only POST request to the Webhook receiver to inspect its HTTP response codes. Use `curl -I -X POST http://10.4.55.2/webhook`",
+        instruction: 'Send a diagnostic HTTP request to the receiver that only returns the response headers, so we can inspect the status codes.',
+        hints: [
+          "You need to make a POST request but only fetch the headers.",
+          "Check the curl documentation for the 'head' or 'include' flag.",
+          "The flag is '-I'."
+        ],
+        solution: 'curl -I -X POST http://10.4.55.2/webhook',
         successMessage: "HTTP/1.1 500 Internal Server Error\nContent-Type: text/plain\n\n[SARAH]: \"A 500 error! Our receiver is crashing when it parses the payload!\"",
         errorMessage: "Invalid syntax. Try `curl -I -X POST http://10.4.55.2/webhook`"
       }

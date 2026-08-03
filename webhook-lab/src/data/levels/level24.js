@@ -16,7 +16,13 @@ export const level24 = {
     tasks: [
       {
         command: /^curl\s+--cert\s+client\.pem\s+--key\s+client\.key\s+https:\/\/core\.mei\.internal\/?$/i,
-        instruction: "Bypass the Zero Trust Architecture by presenting valid mutual TLS (mTLS) certificates.",
+        instruction: 'Authenticate with the secure endpoint by presenting your mutual TLS (mTLS) client certificate and private key.',
+        hints: [
+          "Use the 'curl' command.",
+          "You need to provide the certificate using the '--cert client.crt' flag.",
+          "You need to provide the key using the '--key client.key' flag."
+        ],
+        solution: 'curl --cert client.crt --key client.key https://10.4.55.2/webhook',
         successMessage: "HTTP/1.1 200 OK\n[SARAH]: \"We're in. The core is exposed. It's time to build the ultimate weapon.\"",
         errorMessage: "Invalid syntax. Try `curl --cert client.pem --key client.key https://core.mei.internal`"
       }

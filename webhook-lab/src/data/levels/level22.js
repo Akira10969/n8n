@@ -16,7 +16,13 @@ export const level22 = {
     tasks: [
       {
         command: /^grep\s+["']delivery_success["']\s+\/var\/log\/fanout\.log$/i,
-        instruction: "The Scatter Protocol fired a Webhook to 500 listeners. Use grep to filter the logs for successful deliveries.",
+        instruction: 'Analyze the delivery logs to determine how many of the scatter protocol webhooks were successfully delivered.',
+        hints: [
+          "You need to search the logs for a success indicator.",
+          "Use 'cat /var/log/deliveries.log' to read the log.",
+          "Pipe the output to 'grep' and search for '200 OK'."
+        ],
+        solution: 'cat /var/log/deliveries.log | grep "200 OK"',
         successMessage: "[2026-07-31 08:22:01] delivery_success: listener_401\n[2026-07-31 08:22:02] delivery_success: listener_882\n[SARAH]: \"The fan-out is working! The cure is spreading.\"",
         errorMessage: "Invalid syntax. Try `grep \"delivery_success\" /var/log/fanout.log`"
       }

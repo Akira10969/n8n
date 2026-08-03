@@ -17,10 +17,16 @@ export const level21 = {
   simulator: {
     tasks: [
       {
-        command: /^mei-cli\s+sync\s+run\s+--source\s+stripe\s+--target\s+local_db$/i,
-        instruction: "The database has missed Webhooks during the downtime. Run a reconciliation sync job to fetch missed events from the source.",
+        command: /^npm\s+run\s+reconcile\s+--\s+--source\s+stripe$/i,
+        instruction: 'Use the system CLI to run a reconciliation sync job to fetch the missed events from the source provider.',
+        hints: [
+          "Run the Node.js reconciliation script using `npm run reconcile`.",
+          "The subsystem is 'sync'.",
+          "The action is 'reconcile'."
+        ],
+        solution: 'npm run reconcile',
         successMessage: "[OK] Querying Stripe API for events since last sync...\n[OK] 42 missing events found and written to local_db. State reconciled.",
-        errorMessage: "Invalid syntax. Try `mei-cli sync run --source stripe --target local_db`"
+        errorMessage: "Invalid syntax. Try `npm run reconcile -- --source stripe`"
       }
     ]
   }

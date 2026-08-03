@@ -16,7 +16,13 @@ export const level18 = {
     tasks: [
       {
         command: /^cat\s+\/etc\/mei\/backoff_config\.yaml\s+\|\s+grep\s+max_retries$/i,
-        instruction: "Check the backoff configuration. Pipe the config file into grep to find the 'max_retries' value.",
+        instruction: 'Inspect the system configuration file to determine the maximum number of retry attempts currently configured.',
+        hints: [
+          "You need to search the contents of a file.",
+          "Use 'cat config.json' to output the file.",
+          "Pipe the output to 'grep' and search for 'max_retries'."
+        ],
+        solution: 'cat config.json | grep max_retries',
         successMessage: "max_retries: 10\nexponential_multiplier: 2.0\n[SARAH]: \"Alright, 10 retries with an exponential backoff. That will stop the DoS loop.\"",
         errorMessage: "Invalid syntax. Try `cat /etc/mei/backoff_config.yaml | grep max_retries`"
       }

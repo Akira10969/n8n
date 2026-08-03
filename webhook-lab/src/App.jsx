@@ -43,6 +43,7 @@ function App() {
   const [settings, setSettings] = useState(() => JSON.parse(localStorage.getItem('webhook_settings') || '{"voiceEnabled":true, "musicVolume":0.5, "sfxVolume":0.5, "autoPlayBriefings":true, "reduceMotion":false}'));
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [isOffline, setIsOffline] = useState(() => localStorage.getItem('webhook_engineer_id')?.startsWith('OFFLINE-') || false);
+  const [backendError, setBackendError] = useState(false);
 
   // Sync initial settings to audioUtils
   useEffect(() => {
@@ -90,6 +91,7 @@ function App() {
           const offlineId = 'OFFLINE-' + Math.random().toString(36).substr(2, 6).toUpperCase();
           localStorage.setItem('webhook_engineer_id', offlineId);
           setIsOffline(true);
+          setBackendError(true);
           console.warn(`[APP] Backend unavailable. Running in Offline Mode with temporary ID: ${offlineId}`);
         } else {
           setIsOffline(false);
@@ -282,6 +284,26 @@ function App() {
           <p style={{ fontSize: '1.2rem' }}>
             [ CLICK TO INITIATE CONNECTION ] <span style={{ animation: 'blink 1s step-end infinite' }}>█</span>
           </p>
+        </div>
+      ) : backendError ? (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: '#050505', color: '#ef4444', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '2rem', textAlign: 'center', fontFamily: 'monospace' }}>
+          <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚠ BACKEND CONNECTION FAILED ⚠</h2>
+          <p style={{ maxWidth: '600px', lineHeight: '1.6', marginBottom: '2rem', color: '#ccc' }}>
+            The application could not connect to the local PHP backend at <strong>backend/api/register.php</strong>.
+          </p>
+          <div style={{ background: '#111', border: '1px solid #333', padding: '1.5rem', textAlign: 'left', borderRadius: '8px', maxWidth: '600px', width: '100%' }}>
+            <h3 style={{ color: '#fff', marginBottom: '1rem' }}>Developer Setup Required:</h3>
+            <ol style={{ color: '#aaa', paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <li>Ensure you have <strong>XAMPP</strong>, <strong>MAMP</strong>, or another PHP/MySQL stack installed.</li>
+              <li>Ensure <strong>Apache</strong> and <strong>MySQL</strong> services are running.</li>
+              <li>Import <code>backend/database.sql</code> into your MySQL server.</li>
+              <li>Ensure the project is accessible at the path configured in your Vite proxy, OR use Offline Mode.</li>
+            </ol>
+          </div>
+          <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
+             <button onClick={() => window.location.reload()} style={{ padding: '0.75rem 1.5rem', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Retry Connection</button>
+             <button onClick={() => setBackendError(false)} style={{ padding: '0.75rem 1.5rem', background: 'transparent', color: '#aaa', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer' }}>Continue in Offline Mode</button>
+          </div>
         </div>
       ) : !hasBooted ? (
         <BootSequence highestUnlockedIndex={highestUnlockedIndex} onBootComplete={() => setHasBooted(true)} isOffline={isOffline} />

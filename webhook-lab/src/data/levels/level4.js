@@ -40,7 +40,13 @@ Show them how it's done. Use \`curl -X POST\` to force the request to use the PO
     tasks: [
       {
         command: 'curl -X POST http://10.4.12.88:80/API/submit_lead',
-        instruction: 'Use curl with the -X POST flag to hit the API endpoint.',
+        instruction: 'Send an HTTP request to the API endpoint using the correct HTTP Method for creating data.',
+        hints: [
+          "By default, curl uses the GET method.",
+          "You need to change the method to POST.",
+          "Use the -X flag followed by the method name."
+        ],
+        solution: 'curl -X POST http://10.4.55.2/webhook',
         successMessage: '> POST /API/submit_lead HTTP/1.1\n> Host: 10.4.12.88:80\n< HTTP/1.1 400 Bad Request\n< \n{"error": "Empty payload. Content-Type must be application/JSON"}\n[SARAH]: "Okay, progress! We got a 400 Bad Request instead of a 405. The server accepted the POST method, but it\'s complaining that we didn\'t send any actual data in the request body."',
         errorMessage: 'Invalid syntax. Use `curl -X POST <URL>`'
       }

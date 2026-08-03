@@ -67,7 +67,13 @@ But the mystery deepens. Configuration drift like this doesn't happen accidental
     tasks: [
       {
         command: /^tail\s+-f\s+\/var\/log\/mei_webhook_receiver\.log$/i,
-        instruction: "The Webhooks are failing silently. Tail the receiver log file continuously to see what is happening. Use `tail -f /var/log/mei_webhook_receiver.log`",
+        instruction: 'Inspect the live, real-time output of the webhook receiver\'s log file to catch the incoming events as they happen.',
+        hints: [
+          "You need to view the end of a file and keep watching it.",
+          "The tool is 'tail'.",
+          "Use the '-f' (follow) flag to watch for changes."
+        ],
+        solution: 'tail -f /var/log/mei_webhook_receiver.log',
         successMessage: "[INFO] Listening for Webhooks...\n[ERROR] Payload rejected: Missing Content-Type application/JSON\n[SARAH]: \"Aha! The provider is sending plain text instead of JSON!\"",
         errorMessage: "Invalid command. Try `tail -f /var/log/mei_webhook_receiver.log`"
       }

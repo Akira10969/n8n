@@ -66,7 +66,13 @@ The fraudulent upgrades stop immediately. The attacker's requests are now bounci
     tasks: [
       {
         command: /^iptables\s+-A\s+INPUT\s+-s\s+10\.4\.99\.0\/24\s+-j\s+DROP$/i,
-        instruction: "Block the rogue subnet from sending forged Webhooks. Drop all traffic from 10.4.99.0/24 using iptables.",
+        instruction: 'Configure the server\'s firewall to block all incoming traffic from the compromised rogue subnet.',
+        hints: [
+          "You need to use the 'iptables' firewall utility.",
+          "Append a rule to the INPUT chain (-A INPUT).",
+          "Specify the source subnet (-s 10.4.99.0/24) and jump to the DROP target (-j DROP)."
+        ],
+        solution: 'iptables -A INPUT -s 10.4.99.0/24 -j DROP',
         successMessage: "iptables: rule added.\n[UNIT-7]: Rogue traffic dropping. Network stabilizing.\n[SARAH]: \"Good riddance. That stops the IP spoofing.\"",
         errorMessage: "Invalid command. Use `iptables -A INPUT -s 10.4.99.0/24 -j DROP`"
       }

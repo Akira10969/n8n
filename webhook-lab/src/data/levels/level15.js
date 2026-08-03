@@ -58,10 +58,16 @@ The Platform Operations Zone is secure for now, but the attack is moving deeper 
   simulator: {
     tasks: [
       {
-        command: /^mei-cli\s+dlq\s+inspect\s+--queue\s+billing_failures$/i,
-        instruction: "Inspect the Dead Letter Queue (DLQ) to see which Webhooks failed their final retry attempt.",
+        command: /^aws\s+sqs\s+receive-message\s+--queue-url\s+billing_failures$/i,
+        instruction: 'Use the system CLI to inspect the Dead Letter Queue (DLQ) and identify the webhooks that failed their final retry.',
+        hints: [
+          "Use the AWS CLI (`aws sqs`) to receive messages from the queue.",
+          "The subsystem is 'dlq'.",
+          "The action is 'view'."
+        ],
+        solution: 'aws sqs receive-message',
         successMessage: "[OK] Fetching dead letters...\n{\"system_override\": true, \"message\": \"See you in the Distributed Zone.\", \"signature_bypass\": \"? U N K N O W N ?\"}\n[SARAH]: \"What... is that?\"",
-        errorMessage: "Invalid syntax. Try `mei-cli dlq inspect --queue billing_failures`"
+        errorMessage: "Invalid syntax. Try `aws sqs receive-message --queue-url billing_failures`"
       }
     ]
   }

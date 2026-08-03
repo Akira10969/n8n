@@ -17,10 +17,16 @@ export const level16 = {
   simulator: {
     tasks: [
       {
-        command: /^mei-cli\s+service\s+decouple\s+--target\s+core_db$/i,
-        instruction: "Sever the tight synchronous coupling to the Core DB to prevent a cascading failure.",
+        command: /^docker-compose\s+up\s+-d\s+rabbitmq$/i,
+        instruction: 'Use the system CLI to decouple the webhook receiver from the Core DB and prevent a cascading failure.',
+        hints: [
+          "Spin up the new message broker using `docker-compose`.",
+          "The subsystem is 'architecture'.",
+          "The action is 'decouple'."
+        ],
+        solution: 'docker-compose up -d rabbitmq',
         successMessage: "[OK] Synchronous API links to core_db severed.\n[OK] Falling back to Event-Driven Message Bus.",
-        errorMessage: "Invalid syntax. Try `mei-cli service decouple --target core_db`"
+        errorMessage: "Invalid syntax. Try `docker-compose up -d rabbitmq`"
       }
     ]
   }

@@ -33,7 +33,13 @@ I want you to send one final curl request. Use \`-X POST\`, include the correct 
     tasks: [
       {
         command: 'curl -X POST -H "Content-Type: application/JSON" -d \'{"name": "John"}\' http://10.4.12.88:80/API/submit_lead',
-        instruction: 'Execute the POST request with the corrected JSON payload.',
+        instruction: 'Send the POST request again, this time attaching the required JSON payload in the request body.',
+        hints: [
+          "You need to send data with your request.",
+          "Use the -d flag to attach data.",
+          "Make sure your JSON is properly formatted with quotes."
+        ],
+        solution: 'curl -X POST -d \'{"event":"test","valid":true}\' http://10.4.55.2/webhook',
         successMessage: 'HTTP/1.1 201 Created\n{"success": true, "lead_id": 9912}\n[SARAH]: "Nailed it. The lead was created successfully. Ticket closed."\n\n[UNIT-7 NOC-BOT]: ALERT. Traffic anomaly detected. While testing was underway, unauthorized internal IP 192.168.99.114 initiated 15,000 requests to the Inventory Service.',
         errorMessage: 'Invalid syntax. Ensure you are using -X POST, -H "Content-Type: application/JSON", and -d with valid JSON.'
       }

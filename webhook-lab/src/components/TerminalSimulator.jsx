@@ -11,6 +11,8 @@ export default function TerminalSimulator({ simulatorData, onSuccess, onFail }) 
   const [input, setInput] = useState('');
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [hintStage, setHintStage] = useState(0);
+  const [failedAttempts, setFailedAttempts] = useState(0);
   const inputRef = useRef(null);
   const bottomRef = useRef(null);
 
@@ -29,15 +31,12 @@ export default function TerminalSimulator({ simulatorData, onSuccess, onFail }) 
 
   const handleCommand = (e) => {
     e.preventDefault();
-    if (!input.trim() || isCompleted) return;
+    if (isCompleted || !input.trim()) return;
 
     const cmd = input.trim();
     const newHistory = [...history, { type: 'input', text: `admin@mei-cloud:~$ ${cmd}` }];
-    
-    // Check against current task
+
     if (currentTask) {
-      // Basic validation: check if the typed command matches expected command
-      // In a real app, this could use regex. For now, we do lowercase exact/includes match.
       const isMatch = currentTask.command instanceof RegExp 
         ? currentTask.command.test(cmd)
         : cmd.toLowerCase() === currentTask.command.toLowerCase();
@@ -46,6 +45,8 @@ export default function TerminalSimulator({ simulatorData, onSuccess, onFail }) 
         newHistory.push({ type: 'success', text: currentTask.successMessage });
         setHistory(newHistory);
         setInput('');
+        setHintStage(0);
+        setFailedAttempts(0);
         
         if (currentTaskIndex < tasks.length - 1) {
           setCurrentTaskIndex(prev => prev + 1);
@@ -60,12 +61,34 @@ export default function TerminalSimulator({ simulatorData, onSuccess, onFail }) 
         } else if (cmd === 'ls') {
           newHistory.push({ type: 'output', text: 'config.json  logs/  server.js  webhook-receiver.js' });
           setHistory(newHistory);
+        } else if (cmd === 'hint') {
+          if (!currentTask.hints || currentTask.hints.length === 0) {
+            newHistory.push({ type: 'error', text: 'No hints available for this objective.' });
+          } else {
+            const maxHints = currentTask.hints.length;
+            if (hintStage < maxHints) {
+              newHistory.push({ type: 'system', text: `[HINT ${hintStage + 1}]: ${currentTask.hints[hintStage]}` });
+              setHintStage(prev => prev + 1);
+            } else {
+              if (currentTask.solution) {
+                newHistory.push({ type: 'system', text: `[SOLUTION]: ${currentTask.solution}` });
+              } else {
+                newHistory.push({ type: 'system', text: 'No more hints available.' });
+              }
+            }
+          }
+          setHistory(newHistory);
         } else if (cmd === 'help') {
-          newHistory.push({ type: 'output', text: 'Available commands: clear, ls, help, curl, ping, grep, systemctl, mei-cli' });
+          newHistory.push({ type: 'output', text: 'Available commands: clear, ls, help, hint, curl, ping, grep, systemctl' });
           setHistory(newHistory);
         } else {
           // Task failure message
+          const currentFails = failedAttempts + 1;
+          setFailedAttempts(currentFails);
           newHistory.push({ type: 'error', text: currentTask.errorMessage || `Command failed or unrecognized: ${cmd}` });
+          if (currentFails === 3) {
+             newHistory.push({ type: 'system', text: 'Stuck? Type "hint" for assistance.' });
+          }
           setHistory(newHistory);
           if (onFail) onFail();
         }

@@ -18,7 +18,13 @@ export const level20 = {
     tasks: [
       {
         command: /^jq\s+['"]\.timestamp['"]\s+payload_A\.JSON\s+payload_B\.JSON$/i,
-        instruction: "Use jq to extract the timestamps from two out-of-order payloads to determine their true chronological sequence.",
+        instruction: 'Extract the timestamp fields from the two incoming JSON payloads to determine their true chronological sequence.',
+        hints: [
+          "You need to parse JSON data from the terminal.",
+          "Use the 'jq' tool.",
+          "The filter to extract the timestamp is '.timestamp'. Pass the file 'payloads.json'."
+        ],
+        solution: 'jq .timestamp payloads.json',
         successMessage: "\"2026-07-31T08:14:02Z\"\n\"2026-07-31T08:13:59Z\"\n[SARAH]: \"Just as I thought. Payload B was sent first, but arrived second. Never trust the arrival order!\"",
         errorMessage: "Invalid syntax. Try `jq '.timestamp' payload_A.json payload_B.json`"
       }

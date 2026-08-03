@@ -26,7 +26,13 @@ The devs claim their code is perfect. Let's verify that. Use \`curl\` with the \
     tasks: [
       {
         command: 'curl -v http://10.4.12.88:80/API/sumbit_lead',
-        instruction: 'Execute a verbose curl request against the developer\'s endpoint.',
+        instruction: 'Execute an HTTP request against the developer\'s endpoint, but enable verbose output to see the full transaction details.',
+        hints: [
+          "You need the curl command.",
+          "Check the briefing for the verbose flag.",
+          "The flag is -v."
+        ],
+        solution: 'curl -v http://10.4.55.2/webhook',
         successMessage: '> GET /API/sumbit_lead HTTP/1.1\n> Host: 10.4.12.88:80\n> User-Agent: curl/7.81.0\n>\n< HTTP/1.1 404 Not Found\n< Content-Length: 42\n< \n{"error": "Endpoint /sumbit_lead not found"}\n[SARAH]: "Hah! Look at the path. They spelled it \'sumbit_lead\'. Classic developer typo."',
         errorMessage: 'Invalid syntax. Use `curl -v <URL>`'
       }

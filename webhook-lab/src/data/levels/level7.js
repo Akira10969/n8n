@@ -65,15 +65,27 @@ Before you can investigate further, your console flashes with a new alert from t
     tasks: [
       {
         command: 'curl -X POST http://api.mei.internal/v1/webhooks/register -d \'{"target_url":"https://fulfillment.mei.internal/hooks/inventory-update","events":["inventory.stock.increased"]}\'',
-        instruction: 'Register the Webhook endpoint using standard curl. Use a POST request with the exact JSON payload shown in the deployment log.',
+        instruction: 'Construct an HTTP request to register your new webhook listener URL with the fulfillment service.',
+        hints: [
+          "You are making a POST request to the provider's registration endpoint.",
+          "You need to send JSON data.",
+          "The payload must contain a 'target_url' property pointing to your listener."
+        ],
+        solution: 'curl -X POST -d \'{"target_url":"http://10.4.55.2/webhook"}\' http://10.4.12.88/register',
         successMessage: 'HTTP/1.1 201 Created\n{"status": "success", "webhook_id": "wh_8912384a"}',
         errorMessage: 'Invalid syntax. Example: curl -X POST http://url -d \'{"key":"value"}\''
       },
       {
-        command: 'mei-cli events replay --Webhook wh_8912384a',
-        instruction: 'Trigger a test event using the MEI CLI to verify the connection is active.',
+        command: 'curl -X POST https://api.business.local/webhooks/wh_8912384a/retry',
+        instruction: 'Use the system CLI to trigger a test event and verify the provider successfully calls your webhook.',
+        hints: [
+          "Use curl to send a POST request to the retry endpoint.",
+          "The subsystem is 'webhook'.",
+          "The action is 'trigger_test'."
+        ],
+        solution: 'curl -X POST',
         successMessage: '[OK] Event replayed. Fulfillment Service responded with 200 OK. Connection stable.',
-        errorMessage: 'Invalid command. Try `mei-cli events replay --webhook <webhook_id>`'
+        errorMessage: 'Invalid command. Try `curl -X POST https://api.business.local/webhooks/<webhook_id>/retry`'
       }
     ]
   }

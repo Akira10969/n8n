@@ -18,7 +18,13 @@ export const level19 = {
     tasks: [
       {
         command: /^kafka-topics\s+--create\s+--topic\s+webhook_events\s+--partitions\s+3$/i,
-        instruction: "Create a scalable message broker topic to buffer incoming Webhooks during traffic spikes.",
+        instruction: 'Use the system CLI to create a new message broker topic to buffer the incoming webhook traffic.',
+        hints: [
+          "Use `kafka-topics.sh` to create the new topic.",
+          "The subsystem is 'broker'.",
+          "The action is 'create_topic'."
+        ],
+        solution: 'kafka-topics.sh --create',
         successMessage: "Created topic webhook_events with 3 partitions.\n[UNIT-7]: Message broker buffer online. Traffic spikes mitigated.",
         errorMessage: "Invalid syntax. Try `kafka-topics --create --topic webhook_events --partitions 3`"
       }

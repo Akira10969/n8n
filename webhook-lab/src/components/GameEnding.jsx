@@ -29,13 +29,8 @@ export default function GameEnding({ onEndingComplete, xp }) {
     if (phase === 0) {
       document.body.classList.add('void-active');
       
-      // Deep rumble sound
-      const audio = new Audio('/error.webm');
-      audio.volume = 0.6;
-      audio.loop = true;
-      audio.playbackRate = 0.5;
-      audio.play().catch(e => console.log(e));
-      audioRef.current = audio;
+      // Deep rumble sound handled by music phase
+      audioRef.current = null;
 
       const timer = setTimeout(() => {
         setPhase(1);
