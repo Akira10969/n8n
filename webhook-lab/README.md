@@ -22,8 +22,11 @@ Guided by your NOC-BOT, **UNIT-7**, and Senior Engineer, **Sarah**, you must com
 - **Interactive World Map**: A visually stunning isometric world map where corrupted biomes are healed and restored as you progress.
 - **Terminal Simulator**: Hands-on coding exercises and simulated deployments using a custom-built, React-based terminal emulator.
 - **Advanced Audio Engine**: 
-  - **Browser TTS Voice Synthesis**: Distinct AI-generated voice profiles for UNIT-7, Sarah, and The Void with custom pacing and pitch.
+  - **Browser TTS Voice Synthesis**: Distinct AI-generated voice profiles for UNIT-7 (Male AI), Sarah (Female), and The Void (Distorted/Pitch-shifted), featuring strict gender-matching fallback logic and real-time pronunciation formatting.
   - **Dynamic Web Audio API**: Seamlessly crossfades background music, applies audio ducking during narration, and generates real-time procedural ambience and glitch effects.
+  - **Local Audio Resilience**: Background tracks are completely decoupled from external CDNs, residing locally in `public/audio/`. The engine gracefully degrades to silence if an asset is missing without throwing browser exceptions.
+- **Offline / Degraded Mode**: 
+  - The application features an incredibly robust API architecture. If the backend server (MySQL/PHP) is offline or throws a 502 Bad Gateway, the React client intercepts the failure, dynamically generates a temporary local `OFFLINE-` Engineer ID, and seamlessly continues storing curriculum progression in `localStorage`. The System Diagnostics Boot Sequence dynamically updates its UI to reflect this Offline state.
 - **Cinematic Events**: Immersive story moments, visual glitch effects for The Void, and a massive, emotional Post-Game sequence and Epilogue.
 - **Premium Design**: A modern UI featuring glassmorphism aesthetics, sleek dark mode styling, custom CSS animations, and seamless micro-interactions.
 
@@ -68,6 +71,18 @@ Follow these steps to run Business Cloud OS locally on your machine.
    *(Note: The `vite.config.js` is configured to proxy API requests to `http://localhost/n8n/webhook-lab/backend/api/`. Ensure your local PHP server is running and accessible at this path, or update the proxy settings as needed).*
 
 5. Open your browser and navigate to the URL provided in your terminal (typically `http://localhost:5173`).
+
+### Audio Assets
+The game expects local `.mp3` background music to be placed inside the `public/audio/` directory under specific folders:
+- `/public/audio/ambience/map.mp3`
+- `/public/audio/briefing/briefing.mp3`
+- `/public/audio/deployment/deployment.mp3`
+- `/public/audio/gameplay/gameplay.mp3`
+- `/public/audio/gameplay/critical.mp3`
+- `/public/audio/debrief/debrief.mp3`
+- `/public/audio/ending/void.mp3`
+
+*(Note: If you do not have these files, the game's Audio Engine will gracefully degrade and play in silence, logging a warning to the console rather than crashing).*
 
 ## 🎮 How to Play
 
