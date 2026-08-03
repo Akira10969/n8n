@@ -8,33 +8,34 @@ export const getAuthTokens = () => {
 };
 
 export const registerPlayer = async () => {
-  if (window._isRegistering) return null;
-  window._isRegistering = true;
+  if (window._registerPromise) return window._registerPromise;
   
-  try {
-    const res = await fetch('/backend/api/register.php');
-    if (!res.ok) {
+  window._registerPromise = (async () => {
+    try {
+      const res = await fetch('/backend/api/register.php');
+      if (!res.ok) {
+        if (!window._hasLoggedOffline) {
+          console.warn(`[API] Registration failed with status: ${res.status}. Falling back to Offline Mode.`);
+          window._hasLoggedOffline = true;
+        }
+        return null;
+      }
+      const data = await res.json();
+      if (data && data.success) {
+        localStorage.setItem('webhook_engineer_id', data.data.engineer_id);
+        localStorage.setItem('webhook_player_token', data.data.player_token);
+        return data.data;
+      }
+    } catch (error) {
       if (!window._hasLoggedOffline) {
-        console.warn(`[API] Registration failed with status: ${res.status}. Falling back to Offline Mode.`);
+        console.warn(`[API] Registration error: ${error.message}. Falling back to Offline Mode.`);
         window._hasLoggedOffline = true;
       }
-      return null;
     }
-    const data = await res.json();
-    if (data && data.success) {
-      localStorage.setItem('webhook_engineer_id', data.data.engineer_id);
-      localStorage.setItem('webhook_player_token', data.data.player_token);
-      return data.data;
-    }
-  } catch (error) {
-    if (!window._hasLoggedOffline) {
-      console.warn(`[API] Registration error: ${error.message}. Falling back to Offline Mode.`);
-      window._hasLoggedOffline = true;
-    }
-  } finally {
-    window._isRegistering = false;
-  }
-  return null;
+    return null;
+  })();
+
+  return window._registerPromise;
 };
 
 export const syncProgress = async (progressData) => {
