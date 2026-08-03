@@ -107,7 +107,7 @@ class BrowserTTSProvider extends VoiceProvider {
     window.speechSynthesis.cancel();
     await this.waitForVoices();
 
-    if (this.currentSpeakId !== speakId) return;
+    if (this.currentSpeakId !== speakId) return false;
 
     return new Promise((resolve) => {
       // Final cancel to ensure queue is clear before pushing utterance
@@ -138,11 +138,11 @@ class BrowserTTSProvider extends VoiceProvider {
       if (options.rate) utterance.rate = options.rate;
 
       utterance.onend = () => {
-        resolve();
+        resolve(true);
       };
       
       utterance.onerror = () => {
-        resolve(); // Resolve anyway so game doesn't hang
+        resolve(false); // Resolve anyway so game doesn't hang
       };
 
       window.speechSynthesis.speak(utterance);
@@ -292,7 +292,7 @@ class VoiceEngineManager {
     this.startSpeechBackground(character, options.sfxVolume || 0.5);
     setGlobalDucking(true);
     
-    await this.provider.speak(text, character, options);
+    const success = await this.provider.speak(text, character, options);
     
     // Only cleanup if we are still the active play request
     if (this.currentPlayId === playId) {
@@ -302,7 +302,9 @@ class VoiceEngineManager {
       if (character === 'SARAH') {
         setTimeout(playRadioClick, 200);
       }
+      return success;
     }
+    return false;
   }
 
   stop() {

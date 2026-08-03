@@ -141,6 +141,23 @@ function App() {
     }
   }, [currentIndex, hasSeenVoidReveal, hasCompletedGame]);
 
+  // Developer Cheat Code: Unlock everything (Ctrl+Shift+U)
+  useEffect(() => {
+    if (import.meta.env.PROD) return; // Only active in dev mode
+    
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'U' || e.key === 'u')) {
+        console.warn('[DEV] CHEAT ACTIVATED: Unlocking all missions and features...');
+        setHighestUnlockedIndex(curriculum.length - 1);
+        setAbsoluteHighestIndex(curriculum.length - 1);
+        setXp(5000); // Give max rank
+        setHearts(99); // Infinite hearts
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const getRank = (currentXp) => {
     if (currentXp < 500) return 'IT Intern';
     if (currentXp < 1000) return 'IT Support';
@@ -377,6 +394,7 @@ function App() {
 
             {missionState === 'reward' && (
               <MissionDebrief 
+                missionIndex={currentIndex}
                 xpGained={currentStep.briefing?.rewards?.xp || 50} 
                 newRank={getRank(xp)}
                 newAbsoluteIndex={absoluteHighestIndex}

@@ -3,9 +3,10 @@ import { Trophy, Star, ArrowRight, ShieldCheck, AlertTriangle, ShieldAlert, Chec
 import confetti from 'canvas-confetti';
 import { badges } from '../data/achievements';
 import { playVoiceLine, playSuccessSound } from '../utils/audioUtils';
+import { getDebrief } from '../data/debriefs';
 import './MissionDebrief.css';
 
-export default function MissionDebrief({ xpGained, newRank, unlockedBadgeId, onContinue, failedAttempts }) {
+export default function MissionDebrief({ missionIndex, xpGained, newRank, unlockedBadgeId, onContinue, failedAttempts }) {
   
   const [step, setStep] = useState(0); // 0: Status, 1: Report, 2: Rewards
 
@@ -22,20 +23,18 @@ export default function MissionDebrief({ xpGained, newRank, unlockedBadgeId, onC
   useEffect(() => {
     playSuccessSound();
     
+    const debrief = getDebrief(missionIndex, status);
+
     // Auto-progress sequence
     const t1 = setTimeout(() => setStep(1), 2000);
     const t2 = setTimeout(() => {
       setStep(2);
       fireConfetti();
-      playVoiceLine(
-        status === 'SUCCESS' 
-          ? "[SARAH]: Excellent work, Engineer. The incident has been fully resolved and systems are stable." 
-          : "[SARAH]: The incident is contained, but we experienced some turbulence. Let's review the logs for next time."
-      );
+      playVoiceLine(`[SARAH]: ${debrief.sarah}`);
     }, 4500);
 
     return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [status]);
+  }, [status, missionIndex]);
 
   const fireConfetti = () => {
     const duration = 2500;
@@ -73,8 +72,8 @@ export default function MissionDebrief({ xpGained, newRank, unlockedBadgeId, onC
           <div className="debrief-card report-card debrief-fade-in">
             <h3><CheckCircle2 size={16}/> POST-MISSION REPORT</h3>
             <div className="debrief-log">
-              <p><strong>[UNIT-7]:</strong> System diagnostics complete. Infrastructure integrity at 100%.</p>
-              <p><strong>[SARAH]:</strong> Good job stabilizing the environment. We've updated the NOC dashboard with your deployment logs.</p>
+              <p><strong>[UNIT-7]:</strong> {getDebrief(missionIndex, status).unit7}</p>
+              <p><strong>[SARAH]:</strong> {getDebrief(missionIndex, status).sarah}</p>
             </div>
           </div>
         )}

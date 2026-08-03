@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Database, Webhook, Cloud, Server, Lock } from 'lucide-react';
+import { playVoiceLine, stopVoice } from '../utils/audioUtils';
 
 export default function TheVoidReveal({ onRevealComplete }) {
   const [phase, setPhase] = useState(0);
@@ -39,15 +40,15 @@ export default function TheVoidReveal({ onRevealComplete }) {
     gain.connect(audioCtx.destination);
     osc.start();
 
-    // Glitch sound on mount
+    // Subtle glitch sound on mount (softened)
     const glitchOsc = audioCtx.createOscillator();
     glitchOsc.type = 'sawtooth';
-    glitchOsc.frequency.setValueAtTime(150, audioCtx.currentTime);
-    glitchOsc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.5);
+    glitchOsc.frequency.setValueAtTime(80, audioCtx.currentTime); // Lower frequency, less harsh
+    glitchOsc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.3);
     
     const glitchGain = audioCtx.createGain();
-    glitchGain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-    glitchGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+    glitchGain.gain.setValueAtTime(0.05, audioCtx.currentTime); // Significantly lower volume
+    glitchGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
     
     glitchOsc.connect(glitchGain);
     glitchGain.connect(audioCtx.destination);
@@ -61,34 +62,55 @@ export default function TheVoidReveal({ onRevealComplete }) {
 
     return () => {
       document.body.classList.remove('void-active');
+      stopVoice();
       if (globalAudio) globalAudio.volume = 0.5; // Restore music when done
       if (window.voidAudio) {
         try {
-          window.voidAudio.droneGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
-          setTimeout(() => window.voidAudio.drone.stop(), 1000);
-          setTimeout(() => window.voidAudio.ctx.close(), 1100);
+          window.voidAudio.droneGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+          setTimeout(() => window.voidAudio.drone.stop(), 500);
+          setTimeout(() => window.voidAudio.ctx.close(), 600);
         } catch(e) {}
       }
     };
   }, []);
 
   useEffect(() => {
+    let isActive = true;
+
     if (phase === 0) {
       if (textIndex < scriptLines.length) {
         const line = scriptLines[textIndex];
-        const delay = line.style.includes('void-text') ? 2500 : 1500;
         
-        const timer = setTimeout(() => {
-          setTextIndex(prev => prev + 1);
-        }, delay);
-        return () => clearTimeout(timer);
+        let voiceText = line.text;
+        if (line.style.includes('void-text')) {
+          if (line.text === '...') {
+            voiceText = null;
+          } else {
+            voiceText = '[THE VOID]: ' + line.text;
+          }
+        }
+
+        if (voiceText) {
+          playVoiceLine(voiceText, () => {
+            if (isActive) {
+              setTimeout(() => {
+                if (isActive) setTextIndex(prev => prev + 1);
+              }, line.style.includes('void-text') ? 800 : 400);
+            }
+          });
+        } else {
+          setTimeout(() => {
+            if (isActive) setTextIndex(prev => prev + 1);
+          }, 1500);
+        }
       } else {
         // Moment of near silence before the reveal
         if (window.voidAudio) {
           window.voidAudio.droneGain.gain.linearRampToValueAtTime(0.01, window.voidAudio.ctx.currentTime + 2);
         }
-        const timer = setTimeout(() => setPhase(1), 3500); // 3.5s pause of near silence
-        return () => clearTimeout(timer);
+        setTimeout(() => {
+          if (isActive) setPhase(1);
+        }, 3500);
       }
     } else if (phase === 1) {
       // Trigger the singularity with powerful cinematic impact
@@ -110,24 +132,24 @@ export default function TheVoidReveal({ onRevealComplete }) {
         bass.start();
         bass.stop(ctx.currentTime + 4);
 
-        // Distortion / Static Blast
+        // Distortion / Static Blast (Softened)
         const bufferSize = ctx.sampleRate * 2; // 2 seconds of noise
         const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
         const data = buffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) {
-          data[i] = Math.random() * 2 - 1; // White noise
+          data[i] = (Math.random() * 2 - 1) * 0.3; // Much quieter white noise
         }
         const noiseSource = ctx.createBufferSource();
         noiseSource.buffer = buffer;
         
         const noiseFilter = ctx.createBiquadFilter();
         noiseFilter.type = 'lowpass';
-        noiseFilter.frequency.setValueAtTime(1000, ctx.currentTime);
+        noiseFilter.frequency.setValueAtTime(400, ctx.currentTime); // Cut high frequencies
         noiseFilter.frequency.linearRampToValueAtTime(100, ctx.currentTime + 2);
 
         const noiseGain = ctx.createGain();
-        noiseGain.gain.setValueAtTime(0.5, ctx.currentTime);
-        noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 2);
+        noiseGain.gain.setValueAtTime(0.15, ctx.currentTime); // Low volume blast
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
         
         noiseSource.connect(noiseFilter);
         noiseFilter.connect(noiseGain);
@@ -149,16 +171,19 @@ export default function TheVoidReveal({ onRevealComplete }) {
       setConsumedObjects(objects);
 
       const timer = setTimeout(() => {
-        document.body.classList.remove('screen-tearing-active');
-        setPhase(2);
+        if (isActive) {
+          document.body.classList.remove('screen-tearing-active');
+          setPhase(2);
+        }
       }, 5000);
-      return () => {
-        document.body.classList.remove('screen-tearing-active');
-        clearTimeout(timer);
-      };
     } else if (phase === 2) {
       onRevealComplete();
     }
+
+    return () => {
+      isActive = false;
+      document.body.classList.remove('screen-tearing-active');
+    };
   }, [phase, textIndex]);
 
   return (

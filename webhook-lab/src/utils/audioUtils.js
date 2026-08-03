@@ -265,8 +265,8 @@ export const playVoiceLine = (text, onEnd, options = {}) => {
     ...options,
     sfxVolume: audioSettings.sfxVolume,
     voiceEnabled: audioSettings.voiceEnabled
-  }).then(() => {
-    if (onEnd) onEnd();
+  }).then((success) => {
+    if (success && onEnd) onEnd();
   });
 };
 
