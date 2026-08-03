@@ -64,13 +64,18 @@ export default function TheVoidReveal({ onRevealComplete }) {
       document.body.classList.remove('void-active');
       stopVoice();
       if (globalAudio) globalAudio.volume = 0.5; // Restore music when done
-      if (window.voidAudio) {
-        try {
-          window.voidAudio.droneGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
-          setTimeout(() => window.voidAudio.drone.stop(), 500);
-          setTimeout(() => window.voidAudio.ctx.close(), 600);
-        } catch(e) {}
-      }
+      try {
+        gain.gain.cancelScheduledValues(audioCtx.currentTime);
+        gain.gain.setValueAtTime(gain.gain.value, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+        
+        setTimeout(() => {
+          try { osc.stop(); } catch(e){}
+        }, 500);
+        setTimeout(() => {
+          try { audioCtx.close(); } catch(e){}
+        }, 600);
+      } catch(e) {}
     };
   }, []);
 
