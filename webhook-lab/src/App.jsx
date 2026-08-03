@@ -19,13 +19,10 @@ import TheVoidReveal from './components/TheVoidReveal';
 import GameEnding from './components/GameEnding';
 import AdminDashboard from './components/AdminDashboard';
 import SettingsModal from './components/SettingsModal';
-import { updateAudioSettings, setMusicPhase, playUIBeep, checkAudioAssets } from './utils/audioUtils';
+import { updateAudioSettings, setMusicPhase, playUIBeep } from './utils/audioUtils';
 import { registerPlayer, syncProgress, sendHeartbeat, getAuthTokens, logEvent } from './api';
 import './App.css';
 import './game.css';
-
-// Perform startup checks
-checkAudioAssets();
 
 function App() {
   const [currentIndex, setCurrentIndex] = useState(() => parseInt(localStorage.getItem('webhook_current_index') || '0', 10));

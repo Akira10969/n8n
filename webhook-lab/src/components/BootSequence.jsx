@@ -165,8 +165,9 @@ export default function BootSequence({ highestUnlockedIndex, onBootComplete, isO
     timers.push(setTimeout(() => { setStep(2); playUIBeep(); }, 2500)); // Auth
     timers.push(setTimeout(() => { setStep(3); playUIBeep(); }, 4000)); // Load infra
     timers.push(setTimeout(() => { setStep(4); playUIBeep(); }, 5500)); // Sync complete
-    timers.push(setTimeout(() => { setStep(5); playUIBeep(); }, 7000)); // Welcome
-    timers.push(setTimeout(() => { setStep(6); }, 8500)); // Narrative start
+    timers.push(setTimeout(() => { setStep(5); playUIBeep(); }, 7000)); // Backend connection
+    timers.push(setTimeout(() => { setStep(6); }, 8500)); // System Ready
+    timers.push(setTimeout(() => { setStep(7); }, 10000)); // Narrative start
     
     return () => timers.forEach(clearTimeout);
   }, []);

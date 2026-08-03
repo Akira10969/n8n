@@ -43,37 +43,13 @@ let currentEnvOsc = null;
 let currentEnvGain = null;
 
 const MUSIC_TRACKS = {
-  MAP: "/audio/ambience/map.mp3",
-  BRIEFING: "/audio/briefing/briefing.mp3",
-  DEPLOYMENT: "/audio/deployment/deployment.mp3",
-  GAMEPLAY: "/audio/gameplay/gameplay.mp3",
-  CRITICAL: "/audio/gameplay/critical.mp3",
-  DEBRIEF: "/audio/debrief/debrief.mp3",
-  VOID: "/audio/ending/void.mp3"
-};
-
-export const checkAudioAssets = async () => {
-  if (!import.meta.env.DEV) return;
-  
-  console.log('\n[AUDIO CHECK]');
-  window._knownMissingAudio = window._knownMissingAudio || new Set();
-  
-  for (const [key, path] of Object.entries(MUSIC_TRACKS)) {
-    try {
-      const response = await fetch(path, { method: 'HEAD' });
-      const contentType = response.headers.get('content-type');
-      if (response.ok && (!contentType || !contentType.includes('text/html'))) {
-        console.log(`✓ ${path.split('/').pop()}`);
-      } else {
-        console.warn(`✗ ${path.split('/').pop()} (Missing or Invalid)`);
-        window._knownMissingAudio.add(path);
-      }
-    } catch (error) {
-      console.warn(`✗ ${path.split('/').pop()} (Missing - Network Error)`);
-      window._knownMissingAudio.add(path);
-    }
-  }
-  console.log('\n');
+  MAP: "https://cdn.pixabay.com/download/audio/2022/11/22/audio_febc508520.mp3",
+  BRIEFING: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3",
+  DEPLOYMENT: "https://cdn.pixabay.com/download/audio/2021/11/24/audio_33895e7c8f.mp3",
+  GAMEPLAY: "https://cdn.pixabay.com/download/audio/2021/10/08/audio_2448375e0c.mp3",
+  CRITICAL: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c89e2c694a.mp3",
+  DEBRIEF: "https://cdn.pixabay.com/download/audio/2021/11/23/audio_732a3d0fb1.mp3",
+  VOID: "https://cdn.pixabay.com/download/audio/2022/02/10/audio_5fb6660fc6.mp3"
 };
 
 // Utility to track and clear intervals
@@ -203,11 +179,6 @@ export const setMusicPhase = (phase) => {
   
   // 1. Fade Out Current Element Sequence
   const fadeOutAndPlayNext = () => {
-    if (window._knownMissingAudio && window._knownMissingAudio.has(trackUrl)) {
-      isTransitioning = false;
-      return;
-    }
-
     nextAudioElement = new Audio(trackUrl);
     nextAudioElement.loop = true;
     nextAudioElement.volume = 0;
@@ -224,27 +195,22 @@ export const setMusicPhase = (phase) => {
       const targetVol = Math.max(0, Math.min(1, audioSettings.musicVolume * (isDucking ? 0.2 : 1)));
       let vol = 0;
       
-      currentAudioElement.fadeInterval = safeSetInterval(() => {
+      const fadeInInterval = setInterval(() => {
         vol += 0.05;
         if (vol >= targetVol) {
-          currentAudioElement.volume = targetVol;
-          safeClearInterval(currentAudioElement.fadeInterval);
-          currentAudioElement.fadeInterval = null;
+          if (currentAudioElement) currentAudioElement.volume = targetVol;
+          clearInterval(fadeInInterval);
           isTransitioning = false;
           logAudio('Music Transition Complete');
         } else {
-          currentAudioElement.volume = Math.max(0, Math.min(1, vol));
+          if (currentAudioElement) currentAudioElement.volume = Math.max(0, Math.min(1, vol));
         }
       }, 100);
     }).catch(() => {
       isTransitioning = false;
       
-      window._knownMissingAudio = window._knownMissingAudio || new Set();
-      if (!window._knownMissingAudio.has(trackUrl)) {
-        window._knownMissingAudio.add(trackUrl);
-        if (import.meta.env.DEV) {
-          console.warn(`[AUDIO]\nTrack: ${trackUrl.split('/').pop()}\nStatus: Missing\nFallback: Silence`);
-        }
+      if (import.meta.env.DEV) {
+        console.warn(`[AUDIO]\nTrack: ${trackUrl.split('/').pop()}\nStatus: Missing\nFallback: Silence`);
       }
       
       if (nextAudioElement) {
