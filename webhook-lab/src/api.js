@@ -51,14 +51,13 @@ export const sendHeartbeat = async () => {
   if (!auth.engineer_id || auth.engineer_id.startsWith('OFFLINE-')) return;
 
   try {
-    const res = await fetch('/backend/api/heartbeat.php', {
+    await fetch('/backend/api/heartbeat.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(auth)
     });
-    // Ignore heartbeat response
   } catch (error) {
-    // Ignore heartbeat failures quietly
+    console.debug('[API] Heartbeat failed: Expected if backend is down.', error.message);
   }
 };
 
@@ -67,7 +66,7 @@ export const logEvent = async (eventType, missionIndex = null, eventData = null)
   if (!auth.engineer_id || auth.engineer_id.startsWith('OFFLINE-')) return;
 
   try {
-    const res = await fetch('/backend/api/analytics.php', {
+    await fetch('/backend/api/analytics.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -77,8 +76,7 @@ export const logEvent = async (eventType, missionIndex = null, eventData = null)
         event_data: eventData
       })
     });
-    // Ignore analytics response
   } catch (error) {
-    // Ignore analytics failures quietly
+    console.debug('[API] Analytics failed: Expected if backend is down.', error.message);
   }
 };

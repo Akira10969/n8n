@@ -68,7 +68,7 @@ But the mystery deepens. Configuration drift like this doesn't happen accidental
       {
         command: /^tail\s+-f\s+\/var\/log\/mei_webhook_receiver\.log$/i,
         instruction: "The Webhooks are failing silently. Tail the receiver log file continuously to see what is happening. Use `tail -f /var/log/mei_webhook_receiver.log`",
-        successMessage: "[INFO] Listening for Webhooks...\n[ERROR] Payload rejected: Missing Content-Type application/json\n[SARAH]: \"Aha! The provider is sending plain text instead of JSON!\"",
+        successMessage: "[INFO] Listening for Webhooks...\n[ERROR] Payload rejected: Missing Content-Type application/JSON\n[SARAH]: \"Aha! The provider is sending plain text instead of JSON!\"",
         errorMessage: "Invalid command. Try `tail -f /var/log/mei_webhook_receiver.log`"
       }
     ]

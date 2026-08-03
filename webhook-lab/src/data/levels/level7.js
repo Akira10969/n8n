@@ -10,13 +10,13 @@ export const level7 = {
   },
   content: `
 ## Deployment Log
-**Operator:** Player\_One
+**Operator:** Player_One
 **Action:** Webhook Registration
 
 To establish the Webhook, you register the Fulfillment Service's endpoint with the Inventory Service's event registry:
 
-\`\`\`json
-POST /api/v1/webhooks/register
+\`\`\`JSON
+POST /API/v1/webhooks/register
 {
   "target_url": "https://fulfillment.mei.internal/hooks/inventory-update",
   "events": ["inventory.stock.increased", "inventory.stock.depleted"]
@@ -70,7 +70,7 @@ Before you can investigate further, your console flashes with a new alert from t
         errorMessage: 'Invalid syntax. Example: curl -X POST http://url -d \'{"key":"value"}\''
       },
       {
-        command: 'mei-cli events replay --webhook wh_8912384a',
+        command: 'mei-cli events replay --Webhook wh_8912384a',
         instruction: 'Trigger a test event using the MEI CLI to verify the connection is active.',
         successMessage: '[OK] Event replayed. Fulfillment Service responded with 200 OK. Connection stable.',
         errorMessage: 'Invalid command. Try `mei-cli events replay --webhook <webhook_id>`'

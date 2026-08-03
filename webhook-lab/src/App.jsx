@@ -33,7 +33,7 @@ function App() {
   const [quizKey, setQuizKey] = useState(0);
   const [currentView, setCurrentView] = useState('map'); // 'map', 'learning', 'dashboard'
   const [missionState, setMissionState] = useState('episode-card'); // 'episode-card', 'briefing', 'content', 'reward'
-  const [hasBooted, setHasBooted] = useState(() => sessionStorage.getItem('webhook_has_booted') === 'true');
+  const [hasBooted] = useState(() => sessionStorage.getItem('webhook_has_booted') === 'true');
   const [hasStarted, setHasStarted] = useState(false); // Always false on hard load to ensure audio interaction
   const [hasSeenMapIntro, setHasSeenMapIntro] = useState(() => sessionStorage.getItem('webhook_has_seen_map_intro') === 'true');
   const [hasSeenMapCorruption, setHasSeenMapCorruption] = useState(() => localStorage.getItem('webhook_has_seen_map_corruption') === 'true');

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Terminal, CheckCircle2, XCircle, ChevronRight, Play } from 'lucide-react';
+import { Terminal, CheckCircle2, XCircle, ChevronRight } from 'lucide-react';
 import './TerminalSimulator.css';
 
 export default function TerminalSimulator({ simulatorData, onSuccess, onFail }) {

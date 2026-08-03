@@ -37,13 +37,13 @@ Let's test this manually. Instead of \`ping\`, I want you to act as a web client
   simulator: {
     tasks: [
       {
-        command: /^curl\s+(http:\/\/)?10\.4\.12\.88(:80)?\/?$/i,
+        command: /^curl\s+(HTTP:\/\/)?10\.4\.12\.88(:80)?\/?$/i,
         instruction: 'Retrieve the webpage from the marketing server (10.4.12.88) on port 80 to verify that the web service is responding.',
         successMessage: 'curl: (7) Failed to connect to 10.4.12.88 port 80: Connection refused\n[SARAH]: "Exactly as I suspected. The web process crashed. Let me reboot the Nginx service real quick..."\n[SARAH]: "Okay, try it again."',
         errorMessage: 'Validation Failed. Hint: Use `curl http://10.4.12.88:80` to make the request.'
       },
       {
-        command: /^curl\s+(http:\/\/)?10\.4\.12\.88(:80)?\/?$/i,
+        command: /^curl\s+(HTTP:\/\/)?10\.4\.12\.88(:80)?\/?$/i,
         instruction: 'Sarah rebooted the web service. Run the same command again to verify that the webpage is now accessible.',
         successMessage: 'HTTP/1.1 200 OK\nContent-Type: text/html\n\n<html><body><h1>MEI Marketing v1.0</h1></body></html>\n[SARAH]: "Boom. We have HTML. Good job, kid."',
         errorMessage: 'Validation Failed. Hint: Use `curl http://10.4.12.88:80` to make the request.'

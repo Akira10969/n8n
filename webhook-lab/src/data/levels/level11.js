@@ -19,7 +19,7 @@ The Account Upgrader Service listens for Webhooks from the Billing Service. When
 You pull the logs for one of the fraudulent upgrades:
 
 \`\`\`log
-[INFO] Incoming POST /webhook/account-upgrade
+[INFO] Incoming POST /Webhook/account-upgrade
 [INFO] Payload: {"user_id": 9942, "status": "payment_success", "tier": "premium_admin"}
 [INFO] Upgrading user 9942 to premium_admin...
 \`\`\`
@@ -28,7 +28,7 @@ The Webhook looks completely legitimate. However, when you cross-reference this 
 
 ## Concept Explanation: Webhook Authentication
 
-Because Webhooks are just HTTP requests sent to a public-facing URL (like \`/webhook/account-upgrade\`), **anyone on the internet who knows the URL can send a request to it.**
+Because Webhooks are just HTTP requests sent to a public-facing URL (like \`/Webhook/account-upgrade\`), **anyone on the internet who knows the URL can send a request to it.**
 
 the rogue entity discovered the URL for the Account Upgrader Service. They bypassed the billing system entirely and simply sent a fake HTTP POST request directly to the Webhook receiver, pretending to be the Billing Service. 
 
@@ -41,8 +41,8 @@ To stop the immediate attack, you must establish trust between the sender (Billi
 You modify the Billing Service to include a secret token in every Webhook header:
 
 \`\`\`HTTP
-POST /webhook/account-upgrade HTTP/1.1
-Content-Type: application/json
+POST /Webhook/account-upgrade HTTP/1.1
+Content-Type: application/JSON
 X-Webhook-Token: super_secret_token_123
 
 {"user_id": 9942, "status": "payment_success"}
@@ -51,7 +51,7 @@ X-Webhook-Token: super_secret_token_123
 You then update the Account Upgrader Service to check for this token before processing any data:
 
 \`\`\`javascript
-if (request.headers['x-webhook-token'] !== 'super_secret_token_123') {
+if (request.headers['x-Webhook-token'] !== 'super_secret_token_123') {
     return response.status(401).send("Unauthorized Imposter!");
 }
 \`\`\`

@@ -44,7 +44,7 @@ You cannot simply turn off the old token, or legitimate Webhooks will fail while
 
 \`\`\`javascript
 const validTokens = [ process.env.NEW_API_KEY, process.env.LEGACY_API_KEY ];
-if (!validTokens.includes(request.headers['x-api-key'])) {
+if (!validTokens.includes(request.headers['x-API-key'])) {
     return response.status(401).send("Unauthorized");
 }
 \`\`\`

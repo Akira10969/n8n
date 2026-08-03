@@ -70,12 +70,12 @@ export default function TheVoidReveal({ onRevealComplete }) {
         gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
         
         setTimeout(() => {
-          try { osc.stop(); } catch(e){}
+          try { osc.stop(); } catch {}
         }, 500);
         setTimeout(() => {
-          try { audioCtx.close(); } catch(e){}
+          try { audioCtx.close(); } catch {}
         }, 600);
-      } catch(e) {}
+      } catch {}
     };
   }, []);
 

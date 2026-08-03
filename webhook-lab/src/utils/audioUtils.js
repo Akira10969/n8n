@@ -207,7 +207,7 @@ export const setMusicPhase = (phase) => {
           currentAudioElement.volume = Math.max(0, Math.min(1, vol));
         }
       }, 100);
-    }).catch(e => {
+    }).catch(() => {
       isTransitioning = false;
       
       if (import.meta.env.DEV) {

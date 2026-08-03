@@ -29,7 +29,7 @@ You know the Order Service is configured to send its credentials. You SSH into t
 \`\`\`HTTP
 POST /verify HTTP/1.1
 Host: auth.mei.internal
-Content-Type: application/json
+Content-Type: application/JSON
 Authorization: Bearer xyz123_secure_token_999
 User-Agent: MEI-Order-Service/v2.1
 
@@ -73,7 +73,7 @@ You bypass the malicious proxy, restoring the 'Authorization' headers, and the t
   simulator: {
     tasks: [
       {
-        command: /^curl\s+-H\s+["']Authorization:\s+Bearer\s+secret_token["']\s+(http:\/\/)?10\.4\.55\.2\/webhook\/?$/i,
+        command: /^curl\s+-H\s+["']Authorization:\s+Bearer\s+secret_token["']\s+(HTTP:\/\/)?10\.4\.55\.2\/Webhook\/?$/i,
         instruction: "Test the authenticated endpoint by passing the Bearer token in the headers. Use `curl -H \"Authorization: Bearer secret_token\" http://10.4.55.2/webhook`",
         successMessage: "HTTP/1.1 200 OK\n{\"status\": \"Authorized\"}\n[SARAH]: \"Perfect. The endpoint is locked down. Only those with the token can enter.\"",
         errorMessage: "Invalid syntax. Ensure you are passing the Authorization header exactly as shown."

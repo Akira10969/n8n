@@ -101,26 +101,6 @@ const Typewriter = ({ text, delay = 20, onComplete }) => {
   return <span>{displayed}<span className="cursor-block">█</span></span>;
 };
 
-const LoadingBar = ({ targetPercent, onComplete }) => {
-  const [percent, setPercent] = useState(0);
-
-  useEffect(() => {
-    if (percent < targetPercent) {
-      const t = setTimeout(() => setPercent(p => p + Math.floor(Math.random() * 5) + 1), Math.random() * 50 + 20);
-      return () => clearTimeout(t);
-    } else {
-      setPercent(targetPercent);
-      if (onComplete) onComplete();
-    }
-  }, [percent, targetPercent, onComplete]);
-
-  const boxes = 10;
-  const filledBoxes = Math.floor((percent / 100) * boxes);
-  const bar = Array.from({ length: boxes }, (_, i) => (i < filledBoxes ? '■' : '□')).join('');
-
-  return <div>{bar} {Math.min(percent, targetPercent)}%</div>;
-};
-
 export default function BootSequence({ highestUnlockedIndex, onBootComplete, isOffline = false }) {
   const [step, setStep] = useState(0);
 
@@ -229,7 +209,7 @@ export default function BootSequence({ highestUnlockedIndex, onBootComplete, isO
         gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
         setTimeout(() => osc.stop(), 1000);
         setTimeout(() => audioCtx.close(), 1100);
-      } catch (e) {}
+      } catch {}
     };
   }, [highestUnlockedIndex]);
 

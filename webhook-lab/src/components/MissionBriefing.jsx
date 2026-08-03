@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AlertOctagon, Target, Play, Radio, CheckCircle2, Terminal, ShieldAlert, Cpu, Activity, Server, Clock } from 'lucide-react';
+import { AlertOctagon, Play, Radio, Terminal, ShieldAlert, Cpu, Activity, Server, Clock } from 'lucide-react';
 import './MissionBriefing.css';
-import { playVoiceLine, stopVoice, playUIBeep, playSuccessSound, playZoneAmbience, stopZoneAmbience, getAudioContext, setMusicPhase, playTypingSound } from '../utils/audioUtils';
+import { playVoiceLine, stopVoice, playUIBeep, playSuccessSound, playZoneAmbience, stopZoneAmbience, setMusicPhase, playTypingSound } from '../utils/audioUtils';
 
 // ─── Typewriter component ────────────────────────────────────────────────────
 function Typewriter({ text, delay = 18, onDone, speedMultiplier = 1, showCursor = true }) {
@@ -52,9 +52,13 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission,
   const intervalsRef = useRef([]);
 
   useEffect(() => {
+    const timeouts = timeoutsRef.current;
+    const intervals = intervalsRef.current;
     return () => {
-      timeoutsRef.current.forEach(clearTimeout);
-      intervalsRef.current.forEach(clearInterval);
+      timeouts.forEach(clearTimeout);
+      intervals.forEach(clearInterval);
+      timeouts.length = 0;
+      intervals.length = 0;
     };
   }, []);
   
@@ -152,6 +156,7 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission,
     }
 
     return () => stopVoice();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   // Check completion of typing and voice
@@ -163,6 +168,7 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission,
         timeoutsRef.current.push(t);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typingDone, voiceDone, settings?.autoPlayBriefings, isReplay]);
 
   const advance = () => {

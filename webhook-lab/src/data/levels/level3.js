@@ -16,18 +16,18 @@ export const level3 = {
 
 **HTTP (Hypertext Transfer Protocol)** is the language clients and servers use to talk to each other. When a browser (or curl) connects to a server, it doesn't just say 'hello'. It sends a formatted text document called an **HTTP Request**.
 
-Every HTTP Request needs a **Path** (like \`/index.html\` or \`/api/submit\`). It tells the server exactly *which* file or function the client wants.
+Every HTTP Request needs a **Path** (like \`/index.html\` or \`/API/submit\`). It tells the server exactly *which* file or function the client wants.
 
 The devs claim their code is perfect. Let's verify that. Use \`curl\` with the \`-v\` (verbose) flag. This will print out the exact HTTP conversation happening under the hood when you try to hit their endpoint."
 
-> **SYSTEM ALERT:** The developers are trying to hit \`http://10.4.12.88:80/api/sumbit_lead\`. Run a verbose curl against this URL to see what is happening.
+> **SYSTEM ALERT:** The developers are trying to hit \`http://10.4.12.88:80/API/sumbit_lead\`. Run a verbose curl against this URL to see what is happening.
 `,
   simulator: {
     tasks: [
       {
-        command: 'curl -v http://10.4.12.88:80/api/sumbit_lead',
+        command: 'curl -v http://10.4.12.88:80/API/sumbit_lead',
         instruction: 'Execute a verbose curl request against the developer\'s endpoint.',
-        successMessage: '> GET /api/sumbit_lead HTTP/1.1\n> Host: 10.4.12.88:80\n> User-Agent: curl/7.81.0\n>\n< HTTP/1.1 404 Not Found\n< Content-Length: 42\n< \n{"error": "Endpoint /sumbit_lead not found"}\n[SARAH]: "Hah! Look at the path. They spelled it \'sumbit_lead\'. Classic developer typo."',
+        successMessage: '> GET /API/sumbit_lead HTTP/1.1\n> Host: 10.4.12.88:80\n> User-Agent: curl/7.81.0\n>\n< HTTP/1.1 404 Not Found\n< Content-Length: 42\n< \n{"error": "Endpoint /sumbit_lead not found"}\n[SARAH]: "Hah! Look at the path. They spelled it \'sumbit_lead\'. Classic developer typo."',
         errorMessage: 'Invalid syntax. Use `curl -v <URL>`'
       }
     ]

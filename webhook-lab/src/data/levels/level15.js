@@ -36,7 +36,7 @@ Almost immediately, the DLQ alarm triggers. A message has failed all 10 retries 
 
 You expect to see a standard billing payload. Instead, you find this:
 
-\`\`\`json
+\`\`\`JSON
 {
   "system_override": true,
   "target": "MEI_CORE_INFRASTRUCTURE",

@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Lock, CheckCircle2, Play, AlertTriangle, ShieldAlert, Activity, Server, Radio, Database } from 'lucide-react';
+import { Lock, CheckCircle2, Play, ShieldAlert, Activity } from 'lucide-react';
 import PostGameSequence from './PostGameSequence';
-import { playVoiceLine, playUIBeep } from '../utils/audioUtils';
+import { playVoiceLine } from '../utils/audioUtils';
 import './MissionMap.css';
 
 // Zone definitions for region labels and colors

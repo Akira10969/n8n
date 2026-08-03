@@ -17,9 +17,9 @@ export const level9 = {
 You pull up the centralized logging dashboard. Thousands of requests are failing every minute, but they are failing for different reasons. 
 
 \`\`\`log
-[ERROR] POST /webhook/analytics -> 400 Bad Request
-[ERROR] POST /webhook/analytics -> 502 Bad Gateway
-[ERROR] POST /webhook/analytics -> 400 Bad Request
+[ERROR] POST /Webhook/analytics -> 400 Bad Request
+[ERROR] POST /Webhook/analytics -> 502 Bad Gateway
+[ERROR] POST /Webhook/analytics -> 400 Bad Request
 \`\`\`
 
 To fix the outage, you need to understand what these numbers mean.
@@ -46,7 +46,7 @@ Before we diagnose this, let's establish a strict mental model of what exactly i
 
 You look closer at the \`400 Bad Request\` errors. A 4xx error means the CRM system (the sender) is doing something wrong. You inspect the payload it's sending:
 
-\`\`\`json
+\`\`\`JSON
 {
   "event_type": "user_signup",
   "payload": "{ corrupted_data_stream }",
@@ -71,7 +71,7 @@ The 502s disappear. The servers stabilize. You've stopped the bleeding, but the 
   simulator: {
     tasks: [
       {
-        command: /^curl\s+-I\s+-X\s+POST\s+(http:\/\/)?10\.4\.55\.2\/webhook\/?$/i,
+        command: /^curl\s+-I\s+-X\s+POST\s+(HTTP:\/\/)?10\.4\.55\.2\/Webhook\/?$/i,
         instruction: "Send a HEAD/Headers-only POST request to the Webhook receiver to inspect its HTTP response codes. Use `curl -I -X POST http://10.4.55.2/webhook`",
         successMessage: "HTTP/1.1 500 Internal Server Error\nContent-Type: text/plain\n\n[SARAH]: \"A 500 error! Our receiver is crashing when it parses the payload!\"",
         errorMessage: "Invalid syntax. Try `curl -I -X POST http://10.4.55.2/webhook`"

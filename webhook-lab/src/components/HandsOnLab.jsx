@@ -30,12 +30,13 @@ export default function HandsOnLab() {
             timestamp: new Date().toISOString()
           }
         });
-      } catch (err) {
+      } catch (error) {
         setResponse({
           status: 400,
           statusText: 'Bad Request',
           error: 'Invalid JSON payload. Please check your syntax.'
         });
+        console.warn('[HandsOnLab] Execution failed:', error.message);
       }
     }, 1200);
   };

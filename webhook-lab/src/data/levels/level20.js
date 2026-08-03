@@ -17,7 +17,7 @@ export const level20 = {
   simulator: {
     tasks: [
       {
-        command: /^jq\s+['"]\.timestamp['"]\s+payload_A\.json\s+payload_B\.json$/i,
+        command: /^jq\s+['"]\.timestamp['"]\s+payload_A\.JSON\s+payload_B\.JSON$/i,
         instruction: "Use jq to extract the timestamps from two out-of-order payloads to determine their true chronological sequence.",
         successMessage: "\"2026-07-31T08:14:02Z\"\n\"2026-07-31T08:13:59Z\"\n[SARAH]: \"Just as I thought. Payload B was sent first, but arrived second. Never trust the arrival order!\"",
         errorMessage: "Invalid syntax. Try `jq '.timestamp' payload_A.json payload_B.json`"

@@ -18,10 +18,10 @@ Our monitoring tools indicate that the **Fulfillment Service** is hammering the 
 
 When you intercept the traffic, you see the exact same request being made over and over:
 \`\`\`HTTP
-GET /api/v1/inventory/status?item_id=99281
+GET /API/v1/inventory/status?item_id=99281
 \`\`\`
 And the response is almost always the same:
-\`\`\`json
+\`\`\`JSON
 { "status": "no_change", "stock": 0 }
 \`\`\`
 
@@ -41,7 +41,7 @@ Instead of the Fulfillment Service constantly asking if stock has updated, what 
 This is what a **Webhook** does. 
 
 A Webhook is essentially a **Reverse API**. 
-1. The Fulfillment Service provides the Inventory Service with a URL (e.g., \`https://fulfillment.mei.internal/webhook/inventory\`).
+1. The Fulfillment Service provides the Inventory Service with a URL (e.g., \`https://fulfillment.mei.internal/Webhook/inventory\`).
 2. The Fulfillment Service stops polling and goes to sleep.
 3. The moment the inventory changes, the Inventory Service sends an HTTP POST request to that URL containing the new data.
 

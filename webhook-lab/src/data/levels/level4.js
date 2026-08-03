@@ -4,7 +4,7 @@ export const level4 = {
   type: "theory",
   briefing: {
     recap: "You proved the developers had a typo in their URL path (`/sumbit_lead`). The ticket was closed.",
-    incident: "[UNIT-7 NOC-BOT]: Developers reopened ticket #4912. Typo resolved, but endpoint /api/submit_lead is now returning 405 Method Not Allowed.",
+    incident: "[UNIT-7 NOC-BOT]: Developers reopened ticket #4912. Typo resolved, but endpoint /API/submit_lead is now returning 405 Method Not Allowed.",
     task: "[SARAH - SENIOR Platform Engineer]: They fixed the spelling, but they still don't understand how our APIs are structured. Time to teach them some basic REST principles.",
     rewards: { xp: 50, badge: 'None' }
   },
@@ -31,7 +31,7 @@ They are getting a **405 Method Not Allowed** because they sent a GET request to
 
 Show them how it's done. Use \`curl -X POST\` to force the request to use the POST method against the corrected URL."
 
-> **SYSTEM ALERT:** The correct endpoint is \`http://10.4.12.88:80/api/submit_lead\`. Run a POST request to see if it succeeds.
+> **SYSTEM ALERT:** The correct endpoint is \`http://10.4.12.88:80/API/submit_lead\`. Run a POST request to see if it succeeds.
 
 ### Platform Engineer Insight
 **Troubleshooting:** If Stripe Webhooks are failing, what metrics do you monitor? You graph the HTTP status codes. If you see a spike in \`400s\`, your payload validation is probably rejecting their new schema. If you see \`500s\`, your database or internal processor is crashing.
@@ -39,9 +39,9 @@ Show them how it's done. Use \`curl -X POST\` to force the request to use the PO
   simulator: {
     tasks: [
       {
-        command: 'curl -X POST http://10.4.12.88:80/api/submit_lead',
+        command: 'curl -X POST http://10.4.12.88:80/API/submit_lead',
         instruction: 'Use curl with the -X POST flag to hit the API endpoint.',
-        successMessage: '> POST /api/submit_lead HTTP/1.1\n> Host: 10.4.12.88:80\n< HTTP/1.1 400 Bad Request\n< \n{"error": "Empty payload. Content-Type must be application/json"}\n[SARAH]: "Okay, progress! We got a 400 Bad Request instead of a 405. The server accepted the POST method, but it\'s complaining that we didn\'t send any actual data in the request body."',
+        successMessage: '> POST /API/submit_lead HTTP/1.1\n> Host: 10.4.12.88:80\n< HTTP/1.1 400 Bad Request\n< \n{"error": "Empty payload. Content-Type must be application/JSON"}\n[SARAH]: "Okay, progress! We got a 400 Bad Request instead of a 405. The server accepted the POST method, but it\'s complaining that we didn\'t send any actual data in the request body."',
         errorMessage: 'Invalid syntax. Use `curl -X POST <URL>`'
       }
     ]

@@ -66,9 +66,9 @@ You have cryptographically locked them out. But a rogue entity with this level o
   simulator: {
     tasks: [
       {
-        command: /^openssl\s+dgst\s+-sha256\s+-hmac\s+["']secret["']\s+payload\.json$/i,
-        instruction: "Manually compute the HMAC SHA-256 signature of the payload.json file using the secret key.",
-        successMessage: "HMAC-SHA256(payload.json)= 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\n[SARAH]: \"The signatures match! The cryptographic seal holds.\"",
+        command: /^openssl\s+dgst\s+-sha256\s+-hmac\s+["']secret["']\s+payload\.JSON$/i,
+        instruction: "Manually compute the HMAC SHA-256 signature of the payload.JSON file using the secret key.",
+        successMessage: "HMAC-SHA256(payload.JSON)= 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\n[SARAH]: \"The signatures match! The cryptographic seal holds.\"",
         errorMessage: "Invalid syntax. Use `openssl dgst -sha256 -hmac \"secret\" payload.json`"
       }
     ]
