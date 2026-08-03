@@ -179,6 +179,11 @@ export const setMusicPhase = (phase) => {
   
   // 1. Fade Out Current Element Sequence
   const fadeOutAndPlayNext = () => {
+    if (window._knownMissingAudio && window._knownMissingAudio.has(trackUrl)) {
+      isTransitioning = false;
+      return;
+    }
+
     nextAudioElement = new Audio(trackUrl);
     nextAudioElement.loop = true;
     nextAudioElement.volume = 0;
@@ -210,8 +215,12 @@ export const setMusicPhase = (phase) => {
     }).catch(() => {
       isTransitioning = false;
       
-      if (import.meta.env.DEV) {
-        console.warn(`[AUDIO]\nTrack: ${trackUrl.split('/').pop()}\nStatus: Missing\nFallback: Silence`);
+      window._knownMissingAudio = window._knownMissingAudio || new Set();
+      if (!window._knownMissingAudio.has(trackUrl)) {
+        window._knownMissingAudio.add(trackUrl);
+        if (import.meta.env.DEV) {
+          console.warn(`[AUDIO]\nTrack: ${trackUrl.split('/').pop()}\nStatus: Missing\nFallback: Silence`);
+        }
       }
       
       if (nextAudioElement) {

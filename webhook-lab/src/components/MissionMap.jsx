@@ -129,28 +129,26 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
 
   // NOC Dashboard Values dynamically based on attackPhase and worldState
   const getDashboardData = () => {
-    if (worldState === 'NORMAL') return { f: 'ONLINE', i: 'ONLINE', c: 'ONLINE', s: 'ONLINE', a: 'ONLINE', load: '14%', alerts: 0, gw: 'ONLINE', wq: 'Low' };
+    if (worldState === 'NORMAL') return { env: 'PRODUCTION', health: 'ONLINE', res: '42ms', qps: '850 req/s', inc: 0, hb: '< 1s ago', avail: '99.99%' };
     if (worldState === 'UNDER_ATTACK') {
-      if (attackPhase < 3) return { f: 'ONLINE', i: 'ONLINE', c: 'ONLINE', s: 'ONLINE', a: 'ONLINE', load: '22%', alerts: 1, gw: 'ONLINE', wq: 'Normal' };
-      if (attackPhase === 3) return { f: 'ONLINE', i: 'WARNING', c: 'WARNING', s: 'WARNING', a: 'WARNING', load: '85%', alerts: 4, gw: 'WARNING', wq: 'Elevated' };
-      if (attackPhase >= 4) return { f: 'ONLINE', i: 'DEGRADED', c: 'WARNING', s: 'CRITICAL', a: 'OFFLINE', load: '99%', alerts: 17, gw: 'DEGRADED', wq: 'High' };
+      if (attackPhase < 3) return { env: 'PRODUCTION', health: 'WARNING', res: '125ms', qps: '420 req/s', inc: 1, hb: '2s ago', avail: '99.95%' };
+      if (attackPhase === 3) return { env: 'PRODUCTION', health: 'DEGRADED', res: '450ms', qps: '150 req/s', inc: 4, hb: '4s ago', avail: '98.50%' };
+      if (attackPhase >= 4) return { env: 'PRODUCTION', health: 'CRITICAL', res: '1500ms+', qps: '12 req/s', inc: 17, hb: 'FAILING', avail: '85.20%' };
     }
-    if (worldState === 'CORRUPTED') return { f: 'ONLINE', i: 'DEGRADED', c: 'WARNING', s: 'CRITICAL', a: 'OFFLINE', load: '92%', alerts: 12, gw: 'DEGRADED', wq: 'High' };
+    if (worldState === 'CORRUPTED') return { env: 'PRODUCTION', health: 'CRITICAL', res: 'ERR_TIMEOUT', qps: '0 req/s', inc: 24, hb: 'OFFLINE', avail: '60.00%' };
     if (worldState === 'RECOVERING') {
       const idx = highestUnlockedIndex;
       return { 
-        f: 'ONLINE', 
-        i: idx >= 10 ? 'ONLINE' : 'DEGRADED', 
-        c: idx >= 15 ? 'ONLINE' : 'WARNING', 
-        s: idx >= 20 ? 'ONLINE' : 'CRITICAL', 
-        a: idx >= 25 ? 'ONLINE' : 'OFFLINE', 
-        load: `${Math.max(15, 90 - (idx - 5) * 3)}%`, 
-        alerts: Math.max(0, 12 - Math.floor((idx - 5) / 2)), 
-        gw: idx >= 15 ? 'ONLINE' : 'DEGRADED', 
-        wq: idx >= 20 ? 'Normal' : 'High' 
+        env: 'PRODUCTION',
+        health: idx >= 20 ? 'ONLINE' : (idx >= 15 ? 'DEGRADED' : 'CRITICAL'),
+        res: `${Math.max(45, 1200 - (idx * 40))}ms`,
+        qps: `${Math.min(850, (idx * 30))} req/s`,
+        inc: Math.max(0, 24 - Math.floor(idx * 0.8)),
+        hb: idx >= 15 ? '< 1s ago' : (idx >= 10 ? '3s ago' : '5s ago'),
+        avail: `${Math.min(99.99, 60.0 + (idx * 1.5)).toFixed(2)}%`
       };
     }
-    return { f: 'ONLINE', i: 'ONLINE', c: 'ONLINE', s: 'ONLINE', a: 'ONLINE', load: '10%', alerts: 0, gw: 'ONLINE', wq: 'Low' };
+    return { env: 'PRODUCTION', health: 'ONLINE', res: '40ms', qps: '880 req/s', inc: 0, hb: '< 1s ago', avail: '100.00%' };
   };
 
   const dbData = getDashboardData();
@@ -193,18 +191,16 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
       <div className="map-noc-dashboard" style={{ opacity: isUIVisible && activeMissionIndex === null ? 1 : 0 }}>
         <div className="noc-header"><Activity size={14} /> PLATFORM STATUS: {worldState}</div>
         <div className="noc-grid">
-          <div className="noc-row"><span>Foundation</span> <span className={`status ${dbData.f}`}>{dbData.f}</span></div>
-          <div className="noc-row"><span>Infrastructure</span> <span className={`status ${dbData.i}`}>{dbData.i}</span></div>
-          <div className="noc-row"><span>Cloud</span> <span className={`status ${dbData.c}`}>{dbData.c}</span></div>
-          <div className="noc-row"><span>Security</span> <span className={`status ${dbData.s}`}>{dbData.s}</span></div>
-          <div className="noc-row"><span>Automation</span> <span className={`status ${dbData.a}`}>{dbData.a}</span></div>
+          <div className="noc-row"><span>Platform Health</span> <span className={`status ${dbData.health}`}>{dbData.health}</span></div>
+          <div className="noc-row"><span>Environment</span> <span className="status">{dbData.env}</span></div>
+          <div className="noc-row"><span>Response Time</span> <span className={`status ${dbData.health}`}>{dbData.res}</span></div>
         </div>
         <div className="noc-divider"></div>
         <div className="noc-grid">
-          <div className="noc-row"><span>API Gateway</span> <span className={`status ${dbData.gw}`}>{dbData.gw}</span></div>
-          <div className="noc-row"><span>Webhook Queue</span> <span className={`status ${dbData.wq === 'High' ? 'CRITICAL' : 'ONLINE'}`}>{dbData.wq}</span></div>
-          <div className="noc-row"><span>CPU Load</span> <span className="status">{dbData.load}</span></div>
-          <div className="noc-row"><span>Active Alerts</span> <span className={`status ${dbData.alerts > 0 ? 'WARNING' : 'ONLINE'}`}>{dbData.alerts}</span></div>
+          <div className="noc-row"><span>Queue Throughput</span> <span className={`status ${dbData.health === 'CRITICAL' ? 'CRITICAL' : 'ONLINE'}`}>{dbData.qps}</span></div>
+          <div className="noc-row"><span>Active Incidents</span> <span className={`status ${dbData.inc > 0 ? 'WARNING' : 'ONLINE'}`}>{dbData.inc}</span></div>
+          <div className="noc-row"><span>Last Heartbeat</span> <span className={`status ${dbData.hb === 'FAILING' || dbData.hb === 'OFFLINE' ? 'CRITICAL' : 'ONLINE'}`}>{dbData.hb}</span></div>
+          <div className="noc-row"><span>Availability</span> <span className={`status ${dbData.health}`}>{dbData.avail}</span></div>
         </div>
       </div>
 
@@ -305,10 +301,10 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
                 )}
 
                 <button 
-                  className="map-node"
+                  className="node-icon"
                   style={{ 
                     borderColor: isCorrupted ? '#ef4444' : zoneColor,
-                    background: isCorrupted ? '#450a0a' : '#111',
+                    background: isCorrupted ? '#450a0a' : 'rgba(10,15,25,0.8)',
                     boxShadow: isCorrupted ? '0 0 10px #ef4444' : (isUnlocked ? `0 0 15px ${zoneColor}40` : 'none')
                   }}
                   onClick={() => {
@@ -318,15 +314,26 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
                   }}
                   disabled={!isUnlocked || worldState === 'UNDER_ATTACK'}
                 >
-                  {isCompleted && !isCorrupted ? <CheckCircle2 size={12} color={zoneColor} /> : 
-                   isCorrupted ? <ShieldAlert size={12} color="#ef4444" /> :
-                   isUnlocked ? <Play size={10} color={zoneColor} style={{ marginLeft: '2px' }} /> : 
-                   <Lock size={10} color="rgba(255,255,255,0.3)" />}
+                  {isCompleted && !isCorrupted ? <CheckCircle2 size={16} color={zoneColor} /> : 
+                   isCorrupted ? <ShieldAlert size={16} color="#ef4444" /> :
+                   isUnlocked ? <Play size={14} color={zoneColor} style={{ marginLeft: '2px' }} /> : 
+                   <Lock size={14} color="rgba(255,255,255,0.3)" />}
                 </button>
                 
-                <div className="node-label">
-                  <span className="node-num" style={{ color: isCorrupted ? '#ef4444' : zoneColor }}>{index + 1}</span>
-                  <span className="node-title">{mission.title.split(' - ')[0]}</span>
+                <div className="node-badge" style={{ background: isCorrupted ? '#ef4444' : zoneColor }}>
+                  {index + 1}
+                </div>
+
+                {isNext && !isCorrupted && (
+                  <div className="node-active-label">YOU ARE HERE</div>
+                )}
+                
+                <div className="node-hover-card">
+                  <div className="hover-card-num" style={{ color: zoneColor }}>MISSION {index + 1}</div>
+                  <div className="hover-card-title">{mission.title.split(' - ')[0]}</div>
+                  <div className="hover-card-status">
+                    {isCorrupted ? 'CORRUPTED' : isCompleted ? 'SECURED' : isUnlocked ? 'READY' : 'LOCKED'}
+                  </div>
                 </div>
               </div>
             );

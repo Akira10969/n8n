@@ -413,6 +413,7 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
+  pointer-events: none;
   font-family: 'Space Mono', monospace;
   font-size: 1.2rem;
   color: #ef4444;
@@ -422,6 +423,13 @@
   padding: 1rem 2rem;
   border: 1px solid #ef4444;
   border-radius: 4px;
+}
+
+.void-map-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 15;
+  pointer-events: none;
 }
 
 .global-glitch-overlay {

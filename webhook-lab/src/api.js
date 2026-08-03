@@ -11,7 +11,10 @@ export const registerPlayer = async () => {
   try {
     const res = await fetch('/backend/api/register.php');
     if (!res.ok) {
-      console.warn(`[API] Registration failed with status: ${res.status}`);
+      if (!window._hasLoggedOffline) {
+        console.warn(`[API] Registration failed with status: ${res.status}. Falling back to Offline Mode.`);
+        window._hasLoggedOffline = true;
+      }
       return null;
     }
     const data = await res.json();
@@ -21,7 +24,10 @@ export const registerPlayer = async () => {
       return data.data;
     }
   } catch (error) {
-    console.error('[API] Registration error:', error.message);
+    if (!window._hasLoggedOffline) {
+      console.warn(`[API] Registration error: ${error.message}. Falling back to Offline Mode.`);
+      window._hasLoggedOffline = true;
+    }
   }
   return null;
 };
