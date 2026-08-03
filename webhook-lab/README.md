@@ -1,24 +1,29 @@
-# MEI_Cloud_OS: The Webhook Architect
+# Business Cloud OS: Webhook Lab
 
-An interactive, story-driven, fully gamified educational web application designed to teach the fundamentals of Webhooks and Event-Driven Architecture. Built with React and Vite, this course transforms dense technical concepts into an engaging, visual, and highly interactive gaming experience.
+An interactive, story-driven, fully gamified educational web application designed to teach the fundamentals of Webhooks, APIs, and Event-Driven Architecture. Built with React and Vite, this course transforms dense technical concepts into an engaging, visual, and highly interactive gaming experience.
 
 ## 🚀 The Experience
 
-You are a newly hired engineer at MEI, tasked with managing **MEI_Cloud_OS**. But something has gone terribly wrong. A malicious anomaly known as **The Void** has infected the platform's core infrastructure, shutting down systems and corrupting data streams.
+You are a newly hired engineer at MEI, tasked with managing **Business Cloud OS**. But something has gone terribly wrong. A malicious anomaly known as **The Void** has infected the platform's core infrastructure, shutting down systems and corrupting data streams.
 
-Guided by your NOC-BOT, **UNIT-7**, and Senior Engineer, **Sarah**, you must complete 31 missions across 4 distinct zones to rebuild the infrastructure from the ground up, master webhooks, and ultimately purge The Void from the system.
+Guided by your NOC-BOT, **UNIT-7**, and Senior Engineer, **Sarah**, you must complete 31 missions across 7 distinct zones to rebuild the infrastructure from the ground up, master webhooks, and ultimately purge The Void from the system.
 
 ## ✨ Features
 
-- **Gamified Learning**: Earn XP, rank up from *Junior DevOps* to *Platform Engineer*, and manage your system integrity (HP/Hearts) as you take knowledge-check quizzes.
+- **Gamified Learning**: Earn XP, rank up from *IT Intern* to *Solutions Architect*, and manage your system integrity (HP/Hearts) as you take knowledge-check quizzes and interactive labs.
 - **31 Story-Driven Missions**: 
-  - **Zone 1: Foundation (Missions 1-5)** - Rebuild the basics of HTTP and the Internet.
-  - **Zone 2: Infrastructure (Missions 6-10)** - Understand JSON, REST APIs, and Polling vs. Webhooks.
-  - **Zone 3: Cloud (Missions 11-15)** - Master webhook payloads, events, and tunneling tools like ngrok.
-  - **Zone 4: Security & Advanced (Missions 16-24)** - Secure your endpoints with HMAC, manage retries, and design Event-Driven Message Queues.
-  - **The Capstone Projects (Missions 25-31)** - Real-world coding projects including integrating GitHub Webhooks, routing data with OpenAI & n8n, and building a production Gateway in Express.
+  - **Foundation Zone (Missions 1-5)**: Rebuild the basics of HTTP and the Internet.
+  - **Infrastructure Zone (Missions 6-10)**: Understand JSON, REST APIs, and Polling vs. Webhooks.
+  - **Cloud Zone (Missions 11-15)**: Master webhook payloads, events, and tunneling tools like ngrok.
+  - **Security Zone (Missions 16-20)**: Secure your endpoints with HMAC signatures and authentication.
+  - **Automation Zone (Missions 21-25)**: Handle retries, idempotent requests, and asynchronous workflows.
+  - **Observability Zone (Missions 26-30)**: Design Event-Driven Message Queues and implement dead-letter queues.
+  - **Capstone (Mission 31)**: The final confrontation with The Void to restore the system core.
 - **Interactive World Map**: A visually stunning isometric world map where corrupted biomes are healed and restored as you progress.
 - **Terminal Simulator**: Hands-on coding exercises and simulated deployments using a custom-built, React-based terminal emulator.
+- **Advanced Audio Engine**: 
+  - **Browser TTS Voice Synthesis**: Distinct AI-generated voice profiles for UNIT-7, Sarah, and The Void with custom pacing and pitch.
+  - **Dynamic Web Audio API**: Seamlessly crossfades background music, applies audio ducking during narration, and generates real-time procedural ambience and glitch effects.
 - **Cinematic Events**: Immersive story moments, visual glitch effects for The Void, and a massive, emotional Post-Game sequence and Epilogue.
 - **Premium Design**: A modern UI featuring glassmorphism aesthetics, sleek dark mode styling, custom CSS animations, and seamless micro-interactions.
 
@@ -27,15 +32,17 @@ Guided by your NOC-BOT, **UNIT-7**, and Senior Engineer, **Sarah**, you must com
 - **React 18**
 - **Vite**
 - **React Markdown & Remark GFM** (for rendering robust course content)
-- **Mermaid.js** (for visualizing complex architectural diagrams)
 - **Vanilla CSS** (custom modern design system & cinematic animations)
+- **Web Audio API & Web Speech API** (for procedural audio and voice synthesis)
+- **PHP & MySQL** (for backend progress synchronization)
 
 ## 💻 Getting Started
 
-Follow these steps to run MEI_Cloud_OS locally on your machine.
+Follow these steps to run Business Cloud OS locally on your machine.
 
 ### Prerequisites
 - Node.js (v18 or higher recommended)
+- PHP & MySQL (XAMPP/MAMP or similar for the backend API)
 
 ### Installation
 
@@ -45,22 +52,34 @@ Follow these steps to run MEI_Cloud_OS locally on your machine.
    cd n8n/webhook-lab
    ```
 
-2. Install dependencies:
+2. Set up the Database:
+   - Create a MySQL database and import the `backend/database.sql` file.
+   - Update your database credentials inside `backend/config/config.php`.
+
+3. Install frontend dependencies:
    ```bash
    npm install
    ```
 
-3. Start the development server:
+4. Start the development server:
    ```bash
    npm run dev
    ```
+   *(Note: The `vite.config.js` is configured to proxy API requests to `http://localhost/n8n/webhook-lab/backend/api/`. Ensure your local PHP server is running and accessible at this path, or update the proxy settings as needed).*
 
-4. Open your browser and navigate to the URL provided in your terminal (typically `http://localhost:5173`).
+5. Open your browser and navigate to the URL provided in your terminal (typically `http://localhost:5173`).
 
 ## 🎮 How to Play
 
 - **Explore the Map**: Click on unlocked glowing nodes to start a mission.
-- **Read & Learn**: Follow the narrative and technical instructions provided by UNIT-7 and Sarah.
+- **Read & Learn**: Follow the narrative and technical instructions provided by UNIT-7 and Sarah. The game is fully voice-acted via your browser's TTS engine.
 - **Take Quizzes**: Answer correctly to earn XP. Incorrect answers will cost you System Integrity (Hearts). If you lose all your hearts, your system crashes and you must restart the mission!
 - **Run Commands**: Use the Terminal Simulator to run deployment commands for the final Capstone projects.
 - **Save the Platform**: Complete Mission 31 to unlock the epic Grand Finale and secure your title as a Certified Platform Engineer.
+
+## ⌨️ Developer Cheats
+
+When running the application in a non-production environment (`import.meta.env.DEV`), you can use the following keyboard shortcuts for testing and debugging:
+
+- **Unlock Everything:** Press `Ctrl + Shift + U` to instantly unlock all 31 missions, receive infinite hearts, and gain maximum XP.
+- **Hard Reset:** Press `Ctrl + Shift + R` to completely format the local database, clear your progress, and reload the game from the intro sequence.
