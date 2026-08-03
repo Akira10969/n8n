@@ -18,6 +18,7 @@ class BrowserTTSProvider extends VoiceProvider {
     this.voicesLoaded = false;
     this.voices = [];
     this.currentSpeakId = 0;
+    this.currentUtterance = null; // Strong reference to prevent GC dropping onend
     this.loadVoices();
   }
 
@@ -138,13 +139,16 @@ class BrowserTTSProvider extends VoiceProvider {
       if (options.rate) utterance.rate = options.rate;
 
       utterance.onend = () => {
+        this.currentUtterance = null; // Free reference
         resolve(true);
       };
       
       utterance.onerror = () => {
+        this.currentUtterance = null; // Free reference
         resolve(false); // Resolve anyway so game doesn't hang
       };
 
+      this.currentUtterance = utterance; // Retain strong reference
       window.speechSynthesis.speak(utterance);
     });
   }
@@ -183,7 +187,16 @@ class VoiceEngineManager {
     if (this.activeSpeechBgGain && this.activeSpeechBgNode) {
       const ctx = getAudioContext();
       if (ctx) {
-        this.activeSpeechBgGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5);
+        // Anchor the current gain value to prevent Web Audio from interpolating from the start of the node
+        try {
+          const currentGain = this.activeSpeechBgGain.gain.value;
+          this.activeSpeechBgGain.gain.cancelScheduledValues(ctx.currentTime);
+          this.activeSpeechBgGain.gain.setValueAtTime(currentGain, ctx.currentTime);
+          this.activeSpeechBgGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5);
+        } catch (e) {
+          this.activeSpeechBgGain.gain.value = 0;
+        }
+
         const oscToStop = this.activeSpeechBgNode;
         setTimeout(() => {
           try { oscToStop.stop(); } catch(e){}
