@@ -47,6 +47,17 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission,
   const [isReadyToAdvance, setIsReadyToAdvance] = useState(false);
   const [animIn, setAnimIn] = useState(true);
   
+  // Track timeouts/intervals for cleanup
+  const timeoutsRef = useRef([]);
+  const intervalsRef = useRef([]);
+
+  useEffect(() => {
+    return () => {
+      timeoutsRef.current.forEach(clearTimeout);
+      intervalsRef.current.forEach(clearInterval);
+    };
+  }, []);
+  
   // Terminal UI States
   const [liveTimestamp, setLiveTimestamp] = useState(new Date().toISOString().substring(11, 19));
   const [countdown, setCountdown] = useState(null);
@@ -129,7 +140,7 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission,
 
     // Dynamic dashboard updates based on step
     if (steps[step].id === 'transmission') {
-      setTimeout(() => {
+      const t = setTimeout(() => {
         setDashboardStatus(prev => ({
           ...prev, 
           api: incidentLevel.level === 'CRITICAL' ? 'DEGRADED' : 'ONLINE',
@@ -137,6 +148,7 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission,
           alerts: prev.alerts + 3
         }));
       }, 2000);
+      timeoutsRef.current.push(t);
     }
 
     return () => stopVoice();
@@ -147,7 +159,8 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission,
     if (typingDone && voiceDone && steps[step]?.id !== 'launch') {
       setIsReadyToAdvance(true);
       if (settings?.autoPlayBriefings !== false && !isReplay) {
-        setTimeout(advance, 1500); // Cinematic pause before next
+        const t = setTimeout(advance, 1500); // Cinematic pause before next
+        timeoutsRef.current.push(t);
       }
     }
   }, [typingDone, voiceDone, settings?.autoPlayBriefings, isReplay]);
@@ -155,16 +168,17 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission,
   const advance = () => {
     if (step < steps.length - 1) {
       setAnimIn(false);
-      setTimeout(() => {
+      const t = setTimeout(() => {
         setStep(s => s + 1);
         setAnimIn(true);
       }, 400);
+      timeoutsRef.current.push(t);
     }
   };
 
   const handleStage5 = () => {
     // Stage 5 Checklist animation handled in render, just wait for it.
-    setTimeout(() => {
+    const t = setTimeout(() => {
       if (settings?.voiceEnabled !== false) {
         playVoiceLine("[UNIT-7]: Mission environment ready. Good luck, Engineer.", () => {
           startCountdown();
@@ -173,6 +187,7 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission,
         startCountdown();
       }
     }, 4000); // Wait for checklist to render
+    timeoutsRef.current.push(t);
   };
 
   const startCountdown = () => {
@@ -187,11 +202,13 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission,
         setCountdown('DEPLOYMENT AUTHORIZED');
         playSuccessSound();
         clearInterval(int);
-        setTimeout(() => {
+        const t = setTimeout(() => {
           onStartMission();
         }, 1500);
+        timeoutsRef.current.push(t);
       }
     }, 1000);
+    intervalsRef.current.push(int);
   };
 
   if (!briefing) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './BootSequence.css';
-import { playTypingSound, playUIBeep, setGlobalDucking, setMusicTension, playVoiceLine, stopVoice } from '../utils/audioUtils';
+import { playTypingSound, playUIBeep, setMusicTension, playVoiceLine, stopVoice } from '../utils/audioUtils';
 
 const Typewriter = ({ text, delay = 20, onComplete }) => {
   const [displayed, setDisplayed] = useState('');
@@ -67,6 +67,7 @@ const Typewriter = ({ text, delay = 20, onComplete }) => {
       voiceCompleted = true;
       stopVoice();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);
 
   useEffect(() => {
@@ -94,6 +95,7 @@ const Typewriter = ({ text, delay = 20, onComplete }) => {
       isTypingComplete.current = true;
       checkCompletion();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx, text, delay]);
 
   return <span>{displayed}<span className="cursor-block">█</span></span>;

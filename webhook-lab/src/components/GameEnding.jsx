@@ -54,9 +54,15 @@ export default function GameEnding({ onEndingComplete, xp }) {
       const audio = new Audio('/mission-start.webm');
       audio.volume = 0.8;
       audio.play().catch(e => console.log(e));
+      audioRef.current = audio;
 
       const timer = setTimeout(() => setPhase(2), 4000);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
+      };
     } else if (phase === 3) {
       // Certificate phase
     }

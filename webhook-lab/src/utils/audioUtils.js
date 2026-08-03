@@ -41,9 +41,6 @@ let isTransitioning = false;
 let activeTimers = new Set();
 let currentEnvOsc = null;
 let currentEnvGain = null;
-let activeSpeechBgNode = null;
-let activeSpeechBgGain = null;
-let activeGlitchInterval = null;
 
 const MUSIC_TRACKS = {
   MAP: "https://cdn.pixabay.com/download/audio/2022/11/22/audio_febc508520.mp3",
@@ -444,12 +441,12 @@ export const stopZoneAmbience = (immediate = false) => {
     const ctx = getAudioContext();
     if (immediate) {
       currentEnvGain.gain.setValueAtTime(0, ctx.currentTime);
-      try { currentEnvOsc.stop(); } catch(e){}
+      try { currentEnvOsc.stop(); } catch {}
     } else {
       currentEnvGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1);
       const oscToStop = currentEnvOsc;
       setTimeout(() => {
-        try { oscToStop.stop(); } catch(e){}
+        try { oscToStop.stop(); } catch {}
       }, 1000);
     }
     currentEnvOsc = null;

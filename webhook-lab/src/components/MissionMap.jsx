@@ -103,6 +103,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
     }, 9500);
 
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run ONLY once on mount
 
   // Handle active mission zooming (only when sequence is done)

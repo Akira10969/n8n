@@ -5,7 +5,7 @@ import { getAudioContext, setGlobalDucking, playUIBeep, playRadioClick } from '.
  */
 class VoiceProvider {
   async init() {}
-  async speak(text, character, options = {}) { throw new Error('Not implemented'); }
+  async speak(_text, _character, _options = {}) { throw new Error('Not implemented'); }
   stop() {}
 }
 
@@ -193,13 +193,13 @@ class VoiceEngineManager {
           this.activeSpeechBgGain.gain.cancelScheduledValues(ctx.currentTime);
           this.activeSpeechBgGain.gain.setValueAtTime(currentGain, ctx.currentTime);
           this.activeSpeechBgGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5);
-        } catch (e) {
+        } catch {
           this.activeSpeechBgGain.gain.value = 0;
         }
 
         const oscToStop = this.activeSpeechBgNode;
         setTimeout(() => {
-          try { oscToStop.stop(); } catch(e){}
+          try { oscToStop.stop(); } catch {}
         }, 600);
       }
       this.activeSpeechBgNode = null;

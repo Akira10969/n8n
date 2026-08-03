@@ -1,0 +1,532 @@
+
+> webhook-lab@0.0.0 lint
+> oxlint
+
+
+  ! eslint(no-unused-vars): Catch parameter 'error' is caught but never used.
+    ,-[src/api.js:54:12]
+ 53 |     });
+ 54 |   } catch (error) {
+    :            ^^|^^
+    :              `-- 'error' is declared here
+ 55 |     // Ignore heartbeat failures quietly
+    `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Catch parameter 'error' is caught but never used.
+    ,-[src/api.js:74:12]
+ 73 |     });
+ 74 |   } catch (error) {
+    :            ^^|^^
+    :              `-- 'error' is declared here
+ 75 |     // Ignore analytics failures quietly
+    `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Identifier 'Menu' is imported but never used.
+   ,-[src/App.jsx:4:37]
+ 3 | import remarkGfm from 'remark-gfm';
+ 4 | import { ChevronRight, ChevronLeft, Menu, X, BookOpen, CheckCircle2, Lock, Heart, Trophy, Star } from 'lucide-react';
+   :                                     ^^|^
+   :                                       `-- 'Menu' is imported here
+ 5 | import confetti from 'canvas-confetti';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'X' is imported but never used.
+   ,-[src/App.jsx:4:43]
+ 3 | import remarkGfm from 'remark-gfm';
+ 4 | import { ChevronRight, ChevronLeft, Menu, X, BookOpen, CheckCircle2, Lock, Heart, Trophy, Star } from 'lucide-react';
+   :                                           |
+   :                                           `-- 'X' is imported here
+ 5 | import confetti from 'canvas-confetti';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'BookOpen' is imported but never used.
+   ,-[src/App.jsx:4:46]
+ 3 | import remarkGfm from 'remark-gfm';
+ 4 | import { ChevronRight, ChevronLeft, Menu, X, BookOpen, CheckCircle2, Lock, Heart, Trophy, Star } from 'lucide-react';
+   :                                              ^^^^|^^^
+   :                                                  `-- 'BookOpen' is imported here
+ 5 | import confetti from 'canvas-confetti';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'CheckCircle2' is imported but never used.
+   ,-[src/App.jsx:4:56]
+ 3 | import remarkGfm from 'remark-gfm';
+ 4 | import { ChevronRight, ChevronLeft, Menu, X, BookOpen, CheckCircle2, Lock, Heart, Trophy, Star } from 'lucide-react';
+   :                                                        ^^^^^^|^^^^^
+   :                                                              `-- 'CheckCircle2' is imported here
+ 5 | import confetti from 'canvas-confetti';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Lock' is imported but never used.
+   ,-[src/App.jsx:4:70]
+ 3 | import remarkGfm from 'remark-gfm';
+ 4 | import { ChevronRight, ChevronLeft, Menu, X, BookOpen, CheckCircle2, Lock, Heart, Trophy, Star } from 'lucide-react';
+   :                                                                      ^^|^
+   :                                                                        `-- 'Lock' is imported here
+ 5 | import confetti from 'canvas-confetti';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'confetti' is imported but never used.
+   ,-[src/App.jsx:5:8]
+ 4 | import { ChevronRight, ChevronLeft, Menu, X, BookOpen, CheckCircle2, Lock, Heart, Trophy, Star } from 'lucide-react';
+ 5 | import confetti from 'canvas-confetti';
+   :        ^^^^|^^^
+   :            `-- 'confetti' is imported here
+ 6 | 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'PostGameSequence' is imported but never used.
+    ,-[src/App.jsx:20:8]
+ 19 | import TheVoidReveal from './components/TheVoidReveal';
+ 20 | import PostGameSequence from './components/PostGameSequence';
+    :        ^^^^^^^^|^^^^^^^
+    :                `-- 'PostGameSequence' is imported here
+ 21 | import GameEnding from './components/GameEnding';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'activeSpeechBgNode' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/utils/audioUtils.js:44:5]
+ 43 | let currentEnvGain = null;
+ 44 | let activeSpeechBgNode = null;
+    :     ^^^^^^^^^|^^^^^^^^
+    :              `-- 'activeSpeechBgNode' is declared here
+ 45 | let activeSpeechBgGain = null;
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'activeSpeechBgGain' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/utils/audioUtils.js:45:5]
+ 44 | let activeSpeechBgNode = null;
+ 45 | let activeSpeechBgGain = null;
+    :     ^^^^^^^^^|^^^^^^^^
+    :              `-- 'activeSpeechBgGain' is declared here
+ 46 | let activeGlitchInterval = null;
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'activeGlitchInterval' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/utils/audioUtils.js:46:5]
+ 45 | let activeSpeechBgGain = null;
+ 46 | let activeGlitchInterval = null;
+    :     ^^^^^^^^^^|^^^^^^^^^
+    :               `-- 'activeGlitchInterval' is declared here
+ 47 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Catch parameter 'e' is caught but never used.
+     ,-[src/utils/audioUtils.js:447:43]
+ 446 |       currentEnvGain.gain.setValueAtTime(0, ctx.currentTime);
+ 447 |       try { currentEnvOsc.stop(); } catch(e){}
+     :                                           |
+     :                                           `-- 'e' is declared here
+ 448 |     } else {
+     `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Catch parameter 'e' is caught but never used.
+     ,-[src/utils/audioUtils.js:452:41]
+ 451 |       setTimeout(() => {
+ 452 |         try { oscToStop.stop(); } catch(e){}
+     :                                         |
+     :                                         `-- 'e' is declared here
+ 453 |       }, 1000);
+     `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Identifier 'Trophy' is imported but never used.
+   ,-[src/components/MissionDebrief.jsx:2:10]
+ 1 | import React, { useEffect, useState } from 'react';
+ 2 | import { Trophy, Star, ArrowRight, ShieldCheck, AlertTriangle, ShieldAlert, CheckCircle2 } from 'lucide-react';
+   :          ^^^|^^
+   :             `-- 'Trophy' is imported here
+ 3 | import confetti from 'canvas-confetti';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'ShieldAlert' is imported but never used.
+   ,-[src/components/MissionDebrief.jsx:2:64]
+ 1 | import React, { useEffect, useState } from 'react';
+ 2 | import { Trophy, Star, ArrowRight, ShieldCheck, AlertTriangle, ShieldAlert, CheckCircle2 } from 'lucide-react';
+   :                                                                ^^^^^|^^^^^
+   :                                                                     `-- 'ShieldAlert' is imported here
+ 3 | import confetti from 'canvas-confetti';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Parameter 'newRank' is declared but never used. Unused parameters should start with a '_'.
+    ,-[src/components/MissionDebrief.jsx:9:66]
+  8 | 
+  9 | export default function MissionDebrief({ missionIndex, xpGained, newRank, unlockedBadgeId, onContinue, failedAttempts }) {
+    :                                                                  ^^^|^^^
+    :                                                                     `-- 'newRank' is declared here
+ 10 |   
+    `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Parameter 'text' is declared but never used. Unused parameters should start with a '_'.
+   ,-[src/utils/VoiceEngine.js:8:15]
+ 7 |   async init() {}
+ 8 |   async speak(text, character, options = {}) { throw new Error('Not implemented'); }
+   :               ^^|^
+   :                 `-- 'text' is declared here
+ 9 |   stop() {}
+   `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Parameter 'character' is declared but never used. Unused parameters should start with a '_'.
+   ,-[src/utils/VoiceEngine.js:8:21]
+ 7 |   async init() {}
+ 8 |   async speak(text, character, options = {}) { throw new Error('Not implemented'); }
+   :                     ^^^^|^^^^
+   :                         `-- 'character' is declared here
+ 9 |   stop() {}
+   `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Parameter 'options' is declared but never used. Unused parameters should start with a '_'.
+   ,-[src/utils/VoiceEngine.js:8:32]
+ 7 |   async init() {}
+ 8 |   async speak(text, character, options = {}) { throw new Error('Not implemented'); }
+   :                                ^^^|^^^
+   :                                   `-- 'options' is declared here
+ 9 |   stop() {}
+   `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Catch parameter 'e' is caught but never used.
+     ,-[src/utils/VoiceEngine.js:196:18]
+ 195 |           this.activeSpeechBgGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5);
+ 196 |         } catch (e) {
+     :                  |
+     :                  `-- 'e' is declared here
+ 197 |           this.activeSpeechBgGain.gain.value = 0;
+     `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Catch parameter 'e' is caught but never used.
+     ,-[src/utils/VoiceEngine.js:202:43]
+ 201 |         setTimeout(() => {
+ 202 |           try { oscToStop.stop(); } catch(e){}
+     :                                           |
+     :                                           `-- 'e' is declared here
+ 203 |         }, 600);
+     `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Identifier 'Play' is imported but never used.
+   ,-[src/components/TerminalSimulator.jsx:2:57]
+ 1 | import React, { useState, useEffect, useRef } from 'react';
+ 2 | import { Terminal, CheckCircle2, XCircle, ChevronRight, Play } from 'lucide-react';
+   :                                                         ^^|^
+   :                                                           `-- 'Play' is imported here
+ 3 | import './TerminalSimulator.css';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'useRef' is imported but never used.
+   ,-[src/components/MissionBriefing.jsx:1:38]
+ 1 | import React, { useState, useEffect, useRef } from 'react';
+   :                                      ^^^|^^
+   :                                         `-- 'useRef' is imported here
+ 2 | import { AlertOctagon, Target, Play, Radio, CheckCircle2, Terminal, ShieldAlert, Cpu, Activity, Server, Clock } from 'lucide-react';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Target' is imported but never used.
+   ,-[src/components/MissionBriefing.jsx:2:24]
+ 1 | import React, { useState, useEffect, useRef } from 'react';
+ 2 | import { AlertOctagon, Target, Play, Radio, CheckCircle2, Terminal, ShieldAlert, Cpu, Activity, Server, Clock } from 'lucide-react';
+   :                        ^^^|^^
+   :                           `-- 'Target' is imported here
+ 3 | import './MissionBriefing.css';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'CheckCircle2' is imported but never used.
+   ,-[src/components/MissionBriefing.jsx:2:45]
+ 1 | import React, { useState, useEffect, useRef } from 'react';
+ 2 | import { AlertOctagon, Target, Play, Radio, CheckCircle2, Terminal, ShieldAlert, Cpu, Activity, Server, Clock } from 'lucide-react';
+   :                                             ^^^^^^|^^^^^
+   :                                                   `-- 'CheckCircle2' is imported here
+ 3 | import './MissionBriefing.css';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'getAudioContext' is imported but never used.
+   ,-[src/components/MissionBriefing.jsx:4:102]
+ 3 | import './MissionBriefing.css';
+ 4 | import { playVoiceLine, stopVoice, playUIBeep, playSuccessSound, playZoneAmbience, stopZoneAmbience, getAudioContext, setMusicPhase, playTypingSound } from '../utils/audioUtils';
+   :                                                                                                      ^^^^^^^|^^^^^^^
+   :                                                                                                             `-- 'getAudioContext' is imported here
+ 5 | 
+   `----
+  help: Consider removing this import.
+
+  ! react-hooks(exhaustive-deps): React Hook useEffect has missing dependencies: 'steps', 'settings.voiceEnabled', 'steps.length', 'incidentLevel.level', and 'handleStage5'
+     ,-[src/components/MissionBriefing.jsx:143:6]
+ 104 |   useEffect(() => {
+ 105 |     if (step >= steps.length) return;
+     :                 ^^^^^
+ 106 |     
+ 107 |     setVoiceDone(false);
+ 108 |     setTypingDone(false);
+ 109 |     setIsReadyToAdvance(false);
+ 110 |     
+ 111 |     if (steps[step].id === 'launch') {
+     :         ^^^^^
+ 112 |       // Special logic for launch stage
+ 113 |       setMusicPhase('DEPLOYMENT');
+ 114 |       handleStage5();
+     :       ^^^^^^^^^^^^
+ 115 |       return;
+ 116 |     }
+ 117 | 
+ 118 |     if (steps[step].id === 'recap' || steps[step].id === 'unit7_intro') {
+ 119 |       setMusicPhase('MAP'); // Calm/Mysterious
+ 120 |     } else if (steps[step].id === 'transmission' || steps[step].id === 'task') {
+ 121 |       setMusicPhase('BRIEFING'); // Tense pulse
+ 122 |     }
+ 123 | 
+ 124 |     if (settings?.voiceEnabled !== false) {
+     :         ^^^^^^^^
+ 125 |       playVoiceLine(steps[step].text, () => setVoiceDone(true));
+ 126 |     } else {
+ 127 |       setVoiceDone(true); // Auto done if disabled
+ 128 |     }
+ 129 | 
+ 130 |     // Dynamic dashboard updates based on step
+ 131 |     if (steps[step].id === 'transmission') {
+ 132 |       setTimeout(() => {
+ 133 |         setDashboardStatus(prev => ({
+ 134 |           ...prev, 
+ 135 |           api: incidentLevel.level === 'CRITICAL' ? 'DEGRADED' : 'ONLINE',
+     :                ^^^^^^^^^^^^^
+ 136 |           webhook: 'CRITICAL',
+ 137 |           alerts: prev.alerts + 3
+ 138 |         }));
+ 139 |       }, 2000);
+ 140 |     }
+ 141 | 
+ 142 |     return () => stopVoice();
+ 143 |   }, [step]);
+     :      ^^^^^^
+ 144 | 
+     `----
+  help: Either include it or remove the dependency array.
+
+  ! react-hooks(exhaustive-deps): React Hook useEffect has missing dependencies: 'step', 'advance', and 'steps'
+     ,-[src/components/MissionBriefing.jsx:153:6]
+ 146 |   useEffect(() => {
+ 147 |     if (typingDone && voiceDone && steps[step]?.id !== 'launch') {
+     :                                    ^^^^^ ^^^^
+ 148 |       setIsReadyToAdvance(true);
+ 149 |       if (settings?.autoPlayBriefings !== false && !isReplay) {
+ 150 |         setTimeout(advance, 1500); // Cinematic pause before next
+     :                    ^^^^^^^
+ 151 |       }
+ 152 |     }
+ 153 |   }, [typingDone, voiceDone, settings?.autoPlayBriefings, isReplay]);
+     :      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 154 | 
+     `----
+  help: Either include it or remove the dependency array.
+
+  ! eslint(no-unused-vars): Catch parameter 'e' is caught but never used.
+    ,-[src/components/TheVoidReveal.jsx:73:37]
+ 72 |         setTimeout(() => {
+ 73 |           try { osc.stop(); } catch(e){}
+    :                                     |
+    :                                     `-- 'e' is declared here
+ 74 |         }, 500);
+    `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Catch parameter 'e' is caught but never used.
+    ,-[src/components/TheVoidReveal.jsx:76:43]
+ 75 |         setTimeout(() => {
+ 76 |           try { audioCtx.close(); } catch(e){}
+    :                                           |
+    :                                           `-- 'e' is declared here
+ 77 |         }, 600);
+    `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Catch parameter 'e' is caught but never used.
+    ,-[src/components/TheVoidReveal.jsx:78:15]
+ 77 |         }, 600);
+ 78 |       } catch(e) {}
+    :               |
+    :               `-- 'e' is declared here
+ 79 |     };
+    `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Variable 'timer' is declared but never used. Unused variables should start with a '_'.
+     ,-[src/components/TheVoidReveal.jsx:178:13]
+ 177 | 
+ 178 |       const timer = setTimeout(() => {
+     :             ^^|^^
+     :               `-- 'timer' is declared here
+ 179 |         if (isActive) {
+     `----
+  help: Consider removing this declaration.
+
+  ! react-hooks(exhaustive-deps): React Hook useEffect has missing dependencies: 'scriptLines.length', 'scriptLines', and 'onRevealComplete'
+    ,-[src/components/TheVoidReveal.jsx:86:23]
+ 85 |     if (phase === 0) {
+ 86 |       if (textIndex < scriptLines.length) {
+    :                       ^^^^^^^^^^^
+ 87 |         const line = scriptLines[textIndex];
+    :                      ^^^^^^^^^^^
+ 88 |         
+    `----
+     ,-[src/components/TheVoidReveal.jsx:192:6]
+ 184 |     } else if (phase === 2) {
+ 185 |       onRevealComplete();
+     :       ^^^^^^^^^^^^^^^^
+ 186 |     }
+ 187 | 
+ 188 |     return () => {
+ 189 |       isActive = false;
+ 190 |       document.body.classList.remove('screen-tearing-active');
+ 191 |     };
+ 192 |   }, [phase, textIndex]);
+     :      ^^^^^^^^^^^^^^^^^^
+ 193 | 
+     `----
+  help: Either include it or remove the dependency array.
+
+  ! react-hooks(exhaustive-deps): React Hook useEffect has missing dependencies: 'onIntroComplete', 'skipIntro', and 'activeMissionIndex'
+     ,-[src/components/MissionMap.jsx:106:6]
+  86 |   useEffect(() => {
+  87 |     if (activeMissionIndex !== null || skipIntro) return;
+     :         ^^^^^^^^^^^^^^^^^^             ^^^^^^^^^
+  88 |     
+  89 |     // Start sequence
+  90 |     const t1 = setTimeout(() => {
+  91 |       setIntroPhase('pan');
+  92 |       setMapTransform('scale(2.2) translate(15%, 20%)');
+  93 |     }, 100);
+  94 | 
+  95 |     const t2 = setTimeout(() => {
+  96 |       setIntroPhase('zoom-out');
+  97 |       setMapTransform('scale(1) translate(0%, 0%)');
+  98 |     }, 6000);
+  99 | 
+ 100 |     const t3 = setTimeout(() => {
+ 101 |       setIntroPhase('done');
+ 102 |       if (onIntroComplete) onIntroComplete();
+     :           ^^^^^^^^^^^^^^^
+ 103 |     }, 9500);
+ 104 | 
+ 105 |     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+ 106 |   }, []); // Run ONLY once on mount
+     :      ^^
+ 107 | 
+     `----
+  help: Either include it or remove the dependency array.
+
+  ! eslint(no-useless-escape): Unnecessary escape character '_'
+    ,-[src/data/levels/level7.js:13:21]
+ 12 | ## Deployment Log
+ 13 | **Operator:** Player\_One
+    :                     ^^
+ 14 | **Action:** Webhook Registration
+    `----
+  help: Replace `\_` with `_`.
+
+  ! eslint(no-unused-vars): Catch parameter 'err' is caught but never used.
+    ,-[src/components/HandsOnLab.jsx:33:16]
+ 32 |         });
+ 33 |       } catch (err) {
+    :                ^|^
+    :                 `-- 'err' is declared here
+ 34 |         setResponse({
+    `----
+  help: Consider handling this error.
+
+  ! eslint(no-useless-escape): Unnecessary escape character '_'
+    ,-[src/data/levels/level6.js:14:18]
+ 13 | **Timestamp:** 04:12:08 UTC
+ 14 | **Service:** Core\_Inventory\_API
+    :                  ^^
+ 15 | **Status:** DEGRADED
+    `----
+  help: Replace `\_` with `_`.
+
+  ! eslint(no-useless-escape): Unnecessary escape character '_'
+    ,-[src/data/levels/level6.js:14:29]
+ 13 | **Timestamp:** 04:12:08 UTC
+ 14 | **Service:** Core\_Inventory\_API
+    :                             ^^
+ 15 | **Status:** DEGRADED
+    `----
+  help: Replace `\_` with `_`.
+
+  ! eslint(no-unused-vars): Identifier 'setGlobalDucking' is imported but never used.
+   ,-[src/components/BootSequence.jsx:3:39]
+ 2 | import './BootSequence.css';
+ 3 | import { playTypingSound, playUIBeep, setGlobalDucking, setMusicTension, playVoiceLine, stopVoice } from '../utils/audioUtils';
+   :                                       ^^^^^^^^|^^^^^^^
+   :                                               `-- 'setGlobalDucking' is imported here
+ 4 | 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Catch parameter 'e' is caught but never used.
+     ,-[src/components/BootSequence.jsx:230:16]
+ 229 |         setTimeout(() => audioCtx.close(), 1100);
+ 230 |       } catch (e) {}
+     :                |
+     :                `-- 'e' is declared here
+ 231 |     };
+     `----
+  help: Consider handling this error.
+
+  ! react-hooks(exhaustive-deps): React Hook useEffect has a missing dependency: 'checkCompletion'
+    ,-[src/components/BootSequence.jsx:70:6]
+ 58 |         isVoiceComplete.current = true;
+ 59 |         checkCompletion();
+    :         ^^^^^^^|^^^^^^^
+    :                `-- useEffect uses `checkCompletion` here
+ 60 |       }, { pitch, rate });
+ 61 | 
+ 62 |     } else {
+ 63 |       isVoiceComplete.current = true;
+ 64 |     }
+ 65 | 
+ 66 |     return () => {
+ 67 |       voiceCompleted = true;
+ 68 |       stopVoice();
+ 69 |     };
+ 70 |   }, [text]);
+    :      ^^^^^^
+ 71 | 
+    `----
+  help: Either include it or remove the dependency array.
+
+  ! react-hooks(exhaustive-deps): React Hook useEffect has a missing dependency: 'checkCompletion'
+    ,-[src/components/BootSequence.jsx:97:6]
+ 94 |       isTypingComplete.current = true;
+ 95 |       checkCompletion();
+    :       ^^^^^^^|^^^^^^^
+    :              `-- useEffect uses `checkCompletion` here
+ 96 |     }
+ 97 |   }, [idx, text, delay]);
+    :      ^^^^^^^^^^^^^^^^^^
+ 98 | 
+    `----
+  help: Either include it or remove the dependency array.
+
+Found 43 warnings and 0 errors.
+Finished in 35ms on 56 files with 92 rules using 12 threads.

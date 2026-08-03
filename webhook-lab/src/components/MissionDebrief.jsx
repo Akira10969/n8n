@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Trophy, Star, ArrowRight, ShieldCheck, AlertTriangle, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { Star, ArrowRight, ShieldCheck, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { badges } from '../data/achievements';
 import { playVoiceLine, playSuccessSound } from '../utils/audioUtils';
 import { getDebrief } from '../data/debriefs';
 import './MissionDebrief.css';
 
-export default function MissionDebrief({ missionIndex, xpGained, newRank, unlockedBadgeId, onContinue, failedAttempts }) {
+export default function MissionDebrief({ missionIndex, xpGained, unlockedBadgeId, onContinue, failedAttempts }) {
   
   const [step, setStep] = useState(0); // 0: Status, 1: Report, 2: Rewards
 

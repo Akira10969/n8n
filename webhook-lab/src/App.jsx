@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { ChevronRight, ChevronLeft, Menu, X, BookOpen, CheckCircle2, Lock, Heart, Trophy, Star } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { ChevronRight, ChevronLeft, Heart, Trophy, Star } from 'lucide-react';
 
 import { curriculum } from './data/curriculum';
 import { badges, toolbox } from './data/achievements';
@@ -17,7 +16,6 @@ import TerminalSimulator from './components/TerminalSimulator';
 import BootSequence from './components/BootSequence';
 import EpisodeCard from './components/EpisodeCard';
 import TheVoidReveal from './components/TheVoidReveal';
-import PostGameSequence from './components/PostGameSequence';
 import GameEnding from './components/GameEnding';
 import AdminDashboard from './components/AdminDashboard';
 import SettingsModal from './components/SettingsModal';
@@ -152,6 +150,10 @@ function App() {
         setAbsoluteHighestIndex(curriculum.length - 1);
         setXp(5000); // Give max rank
         setHearts(99); // Infinite hearts
+      } else if (e.ctrlKey && e.shiftKey && (e.key === 'R' || e.key === 'r')) {
+        console.warn('[DEV] DB WIPE ACTIVATED: Resetting all local progress...');
+        localStorage.clear();
+        window.location.reload();
       }
     };
     window.addEventListener('keydown', handleKeyDown);

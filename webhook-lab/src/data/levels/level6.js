@@ -11,7 +11,7 @@ export const level6 = {
   content: `
 ## Incident Analysis Report
 **Timestamp:** 04:12:08 UTC
-**Service:** Core\_Inventory\_API
+**Service:** Core_Inventory_API
 **Status:** DEGRADED
 
 Our monitoring tools indicate that the **Fulfillment Service** is hammering the Inventory API with over 15,000 requests per minute. 

@@ -175,7 +175,7 @@ export default function TheVoidReveal({ onRevealComplete }) {
       });
       setConsumedObjects(objects);
 
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         if (isActive) {
           document.body.classList.remove('screen-tearing-active');
           setPhase(2);
@@ -189,6 +189,7 @@ export default function TheVoidReveal({ onRevealComplete }) {
       isActive = false;
       document.body.classList.remove('screen-tearing-active');
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, textIndex]);
 
   return (
