@@ -52,6 +52,29 @@ const MUSIC_TRACKS = {
   VOID: "/audio/ending/void.mp3"
 };
 
+export const checkAudioAssets = async () => {
+  if (!import.meta.env.DEV) return;
+  
+  console.log('\n[AUDIO CHECK]');
+  window._knownMissingAudio = window._knownMissingAudio || new Set();
+  
+  for (const [key, path] of Object.entries(MUSIC_TRACKS)) {
+    try {
+      const response = await fetch(path, { method: 'HEAD' });
+      if (response.ok) {
+        console.log(`✓ ${path.split('/').pop()}`);
+      } else {
+        console.warn(`✗ ${path.split('/').pop()} (Missing)`);
+        window._knownMissingAudio.add(path);
+      }
+    } catch (error) {
+      console.warn(`✗ ${path.split('/').pop()} (Missing - Network Error)`);
+      window._knownMissingAudio.add(path);
+    }
+  }
+  console.log('\n');
+};
+
 // Utility to track and clear intervals
 const safeSetInterval = (fn, ms) => {
   const id = setInterval(fn, ms);
