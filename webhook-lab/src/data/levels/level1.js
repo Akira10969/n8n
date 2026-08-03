@@ -5,7 +5,7 @@ export const level1 = {
   briefing: {
     recap: "Welcome to Business Cloud OS. You have been assigned to the Foundation Operations Zone. Your clearance level is: JUNIOR ENGINEER.",
     incident: "[UNIT-7 NOC-BOT]: Automated monitoring has detected intermittent packet loss on legacy asset 'MKT-01' (Marketing Web Server). Current uptime SLA is at risk.",
-    task: "[SARAH - SENIOR PLATFORM ENGINEER]: Hey new kid. Looks like one of the old marketing servers is acting up. Probably just a dusty network cable or a routing glitch. Can you verify basic connectivity before we escalate?",
+    task: "[SARAH - SENIOR Platform Engineer]: Hey, new kid. Looks like one of the old marketing servers is acting up. Probably just a dusty network cable or a routing glitch. Can you verify basic connectivity before we escalate?",
     rewards: { xp: 50, badge: 'None' }
   },
   content: `
@@ -13,6 +13,10 @@ export const level1 = {
 
 **Sarah (Senior Engineer):** 
 "Before we go pulling cables, we need to know if the server is completely dead or just dropping packets intermittently. 
+
+But first, let's make sure you understand how data actually travels across the network. When you send a message over the internet, it doesn't travel as one giant block. It gets chopped up into tiny pieces called **Packets**. 
+
+These packets travel from your machine, bounce across multiple **Routers** (called **Hops**), until they reach their destination. If a router goes offline, packets get dropped, and the message never arrives.
 
 Whenever you need to check if a machine is alive on the network, the first tool in your belt is \`ping\`. 
 

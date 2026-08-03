@@ -41,6 +41,7 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [settings, setSettings] = useState(() => JSON.parse(localStorage.getItem('webhook_settings') || '{"voiceEnabled":true, "musicVolume":0.5, "sfxVolume":0.5, "autoPlayBriefings":true, "reduceMotion":false}'));
   const [failedAttempts, setFailedAttempts] = useState(0);
+  const [isOffline, setIsOffline] = useState(() => localStorage.getItem('webhook_engineer_id')?.startsWith('OFFLINE-') || false);
 
   // Sync initial settings to audioUtils
   useEffect(() => {
@@ -79,7 +80,18 @@ function App() {
     const initPlayer = async () => {
       const auth = getAuthTokens();
       if (!auth.engineer_id) {
-        await registerPlayer();
+        const data = await registerPlayer();
+        if (!data) {
+          // Generate temporary offline ID if backend fails
+          const offlineId = 'OFFLINE-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+          localStorage.setItem('webhook_engineer_id', offlineId);
+          setIsOffline(true);
+          console.warn(`[APP] Backend unavailable. Running in Offline Mode with temporary ID: ${offlineId}`);
+        } else {
+          setIsOffline(false);
+        }
+      } else if (auth.engineer_id.startsWith('OFFLINE-')) {
+        setIsOffline(true);
       }
     };
     initPlayer();
@@ -255,7 +267,7 @@ function App() {
           </p>
         </div>
       ) : !hasBooted ? (
-        <BootSequence highestUnlockedIndex={highestUnlockedIndex} onBootComplete={() => setHasBooted(true)} />
+        <BootSequence highestUnlockedIndex={highestUnlockedIndex} onBootComplete={handleBootComplete} isOffline={isOffline} />
       ) : currentIndex >= 24 && !hasSeenVoidReveal ? (
         <TheVoidReveal onRevealComplete={() => {
           setHasSeenVoidReveal(true);

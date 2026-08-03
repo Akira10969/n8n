@@ -3,8 +3,8 @@ export const level12 = {
   title: "Level 12 – The Key Rotation",
   type: "theory",
   briefing: {
-    recap: "An attacker exploited the lack of webhook authentication to forge billing payloads and grant themselves Premium Administrator access. You implemented a shared secret to block them.",
-    incident: "The fraudulent account upgrades have returned. the rogue entity is bypassing your 401 Unauthorized block. Somehow, they acquired the 'super_secret_token_123' used to authenticate webhooks.",
+    recap: "An attacker exploited the lack of Webhook authentication to forge billing payloads and grant themselves Premium Administrator access. You implemented a shared secret to block them.",
+    incident: "The fraudulent account upgrades have returned. the rogue entity is bypassing your 401 Unauthorized block. Somehow, they acquired the 'super_secret_token_123' used to authenticate Webhooks.",
     task: "Implement a secure API Key management strategy. You must rotate the compromised keys without taking the production systems offline, and transition away from hardcoded secrets.",
     rewards: { xp: 100, badge: 'None' }
   },
@@ -14,7 +14,7 @@ export const level12 = {
 **Service:** Account_Upgrader_Service
 **Status:** COMPROMISED (AGAIN)
 
-The security token you implemented in the last mission (\`super_secret_token_123\`) worked for exactly 5 hours. Now, the attacker is sending webhooks with the correct token.
+The security token you implemented in the last mission (\`super_secret_token_123\`) worked for exactly 5 hours. Now, the attacker is sending Webhooks with the correct token.
 
 How did they get it? You check the Business Cloud OS source code repository and realize the token was hardcoded directly into the JavaScript files. 
 
@@ -36,7 +36,7 @@ API Keys should be treated like nuclear launch codes.
 
 ### The Key Rotation Operation
 
-You cannot simply turn off the old token, or legitimate webhooks will fail while you deploy the new one. You must perform a **Key Rotation**.
+You cannot simply turn off the old token, or legitimate Webhooks will fail while you deploy the new one. You must perform a **Key Rotation**.
 
 1. You generate a new, secure API key: \`mei_live_9x8f7d6a5s4d3f2g1h\`.
 2. You inject this key into the Account Upgrader Service via secure environment variables.

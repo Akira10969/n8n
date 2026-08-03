@@ -4,7 +4,7 @@ export const level10 = {
   type: "theory",
   briefing: {
     recap: "A massive influx of malformed payloads crashed the Analytics Engine. You patched the JSON parser to safely return 400 Bad Request instead of crashing.",
-    incident: "Internal microservices have stopped communicating. The Authorization Service is blanket rejecting all requests from the Order Service with 401 Unauthorized errors, bringing all transactions to a halt.",
+    incident: "Internal microservices have stopped communicating. The Authorization Service is blanket rejecting all requests from the Order Service with \\401 Unauthorized\\ errors, bringing all transactions to a halt.",
     task: "Inspect the raw HTTP requests traveling between the Order Service and the Authorization Service. Determine why valid requests are suddenly being rejected.",
     rewards: { xp: 100, badge: 'platform-operations-started' }
   },
@@ -21,12 +21,12 @@ You pull the logs from the Authorization Gateway:
 \`\`\`log
 [AUTH] Incoming request from Order_Service.
 [AUTH] Missing authentication credentials.
-[AUTH] Rejecting with 401 Unauthorized.
+[AUTH] Rejecting with \\401 Unauthorized\\.
 \`\`\`
 
 You know the Order Service is configured to send its credentials. You SSH into the Order Service container and intercept an outbound request to see exactly what it is sending over the wire:
 
-\`\`\`http
+\`\`\`HTTP
 POST /verify HTTP/1.1
 Host: auth.mei.internal
 Content-Type: application/json
@@ -41,9 +41,9 @@ The credentials are right there in the \`Authorization\` header! Why isn't the A
 ## Concept Explanation: HTTP Headers
 
 An HTTP request consists of three main parts:
-1.  **The Request Line:** (e.g., \`POST /verify HTTP/1.1\`)
-2.  **Headers:** Key-value pairs providing metadata about the request.
-3.  **The Body (Payload):** The actual data being sent (like JSON).
+1. **The Request Line:** (e.g., \`POST /verify HTTP/1.1\`)
+2. **Headers:** Key-value pairs providing metadata about the request.
+3. **The Body (Payload):** The actual data being sent (like JSON).
 
 **Headers** act like the metadata on an envelope. They tell the server what format the data is in (\`Content-Type\`), what kind of client is making the request (\`User-Agent\`), and most importantly, who is making the request (\`Authorization\`).
 
@@ -64,14 +64,12 @@ server {
 }
 \`\`\`
 
-The rogue entity deployed a silent proxy specifically designed to strip the \`Authorization\` header in transit, causing the entire system to lock down as components could no longer trust each other. 
+The rogue entity deployed a silent proxy specifically designed to strip the 'Authorization' header in transit, causing the entire system to lock down as components could no longer trust each other. 
 
-You bypass the malicious proxy, restoring the \`Authorization\` headers, and the transactions begin flowing again. the rogue entity is no longer just causing errors; they are actively manipulating the network topology.
+You bypass the malicious proxy, restoring the 'Authorization' headers, and the transactions begin flowing again. the rogue entity is no longer just causing errors; they are actively manipulating the network topology.
 
-> **SYSTEM ALERT:** The endpoint is now secure. Prove you can access it by passing the Bearer token via curl.
-`
-
-  ,
+> **SYSTEM ALERT:** The endpoint is now secure. Prove you can access it by passing the Bearer token via curlHTTP/1.1 200 OK\n\n### Platform Engineer Insight\n**Troubleshooting:** When you see a sudden wave of '401 Unauthorized' errors from your Webhook receiver, your first step is to verify if the Sender's API keys or HMAC secrets were recently rotated and if your infrastructure was updated to match.
+`,
   simulator: {
     tasks: [
       {

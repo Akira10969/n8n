@@ -17,7 +17,7 @@ export const level6 = {
 Our monitoring tools indicate that the **Fulfillment Service** is hammering the Inventory API with over 15,000 requests per minute. 
 
 When you intercept the traffic, you see the exact same request being made over and over:
-\`\`\`http
+\`\`\`HTTP
 GET /api/v1/inventory/status?item_id=99281
 \`\`\`
 And the response is almost always the same:
@@ -45,12 +45,36 @@ A Webhook is essentially a **Reverse API**.
 2. The Fulfillment Service stops polling and goes to sleep.
 3. The moment the inventory changes, the Inventory Service sends an HTTP POST request to that URL containing the new data.
 
+### The Complete Webhook Architecture Flow
+
+To truly master Platform Engineering, you must understand the entire lifecycle of how Webhooks move data between systems. Every production Webhook system follows this pipeline:
+
+1. **Event Occurs:** Something happens in the source system (e.g., Inventory drops to 0).
+2. **Sender:** The source system packages the data into JSON.
+3. **Webhook Request:** An HTTP POST request is dispatched over the internet.
+4. **Listener:** An HTTP server (like Nginx) at the destination waits for the incoming connection.
+5. **Receiver:** The application endpoint accepts the payload.
+6. **Authentication (where applicable) & Signature Verification (HMAC):** Mathematically prove who sent the Webhook.
+7. **Payload Validation:** Ensure the JSON schema is correct and safe.
+8. **Idempotency Check:** Ensure this exact event hasn't been processed before.
+9. **Queue / Asynchronous Processing:** Acknowledge receipt with a 2xx Status Code quickly, then push the payload to a queue.
+10. **Business Logic:** A background worker picks up the payload and analyzes it.
+11. **Logging:** Record the success/failure event.
+12. **Metrics:** Track failure rates and system health.
+13. **Tracing & Correlation IDs:** Trace the event's lifecycle across microservices.
+14. **Observability:** Centralize all data so engineers can troubleshoot the system.
+
+### Platform Engineer Insight
+**Architecture:** You will see this exact architecture when integrating Shopify or Discord. The Listener and Receiver are often just an API Gateway or a reverse proxy, which immediately forwards the payload to an asynchronous queue for the Processor to handle.
+
+*Note the difference:* The **Listener** is just the open door on the network. The **Receiver** is the clerk who takes the package. The **Processor** is the worker who opens it and does the job.
+
 ### The Architectural Decision
 To save the Inventory Service from crashing, you must disable the polling loop in the Fulfillment Service and reconfigure it to listen for Webhooks instead. 
 
-As a Lead Operations Engineer, you must recognize when synchronous polling is creating an artificial bottleneck. By shifting to an event-driven webhook model, we can reduce network traffic by over 99%.
+As a Lead Operations Engineer, you must recognize when synchronous polling is creating an artificial bottleneck. By shifting to an event-driven Webhook model, we can reduce network traffic by over 99%.
 
-> **SYSTEM OVERRIDE DETECTED:** While you are reading this report, a secondary spike in traffic just hit the load balancers. Proceed to the next mission immediately to implement the webhook fix before the server goes offline completely.
+> **SYSTEM OVERRIDE DETECTED:** While you are reading this report, a secondary spike in traffic just hit the load balancers. Proceed to the next mission immediately to implement the Webhook fix before the server goes offline completely.
 `,
   simulator: {
     tasks: [

@@ -5,7 +5,7 @@ export const level5 = {
   briefing: {
     recap: "You proved to the developers that they needed to use a POST request instead of a GET request. The server accepted the method, but rejected the empty body.",
     incident: "[UNIT-7 NOC-BOT]: Incident #4913. Developers attached data to their POST request, but the server is returning a 400 Bad Request: 'Invalid JSON'.",
-    task: "[SARAH - SENIOR PLATFORM ENGINEER]: Sigh. They are trying to send data, but they aren't formatting it correctly. Let's show them how JSON works.",
+    task: "[SARAH - SENIOR Platform Engineer]: Sigh. They are trying to send data, but they aren't formatting it correctly. Let's show them how JSON works.",
     rewards: { xp: 50, badge: 'None' }
   },
   content: `

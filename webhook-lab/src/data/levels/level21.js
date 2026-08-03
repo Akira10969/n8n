@@ -18,7 +18,7 @@ export const level21 = {
     tasks: [
       {
         command: /^mei-cli\s+sync\s+run\s+--source\s+stripe\s+--target\s+local_db$/i,
-        instruction: "The database has missed webhooks during the downtime. Run a reconciliation sync job to fetch missed events from the source.",
+        instruction: "The database has missed Webhooks during the downtime. Run a reconciliation sync job to fetch missed events from the source.",
         successMessage: "[OK] Querying Stripe API for events since last sync...\n[OK] 42 missing events found and written to local_db. State reconciled.",
         errorMessage: "Invalid syntax. Try `mei-cli sync run --source stripe --target local_db`"
       }

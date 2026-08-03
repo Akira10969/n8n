@@ -5,7 +5,7 @@ export const level3 = {
   briefing: {
     recap: "You verified the web server process crashed and Sarah rebooted it. The server is listening on Port 80 again.",
     incident: "[UNIT-7 NOC-BOT]: Incident escalated. Marketing Developers report the web server is online, but the 'Submit Lead' function is returning a 404 Not Found error.",
-    task: "[SARAH - SENIOR PLATFORM ENGINEER]: The server is up, but the developers say it's broken. Classic. Let's look at the exact HTTP request they are sending to the server to see who's really at fault here.",
+    task: "[SARAH - SENIOR Platform Engineer]: The server is up, but the developers say it's broken. Classic. Let's look at the exact HTTP request they are sending to the server to see who's really at fault here.",
     rewards: { xp: 50, badge: 'None' }
   },
   content: `

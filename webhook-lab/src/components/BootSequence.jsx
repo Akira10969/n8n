@@ -121,7 +121,7 @@ const LoadingBar = ({ targetPercent, onComplete }) => {
   return <div>{bar} {Math.min(percent, targetPercent)}%</div>;
 };
 
-export default function BootSequence({ highestUnlockedIndex, onBootComplete }) {
+export default function BootSequence({ highestUnlockedIndex, onBootComplete, isOffline = false }) {
   const [step, setStep] = useState(0);
 
   // Dynamic narrative logic based on progress
@@ -269,40 +269,49 @@ export default function BootSequence({ highestUnlockedIndex, onBootComplete }) {
 
         {step >= 1 && (
           <div className="boot-step">
-            <p>Connecting...</p>
-            <LoadingBar targetPercent={22} />
+            <p>Initializing Business Cloud OS...</p>
+            <br/>
           </div>
         )}
 
         {step >= 2 && (
-          <div className="boot-step">
-            <p>Authenticating Engineer...</p>
-            <LoadingBar targetPercent={54} />
+          <div className="boot-step" style={{ marginLeft: '20px' }}>
+            <p>✓ Audio Engine</p>
           </div>
         )}
 
         {step >= 3 && (
-          <div className="boot-step">
-            <p>Loading Infrastructure...</p>
-            <LoadingBar targetPercent={87} />
+          <div className="boot-step" style={{ marginLeft: '20px' }}>
+            <p>✓ Voice Engine</p>
           </div>
         )}
 
         {step >= 4 && (
-          <div className="boot-step">
-            <p>Synchronization Complete.</p>
+          <div className="boot-step" style={{ marginLeft: '20px' }}>
+            <p>✓ Save System</p>
           </div>
         )}
 
         {step >= 5 && (
+          <div className="boot-step" style={{ marginLeft: '20px' }}>
+            {isOffline ? (
+              <p className="text-warn">⚠ Backend Offline (Offline Mode Enabled)</p>
+            ) : (
+              <p>✓ Backend Connection</p>
+            )}
+            <br/>
+          </div>
+        )}
+
+        {step >= 6 && (
           <div className="boot-step highlight">
-            <p>Welcome, Engineer.</p>
+            <p>System Ready.</p>
             <br/>
           </div>
         )}
       </div>
 
-      {step >= 6 && narrativeText[narrativeIndex] && (
+      {step >= 7 && narrativeText[narrativeIndex] && (
         <div className={`boot-narrative-centered ${fadeStatus === 'in' ? 'fade-in' : 'fade-out'}`}>
           <p className={narrativeText[narrativeIndex].includes('Warning') || narrativeText[narrativeIndex].includes('EMERGENCY') || narrativeText[narrativeIndex].includes('FAILURE') ? 'text-warn' : ''}>
             <Typewriter key={narrativeIndex} text={narrativeText[narrativeIndex]} onComplete={handleLineComplete} delay={15} />

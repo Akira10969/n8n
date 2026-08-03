@@ -11,10 +11,10 @@ export const project2 = {
   "content": "## System Diagnostics\
 **[The Void]** \"You cannot handle the flood. You will drown.\"\
 \
-**[Sarah]** \"It is right. If we try to process these webhooks synchronously, the receiver will crash. We need a Queue.\"\
+**[Sarah]** \"It is right. If we try to process these Webhooks synchronously, the receiver will crash. We need a Queue.\"\
 \
 ## Objective\
-Route incoming webhooks into an in-memory queue to decouple the ingestion.",
+Route incoming Webhooks into an in-memory queue to decouple the ingestion.",
   "simulator": {
     "tasks": [
       {

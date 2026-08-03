@@ -5,7 +5,7 @@ export const project5 = {
   "briefing": {
     "recap": "The Graveyard is secured. The Void is retaliating with a massive, localized DDoS.",
     "incident": "ALERT: Ingestion nodes are being overwhelmed.",
-    "task": "Implement strict Rate Limiting on the webhook ingestion endpoints.",
+    "task": "Implement strict Rate Limiting on the Webhook ingestion endpoints.",
     "rewards": { "xp": 700, "badge": "Shield Wall" }
   },
   "content": "## System Diagnostics\

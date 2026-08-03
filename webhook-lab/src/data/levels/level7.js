@@ -4,8 +4,8 @@ export const level7 = {
   type: "theory",
   briefing: {
     recap: "You discovered the Fulfillment Service was polling the Inventory API 15,000 times a minute, causing a CPU spike. You halted the polling loop.",
-    incident: "You successfully terminated the Fulfillment Service's polling loop. CPU usage has dropped to 45%. Now you must establish the webhook connection so Fulfillment still receives stock updates.",
-    task: "Configure the Inventory Service to push event notifications to the Fulfillment webhook endpoint. Review the server logs to verify the connection is stable.",
+    incident: "You successfully terminated the Fulfillment Service's polling loop. CPU usage has dropped to 45%. Now you must establish the Webhook connection so Fulfillment still receives stock updates.",
+    task: "Configure the Inventory Service to push event notifications to the Fulfillment Webhook endpoint. Review the server logs to verify the connection is stable.",
     rewards: { xp: 150, badge: 'foundation-completed' }
   },
   content: `
@@ -13,7 +13,7 @@ export const level7 = {
 **Operator:** Player\_One
 **Action:** Webhook Registration
 
-To establish the webhook, you register the Fulfillment Service's endpoint with the Inventory Service's event registry:
+To establish the Webhook, you register the Fulfillment Service's endpoint with the Inventory Service's event registry:
 
 \`\`\`json
 POST /api/v1/webhooks/register
@@ -27,12 +27,12 @@ The server responds with a \`201 Created\`. The connection is established.
 
 ## Concept Explanation: Anatomy of a Webhook
 
-Unlike traditional APIs where you write code to make a request, a webhook requires you to write code to *receive* a request. 
+Unlike traditional APIs where you write code to make a request, a Webhook requires you to write code to *receive* a request. 
 
 For this to work, the Fulfillment Service must be running a web server that listens for incoming HTTP POST requests on the \`/hooks/inventory-update\` route. When the Inventory Service detects a stock change, it builds an HTTP request containing the event data in JSON format, and fires it off to the \`target_url\`.
 
 ### Verifying the Fix
-You tail the logs of the Fulfillment Service to ensure the webhooks are arriving correctly:
+You tail the logs of the Fulfillment Service to ensure the Webhooks are arriving correctly:
 
 \`\`\`log
 [INFO] Listening on port 8080...
@@ -65,7 +65,7 @@ Before you can investigate further, your console flashes with a new alert from t
     tasks: [
       {
         command: 'curl -X POST http://api.mei.internal/v1/webhooks/register -d \'{"target_url":"https://fulfillment.mei.internal/hooks/inventory-update","events":["inventory.stock.increased"]}\'',
-        instruction: 'Register the webhook endpoint using standard curl. Use a POST request with the exact JSON payload shown in the deployment log.',
+        instruction: 'Register the Webhook endpoint using standard curl. Use a POST request with the exact JSON payload shown in the deployment log.',
         successMessage: 'HTTP/1.1 201 Created\n{"status": "success", "webhook_id": "wh_8912384a"}',
         errorMessage: 'Invalid syntax. Example: curl -X POST http://url -d \'{"key":"value"}\''
       },

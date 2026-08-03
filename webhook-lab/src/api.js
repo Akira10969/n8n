@@ -10,21 +10,25 @@ export const getAuthTokens = () => {
 export const registerPlayer = async () => {
   try {
     const res = await fetch('/backend/api/register.php');
+    if (!res.ok) {
+      console.warn(`[API] Registration failed with status: ${res.status}`);
+      return null;
+    }
     const data = await res.json();
-    if (data.success) {
+    if (data && data.success) {
       localStorage.setItem('webhook_engineer_id', data.data.engineer_id);
       localStorage.setItem('webhook_player_token', data.data.player_token);
       return data.data;
     }
   } catch (error) {
-    console.error('Registration failed:', error);
+    console.error('[API] Registration error:', error.message);
   }
   return null;
 };
 
 export const syncProgress = async (progressData) => {
   const auth = getAuthTokens();
-  if (!auth.engineer_id) return;
+  if (!auth.engineer_id || auth.engineer_id.startsWith('OFFLINE-')) return;
 
   try {
     const res = await fetch('/backend/api/sync_progress.php', {
@@ -35,22 +39,24 @@ export const syncProgress = async (progressData) => {
         ...progressData
       })
     });
+    if (!res.ok) return;
     return await res.json();
   } catch (error) {
-    console.error('Sync failed:', error);
+    console.error('[API] Sync failed:', error.message);
   }
 };
 
 export const sendHeartbeat = async () => {
   const auth = getAuthTokens();
-  if (!auth.engineer_id) return;
+  if (!auth.engineer_id || auth.engineer_id.startsWith('OFFLINE-')) return;
 
   try {
-    await fetch('/backend/api/heartbeat.php', {
+    const res = await fetch('/backend/api/heartbeat.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(auth)
     });
+    // Ignore heartbeat response
   } catch (error) {
     // Ignore heartbeat failures quietly
   }
@@ -58,10 +64,10 @@ export const sendHeartbeat = async () => {
 
 export const logEvent = async (eventType, missionIndex = null, eventData = null) => {
   const auth = getAuthTokens();
-  if (!auth.engineer_id) return;
+  if (!auth.engineer_id || auth.engineer_id.startsWith('OFFLINE-')) return;
 
   try {
-    await fetch('/backend/api/analytics.php', {
+    const res = await fetch('/backend/api/analytics.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -71,6 +77,7 @@ export const logEvent = async (eventType, missionIndex = null, eventData = null)
         event_data: eventData
       })
     });
+    // Ignore analytics response
   } catch (error) {
     // Ignore analytics failures quietly
   }

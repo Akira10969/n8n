@@ -11,12 +11,22 @@ class VoiceProvider {
 
 /**
  * Concrete Implementation: Browser's built-in Web Speech API
+ * 
+ * KNOWN LIMITATIONS: Browser TTS implementations vary wildly across operating systems and browsers.
+ * For example, Chrome on Windows has different voices than Safari on macOS.
+ * Because of this, characters may sound different depending on the player's device.
+ * 
+ * This class is intentionally kept modular behind the VoiceProvider interface. 
+ * In the future, this can be seamlessly swapped out for a dedicated AI Voice provider 
+ * (such as Azure AI Speech or ElevenLabs) to guarantee 100% consistent character identity 
+ * across all devices.
  */
 class BrowserTTSProvider extends VoiceProvider {
   constructor() {
     super();
     this.voicesLoaded = false;
     this.voices = [];
+    this.voiceCache = new Map(); // Cache selected voices to guarantee consistency
     this.currentSpeakId = 0;
     this.currentUtterance = null; // Strong reference to prevent GC dropping onend
     this.loadVoices();
@@ -42,58 +52,117 @@ class BrowserTTSProvider extends VoiceProvider {
   async waitForVoices() {
     if (this.voicesLoaded) return;
     
-    // Poll for voices up to 2 seconds
-    let attempts = 0;
-    while (!this.voicesLoaded && attempts < 20) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-      this.voices = window.speechSynthesis.getVoices();
-      if (this.voices.length > 0) {
-        this.voicesLoaded = true;
-      }
-      attempts++;
-    }
+    // Create a robust Promise that waits for the onvoiceschanged event, with a polling fallback up to 5 seconds.
+    await new Promise(resolve => {
+      let attempts = 0;
+      let interval;
+      
+      const checkVoices = () => {
+        this.voices = window.speechSynthesis.getVoices();
+        if (this.voices.length > 0) {
+          this.voicesLoaded = true;
+          clearInterval(interval);
+          resolve();
+          return true;
+        }
+        return false;
+      };
+
+      if (checkVoices()) return;
+
+      window.speechSynthesis.onvoiceschanged = () => {
+        if (checkVoices()) window.speechSynthesis.onvoiceschanged = null;
+      };
+
+      interval = setInterval(() => {
+        if (checkVoices()) {
+          window.speechSynthesis.onvoiceschanged = null;
+        } else if (attempts >= 50) { // 5 seconds
+          clearInterval(interval);
+          window.speechSynthesis.onvoiceschanged = null;
+          resolve();
+        }
+        attempts++;
+      }, 100);
+    });
   }
 
   getVoiceForCharacter(character) {
+    if (this.voiceCache.has(character)) {
+      return this.voiceCache.get(character);
+    }
+
+    // Filter to English voices first
+    let enVoices = this.voices.filter(v => v.lang.startsWith('en'));
+    if (enVoices.length === 0) enVoices = this.voices;
+
+    let selectedVoice = null;
+    let isFallback = false;
+
+    const findVoiceByPrefs = (prefs) => {
+      for (const pref of prefs) {
+        const match = enVoices.find(v => v.name.toLowerCase().includes(pref.toLowerCase()));
+        if (match) return match;
+      }
+      return null;
+    };
+
     if (character === 'SARAH') {
-      return this.voices.find(v => 
-        v.name.includes('Google UK English Female') || 
-        v.name.includes('Microsoft Zira') || 
-        v.name.includes('Samantha') || 
-        v.name.includes('Female')
-      ) || this.voices.find(v => v.name.includes('Female')) || this.voices[0];
+      const preferred = findVoiceByPrefs(['Google UK English Female', 'Microsoft Zira', 'Samantha', 'Google US English Female']);
+      if (preferred) {
+        selectedVoice = preferred;
+      } else {
+        selectedVoice = findVoiceByPrefs(['Female', 'Woman', 'Girl']) || enVoices[0];
+        isFallback = true;
+      }
     } else if (character === 'UNIT-7') {
-      return this.voices.find(v => 
-        v.name.includes('Microsoft Mark') || 
-        v.name.includes('Google UK English Male') || 
-        v.name.includes('David') || 
-        v.name.includes('Male')
-      ) || this.voices.find(v => v.name.includes('Male')) || this.voices[0];
+      const preferred = findVoiceByPrefs(['Microsoft Mark', 'Google UK English Male', 'David', 'Google US English Male']);
+      if (preferred) {
+        selectedVoice = preferred;
+      } else {
+        selectedVoice = findVoiceByPrefs(['Male', 'Man', 'Boy']) || enVoices[0];
+        isFallback = true;
+      }
     } else if (character === 'THE_VOID') {
-      // Void usually uses a deep male voice if possible
-      return this.voices.find(v => 
-        v.name.includes('Google UK English Male') || 
-        v.name.includes('Microsoft David') || 
-        v.name.includes('Male')
-      ) || this.voices[0];
+      const preferred = findVoiceByPrefs(['Google UK English Male', 'Microsoft David']);
+      if (preferred) {
+        selectedVoice = preferred;
+      } else {
+        selectedVoice = findVoiceByPrefs(['Male', 'Man']) || enVoices[0];
+        isFallback = true;
+      }
+    } else if (character === 'NARRATOR') {
+      const preferred = findVoiceByPrefs(['Microsoft David', 'Google UK English Male', 'Google US English Male']);
+      if (preferred) {
+        selectedVoice = preferred;
+      } else {
+        selectedVoice = findVoiceByPrefs(['Male', 'Man']) || enVoices[0];
+        isFallback = true;
+      }
+    }
+
+    if (!selectedVoice && this.voices.length > 0) {
+      selectedVoice = this.voices[0];
+      isFallback = true;
+    }
+
+    if (selectedVoice) {
+      // Store object containing both the voice and whether it was a fallback
+      this.voiceCache.set(character, { voice: selectedVoice, isFallback });
     }
     
-    return this.voices[0];
+    return { voice: selectedVoice, isFallback };
   }
 
   // Delivery modification (punctuation spacing)
   formatTextForDelivery(text, character) {
     if (character === 'THE_VOID') {
-      // Add commas to force deliberate, slow pacing between words.
-      // Negative lookahead to ensure we don't insert a comma right before another punctuation mark.
       return text
-        .replace(/([.?!])\s+/g, '$1 . . . ') // Emphasize sentence breaks
-        .replace(/([a-zA-Z]{5,})(?=\s+[a-zA-Z])/g, '$1, '); // Inject commas between long words for unnatural pacing
+        .replace(/([.?!])\s+/g, '$1 . . . ') 
+        .replace(/([a-zA-Z]{5,})(?=\s+[a-zA-Z])/g, '$1, '); 
     } else if (character === 'UNIT-7') {
-      // Short pauses for analytical pacing
       return text.replace(/([.?!])\s+/g, '$1 . . . ');
     } else if (character === 'SARAH') {
-      // Natural conversational flow, no forced commas
       return text;
     }
     return text;
@@ -111,32 +180,48 @@ class BrowserTTSProvider extends VoiceProvider {
     if (this.currentSpeakId !== speakId) return false;
 
     return new Promise((resolve) => {
-      // Final cancel to ensure queue is clear before pushing utterance
       window.speechSynthesis.cancel();
 
       const formattedText = this.formatTextForDelivery(text, character);
       const utterance = new SpeechSynthesisUtterance(formattedText);
-      utterance.voice = this.getVoiceForCharacter(character);
+      const { voice, isFallback } = this.getVoiceForCharacter(character) || {};
+      
+      if (voice) {
+        utterance.voice = voice;
+      }
       
       utterance.volume = options.volume || 1.0;
 
       if (character === 'SARAH') {
         utterance.pitch = 1.1;
-        utterance.rate = 1.05; // Slightly faster, conversational
+        utterance.rate = 1.05; 
       } else if (character === 'UNIT-7') {
         utterance.pitch = 1.0;
-        utterance.rate = 1.0; // Steady, robotic
+        utterance.rate = 1.0; 
       } else if (character === 'THE_VOID') {
         utterance.pitch = 0.4;
-        utterance.rate = 0.65; // Slowed down significantly
+        utterance.rate = 0.65; 
       } else {
         utterance.pitch = 1.0;
         utterance.rate = 1.0;
       }
 
-      // Override if specific emotions dictate
       if (options.pitch) utterance.pitch = options.pitch;
       if (options.rate) utterance.rate = options.rate;
+
+      // Voice Diagnostics (Development)
+      if (import.meta.env.DEV) {
+        let actualCharacter = character;
+        if (character === 'THE_VOID') actualCharacter = 'The Void';
+        if (character === 'SARAH') actualCharacter = 'Sarah';
+        if (character === 'NARRATOR') actualCharacter = 'Narrator';
+        
+        console.log(`[VOICE]
+Character: ${actualCharacter}
+Selected Voice: ${voice ? voice.name : 'System Default'}
+Language: ${voice ? voice.lang : 'Unknown'}
+Fallback: ${isFallback ? 'Yes' : 'No'}`);
+      }
 
       utterance.onend = () => {
         this.currentUtterance = null; // Free reference

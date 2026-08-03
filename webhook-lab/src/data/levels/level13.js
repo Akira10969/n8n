@@ -5,7 +5,7 @@ export const level13 = {
   briefing: {
     recap: "The attacker stole the shared secret from an exposed Git repo. You executed a zero-downtime key rotation using environment variables to secure the system.",
     incident: "Your suspicions were correct. The attacker intercepted the new API key during transmission. Fraudulent account upgrades are happening again. Simple authentication is no longer sufficient; we need mathematical proof of authenticity.",
-    task: "Upgrade the webhook security architecture. Implement HMAC (Hash-based Message Authentication Code) signatures so the receiver can mathematically verify that the payload has not been tampered with and was sent by a trusted source.",
+    task: "Upgrade the Webhook security architecture. Implement HMAC (Hash-based Message Authentication Code) signatures so the receiver can mathematically verify that the payload has not been tampered with and was sent by a trusted source.",
     rewards: { xp: 150, badge: 'None' }
   },
   content: `
@@ -18,9 +18,14 @@ the rogue entity has proven they have network-level visibility. If they can inte
 
 Sending a static password (API Key) over the network is like sending a wax-sealed envelope where anyone can copy the seal. We need a way to prove who sent the message without actually sending the password.
 
+### The Webhook Development Lifecycle: Local Development & Staging
+Building Webhooks is tricky because the sender needs a public URL, but your code is running on your \`localhost\`. In the real world, developers use tunneling tools like **ngrok** to expose their local environment to the internet. 
+
+Once local testing passes, code is pushed to a **Staging Environment** for QA, before finally being promoted to **Production**.
+
 ## Concept Explanation: HMAC Signatures
 
-**HMAC (Hash-based Message Authentication Code)** is the industry standard for securing webhooks (used by Stripe, GitHub, Twilio, etc.).
+**HMAC (Hash-based Message Authentication Code)** is the industry standard for securing Webhooks (used by Stripe, GitHub, Twilio, etc.).
 
 Instead of sending the secret key in the request, the sender uses the secret key to mathematically "sign" the payload. 
 
@@ -28,16 +33,16 @@ Instead of sending the secret key in the request, the sender uses the secret key
 2. The result is a unique, unforgeable string of characters (the signature). 
 3. The sender sends the JSON payload and the signature in a header (e.g., \`X-MEI-Signature: sha256=abc123...\`), but *never sends the secret key*.
 
-When the **Receiver (Account Upgrader)** gets the webhook:
+When the **Receiver (Account Upgrader)** gets the Webhook:
 1. It takes the incoming JSON payload and its own copy of the Secret Key.
 2. It runs the exact same hashing algorithm.
-3. If the signature the receiver generates matches the signature in the header, the webhook is **100% authentic**. 
+3. If the signature the receiver generates matches the signature in the header, the Webhook is **100% authentic**. 
 
 If the attacker alters even a single comma in the JSON payload, the math changes, the signatures won't match, and the request is rejected. Because the attacker doesn't know the Secret Key, they cannot generate a valid signature for their fake payloads.
 
 ### Deploying the Cryptographic Seal
 
-You implement the HMAC verification middleware across all Business Cloud OS webhook receivers. 
+You implement the HMAC verification middleware across all Business Cloud OS Webhook receivers. 
 
 \`\`\`javascript
 const crypto = require('crypto');

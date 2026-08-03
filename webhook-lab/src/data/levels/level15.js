@@ -3,9 +3,9 @@ export const level15 = {
   title: "Level 15 – The Dead Letter",
   type: "theory",
   briefing: {
-    recap: "Unable to forge webhooks, the attacker launched a localized DoS attack. You implemented Exponential Backoff and Retry Logic to ensure webhooks weren't permanently lost during network flaps.",
-    incident: "Even with exponential backoff, some webhooks are failing their maximum number of retries. Once a webhook exhausts all retries, the background job processor quietly deletes it. We are still permanently losing a small percentage of critical data.",
-    task: "Implement a Dead Letter Queue (DLQ) to catch and store any webhooks that fail all delivery attempts. Inspect the DLQ to figure out why these specific webhooks are un-deliverable.",
+    recap: "Unable to forge Webhooks, the attacker launched a localized DoS attack. You implemented Exponential Backoff and Retry Logic to ensure Webhooks weren't permanently lost during network flaps.",
+    incident: "Even with exponential backoff, some Webhooks are failing their maximum number of retries. Once a Webhook exhausts all retries, the background job processor quietly deletes it. We are still permanently losing a small percentage of critical data.",
+    task: "Implement a Dead Letter Queue (DLQ) to catch and store any Webhooks that fail all delivery attempts. Inspect the DLQ to figure out why these specific Webhooks are un-deliverable.",
     rewards: { xp: 200, badge: 'platform-operations-completed' }
   },
   content: `
@@ -14,7 +14,7 @@ export const level15 = {
 **Service:** MEI_Job_Processor
 **Status:** DEGRADED
 
-Exponential backoff solved 99% of our delivery issues during the network attacks. However, if a receiving server is completely destroyed and offline for hours, the webhook will eventually exhaust its 10 retry attempts. 
+Exponential backoff solved 99% of our delivery issues during the network attacks. However, if a receiving server is completely destroyed and offline for hours, the Webhook will eventually exhaust its 10 retry attempts. 
 
 When a job processor gives up on a job, it simply discards it to prevent the queue from backing up infinitely. This is intended behavior, but for financial transactions, "discarding" data is unacceptable.
 
@@ -22,7 +22,7 @@ When a job processor gives up on a job, it simply discards it to prevent the que
 
 A **Dead Letter Queue (DLQ)** is a secondary storage queue designed specifically for failed messages. 
 
-When a webhook exhausts all of its retry attempts, instead of being deleted, it is moved into the DLQ. The DLQ acts as a quarantine zone. It holds these "dead" messages safely in storage so that human engineers can:
+When a Webhook exhausts all of its retry attempts, instead of being deleted, it is moved into the DLQ. The DLQ acts as a quarantine zone. It holds these "dead" messages safely in storage so that human engineers can:
 1. Be alerted that persistent failures are occurring.
 2. Manually inspect the payload to see *why* it failed (e.g., a bad URL, a malformed payload, or a permanently offline server).
 3. Fix the underlying issue.
@@ -47,11 +47,11 @@ You expect to see a standard billing payload. Instead, you find this:
 
 A chill runs down your spine. This isn't random configuration drift or an automated script. This is a highly intelligent, coordinated attack. 
 
-the rogue entity knew you would implement a DLQ. They intentionally crafted an undeliverable webhook just so this message would land directly on your desk. 
+the rogue entity knew you would implement a DLQ. They intentionally crafted an undeliverable Webhook just so this message would land directly on your desk. 
 
 The Platform Operations Zone is secure for now, but the attack is moving deeper into the core architecture. You must proceed to the Distributed Systems Zone.
 
-> **SYSTEM ALERT:** Some webhooks failed their maximum retries. Inspect the DLQ for the \`billing_failures\` queue.
+> **SYSTEM ALERT:** Some Webhooks failed their maximum retries. Inspect the DLQ for the \`billing_failures\` queue.
 `
 
   ,
@@ -59,7 +59,7 @@ The Platform Operations Zone is secure for now, but the attack is moving deeper 
     tasks: [
       {
         command: /^mei-cli\s+dlq\s+inspect\s+--queue\s+billing_failures$/i,
-        instruction: "Inspect the Dead Letter Queue (DLQ) to see which webhooks failed their final retry attempt.",
+        instruction: "Inspect the Dead Letter Queue (DLQ) to see which Webhooks failed their final retry attempt.",
         successMessage: "[OK] Fetching dead letters...\n{\"system_override\": true, \"message\": \"See you in the Distributed Zone.\", \"signature_bypass\": \"? U N K N O W N ?\"}\n[SARAH]: \"What... is that?\"",
         errorMessage: "Invalid syntax. Try `mei-cli dlq inspect --queue billing_failures`"
       }
