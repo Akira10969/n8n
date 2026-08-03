@@ -8,6 +8,9 @@ export const getAuthTokens = () => {
 };
 
 export const registerPlayer = async () => {
+  if (window._isRegistering) return null;
+  window._isRegistering = true;
+  
   try {
     const res = await fetch('/backend/api/register.php');
     if (!res.ok) {
@@ -28,6 +31,8 @@ export const registerPlayer = async () => {
       console.warn(`[API] Registration error: ${error.message}. Falling back to Offline Mode.`);
       window._hasLoggedOffline = true;
     }
+  } finally {
+    window._isRegistering = false;
   }
   return null;
 };

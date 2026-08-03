@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Lock, CheckCircle2, Play, ShieldAlert, Activity } from 'lucide-react';
 import PostGameSequence from './PostGameSequence';
-import { playVoiceLine } from '../utils/audioUtils';
+import { playVoiceLine, setMusicPhase } from '../utils/audioUtils';
 import './MissionMap.css';
 
 // Zone definitions for region labels and colors
@@ -63,30 +63,54 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
   const [attackPhase, setAttackPhase] = useState(0); 
   // 0=idle, 1=monitor, 2=anomaly, 3=breach, 4=voice, 5=sweeping, 6=done
 
-  // Attack Cinematic Sequence
+  // Attack Cinematic Sequence Orchestration
   useEffect(() => {
-    if (worldState === 'UNDER_ATTACK' && attackPhase === 0 && activeMissionIndex === null) {
+    if (worldState !== 'UNDER_ATTACK') return;
+    
+    // Phase 1 triggers immediately on UNDER_ATTACK if idle
+    if (attackPhase === 0 && activeMissionIndex === null) {
       setIntroPhase('done');
-      setMapTransform('scale(1.2) translate(10%, 10%)'); // Slightly zoomed in before pulling back
+      setMapTransform('scale(1.1) translate(5%, 5%)');
       setAttackPhase(1);
     }
   }, [worldState, attackPhase, activeMissionIndex]);
 
   useEffect(() => {
-    if (attackPhase === 4) {
-      // Pull back camera
+    if (worldState !== 'UNDER_ATTACK') return;
+
+    if (attackPhase === 1) {
+      // Phase 1: Subtle flicker & anomaly detection
+      playVoiceLine("[UNIT-7]: Warning. Anomalous data stream detected in sector 4. Signal strength increasing exponentially.", () => {
+        setAttackPhase(2);
+      });
+    } else if (attackPhase === 2) {
+      // Phase 2: Platform Degradation & Alarms
+      playVoiceLine("[UNIT-7]: Multiple security breaches detected. Platform integrity failing.", () => {
+        setAttackPhase(3);
+      });
+    } else if (attackPhase === 3) {
+      // Phase 3: The Void Breaches (Music cuts, hard glitches)
+      setMusicPhase('NONE');
+      setTimeout(() => {
+        playVoiceLine("[THE_VOID]: Your architecture is fragile. I am the space between your nodes.", () => {
+          setAttackPhase(4);
+        }, { pitch: 0.5, rate: 0.85 });
+      }, 800);
+    } else if (attackPhase === 4) {
+      // Phase 4: Sweeping corruption, pull back camera, nodes fail
       setMapTransform('scale(1) translate(0, 0)');
+      setMusicPhase('CRITICAL');
       setTimeout(() => {
         setAttackPhase(5);
-        playVoiceLine("[UNIT-7]: WARNING. The UI is shattered. The map is bleeding. The Void has breached the outer defenses.", () => {
+        playVoiceLine("[UNIT-7]: Engineer... all automated recovery systems have failed. You're our last line of defense.", () => {
           setTimeout(() => {
             setAttackPhase(6);
             if (onCorruptionCinematicComplete) onCorruptionCinematicComplete();
           }, 2000);
-        }, { pitch: 0.8, rate: 1.1 });
-      }, 500);
+        });
+      }, 3500); // Wait for the visual sweep before speaking
     }
-  }, [attackPhase, onCorruptionCinematicComplete]);
+  }, [attackPhase, worldState, onCorruptionCinematicComplete]);
 
   // Handle active mission zooming
   useEffect(() => {
@@ -168,15 +192,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
   }
 
   return (
-    <div className={`interactive-map-wrapper ${activeMissionIndex !== null ? 'sidebar-mode' : ''} ${worldState ? worldState.toLowerCase() : ''}`} ref={wrapperRef}>
-
-      {worldState === 'UNDER_ATTACK' && (attackPhase > 0 && attackPhase < 6) && (
-        <div className="attack-cinematic-overlay">
-          {attackPhase === 1 && <TypewriterLine text="[UNIT-7]: Monitoring..." onDone={() => setAttackPhase(2)} />}
-          {attackPhase === 2 && <TypewriterLine text="[UNIT-7]: Anomaly detected. Unknown signal strength increasing." onDone={() => setAttackPhase(3)} />}
-          {attackPhase === 3 && <TypewriterLine text="[UNIT-7]: Outer defenses compromised." onDone={() => setAttackPhase(4)} />}
-        </div>
-      )}
+    <div className={`interactive-map-wrapper ${activeMissionIndex !== null ? 'sidebar-mode' : ''} ${worldState ? worldState.toLowerCase() : ''} ${worldState === 'UNDER_ATTACK' && attackPhase === 3 ? 'map-shake' : ''}`} ref={wrapperRef}>
 
       {/* Cinematic Fog & Dust Overlay */}
       <div className={`map-fog-overlay ${isFogHeavy ? 'heavy' : 'light'} ${worldState === 'RESTORED' ? 'cleared' : ''}`}></div>
@@ -184,11 +200,14 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
       
       {/* Glitch Overlay for Attack/Corrupted states */}
       {((worldState === 'UNDER_ATTACK' && attackPhase >= 3) || worldState === 'CORRUPTED') && (
-        <div className="global-glitch-overlay"></div>
+        <>
+          <div className="global-glitch-overlay"></div>
+          <div className="corruption-particles"></div>
+        </>
       )}
 
       {/* NOC Dashboard (Top Right) */}
-      <div className="map-noc-dashboard" style={{ opacity: isUIVisible && activeMissionIndex === null ? 1 : 0 }}>
+      <div className={`map-noc-dashboard ${worldState === 'UNDER_ATTACK' && attackPhase === 3 ? 'global-glitch-overlay' : ''}`} style={{ opacity: isUIVisible && activeMissionIndex === null ? 1 : 0 }}>
         <div className="noc-header"><Activity size={14} /> PLATFORM STATUS: {worldState}</div>
         <div className="noc-grid">
           <div className="noc-row"><span>Platform Health</span> <span className={`status ${dbData.health}`}>{dbData.health}</span></div>
@@ -203,6 +222,13 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
           <div className="noc-row"><span>Availability</span> <span className={`status ${dbData.health}`}>{dbData.avail}</span></div>
         </div>
       </div>
+
+      {/* Emergency Banner */}
+      {worldState === 'CORRUPTED' && activeMissionIndex === null && (
+        <div className="emergency-banner-overlay">
+          EMERGENCY DEPLOYMENT REQUIRED: SECTOR 4
+        </div>
+      )}
 
       <div className="map-viewport">
         <div className={hasCompletedGame && !hasAcknowledged ? "map-cinematic-pan" : ""} style={{ width: '100%', height: '100%' }}>
@@ -301,7 +327,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
                 )}
 
                 <button 
-                  className="node-icon"
+                  className={`node-icon ${isCorrupted && worldState === 'UNDER_ATTACK' && attackPhase >= 3 ? 'node-flicker' : ''}`}
                   style={{ 
                     borderColor: isCorrupted ? '#ef4444' : zoneColor,
                     background: isCorrupted ? '#450a0a' : 'rgba(10,15,25,0.8)',
@@ -324,8 +350,8 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
                   {index + 1}
                 </div>
 
-                {isNext && !isCorrupted && (
-                  <div className="node-active-label">YOU ARE HERE</div>
+                {isNext && (
+                  <div className={`node-active-label ${isCorrupted ? 'corrupted-pulse' : ''}`}>YOU ARE HERE</div>
                 )}
                 
                 <div className="node-hover-card">

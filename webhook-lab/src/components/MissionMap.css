@@ -493,3 +493,77 @@
   opacity: 0 !important;
   transition: opacity 4s ease-in-out;
 }
+
+@keyframes mapShake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.map-shake {
+  animation: mapShake 0.5s infinite;
+}
+
+@keyframes nodeFlicker {
+  0%, 100% { opacity: 1; border-color: #ef4444; }
+  50% { opacity: 0.2; border-color: #000; }
+}
+
+.node-flicker {
+  animation: nodeFlicker 0.15s infinite;
+}
+
+@keyframes floatUpRed {
+  0% { transform: translateY(0) scale(1); opacity: 0.8; }
+  100% { transform: translateY(-50px) scale(0); opacity: 0; }
+}
+
+.corruption-particles {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  background-image: 
+    radial-gradient(circle at 30% 70%, rgba(239, 68, 68, 0.4) 1px, transparent 1px),
+    radial-gradient(circle at 70% 30%, rgba(239, 68, 68, 0.4) 2px, transparent 2px),
+    radial-gradient(circle at 40% 40%, rgba(239, 68, 68, 0.4) 1px, transparent 1px);
+  background-size: 100px 100px;
+  animation: floatUpRed 2s infinite linear;
+}
+
+
+.corrupted-path {
+  animation: nodeFlicker 0.15s infinite;
+}
+
+.emergency-banner-overlay {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(220, 38, 38, 0.9);
+  color: white;
+  padding: 10px 20px;
+  font-family: 'Fira Code', monospace;
+  font-weight: bold;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  border: 2px solid #ef4444;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+  z-index: 100;
+  animation: nodeFlicker 1s infinite alternate;
+  pointer-events: none;
+}
+
+.corrupted-pulse {
+  color: #ef4444;
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+  animation: nodeFlicker 0.2s infinite;
+}

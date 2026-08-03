@@ -61,10 +61,11 @@ export const checkAudioAssets = async () => {
   for (const [key, path] of Object.entries(MUSIC_TRACKS)) {
     try {
       const response = await fetch(path, { method: 'HEAD' });
-      if (response.ok) {
+      const contentType = response.headers.get('content-type');
+      if (response.ok && contentType && (contentType.includes('audio') || contentType.includes('video'))) {
         console.log(`✓ ${path.split('/').pop()}`);
       } else {
-        console.warn(`✗ ${path.split('/').pop()} (Missing)`);
+        console.warn(`✗ ${path.split('/').pop()} (Missing or Invalid)`);
         window._knownMissingAudio.add(path);
       }
     } catch (error) {
