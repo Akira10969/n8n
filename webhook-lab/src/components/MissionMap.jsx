@@ -61,6 +61,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
 
   // Cinematic Attack States
   const [attackPhase, setAttackPhase] = useState(0); 
+  const [cinematicText, setCinematicText] = useState("");
   // 0=idle, 1=monitor, 2=anomaly, 3=breach, 4=voice, 5=sweeping, 6=done
 
   // Attack Cinematic Sequence Orchestration
@@ -80,19 +81,25 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
 
     if (attackPhase === 1) {
       // Phase 1: Subtle flicker & anomaly detection
-      playVoiceLine("[UNIT-7]: Warning. Anomalous data stream detected in sector 4. Signal strength increasing exponentially.", () => {
+      const text = "[UNIT-7]: Warning. Anomalous data stream detected in sector 4. Signal strength increasing exponentially.";
+      setCinematicText(text);
+      playVoiceLine(text, () => {
         setAttackPhase(2);
       });
     } else if (attackPhase === 2) {
       // Phase 2: Platform Degradation & Alarms
-      playVoiceLine("[UNIT-7]: Multiple security breaches detected. Platform integrity failing.", () => {
+      const text = "[UNIT-7]: Multiple security breaches detected. Platform integrity failing.";
+      setCinematicText(text);
+      playVoiceLine(text, () => {
         setAttackPhase(3);
       });
     } else if (attackPhase === 3) {
       // Phase 3: The Void Breaches (Music cuts, hard glitches)
       setMusicPhase('NONE');
+      const text = "[THE_VOID]: Your architecture is fragile. I am the space between your nodes.";
       setTimeout(() => {
-        playVoiceLine("[THE_VOID]: Your architecture is fragile. I am the space between your nodes.", () => {
+        setCinematicText(text);
+        playVoiceLine(text, () => {
           setAttackPhase(4);
         }, { pitch: 0.5, rate: 0.85 });
       }, 800);
@@ -102,7 +109,9 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
       setMusicPhase('CRITICAL');
       setTimeout(() => {
         setAttackPhase(5);
-        playVoiceLine("[UNIT-7]: Engineer... all automated recovery systems have failed. You're our last line of defense.", () => {
+        const text = "[UNIT-7]: Engineer... all automated recovery systems have failed. You're our last line of defense.";
+        setCinematicText(text);
+        playVoiceLine(text, () => {
           setTimeout(() => {
             setAttackPhase(6);
             if (onCorruptionCinematicComplete) onCorruptionCinematicComplete();
@@ -193,6 +202,13 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
 
   return (
     <div className={`interactive-map-wrapper ${activeMissionIndex !== null ? 'sidebar-mode' : ''} ${worldState ? worldState.toLowerCase() : ''} ${worldState === 'UNDER_ATTACK' && attackPhase === 3 ? 'map-shake' : ''}`} ref={wrapperRef}>
+
+      {/* Cinematic Text Overlay */}
+      {worldState === 'UNDER_ATTACK' && cinematicText && attackPhase < 6 && (
+        <div className="attack-cinematic-overlay">
+          <TypewriterLine key={cinematicText} text={cinematicText} />
+        </div>
+      )}
 
       {/* Cinematic Fog & Dust Overlay */}
       <div className={`map-fog-overlay ${isFogHeavy ? 'heavy' : 'light'} ${worldState === 'RESTORED' ? 'cleared' : ''}`}></div>

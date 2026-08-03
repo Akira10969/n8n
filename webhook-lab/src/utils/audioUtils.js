@@ -62,7 +62,7 @@ export const checkAudioAssets = async () => {
     try {
       const response = await fetch(path, { method: 'HEAD' });
       const contentType = response.headers.get('content-type');
-      if (response.ok && contentType && (contentType.includes('audio') || contentType.includes('video'))) {
+      if (response.ok && (!contentType || !contentType.includes('text/html'))) {
         console.log(`✓ ${path.split('/').pop()}`);
       } else {
         console.warn(`✗ ${path.split('/').pop()} (Missing or Invalid)`);
