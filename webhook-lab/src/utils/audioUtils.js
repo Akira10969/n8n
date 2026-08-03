@@ -1,4 +1,9 @@
-// Global Audio Context to avoid creating multiple instances
+
+// ==========================================
+// GLOBAL AUDIO MANAGER
+// ==========================================
+
+// Global Audio Context
 let audioCtx = null;
 
 export const getAudioContext = () => {
@@ -11,18 +16,34 @@ export const getAudioContext = () => {
   return audioCtx;
 };
 
-// Global settings state references
+// DEV Logging
+const logAudio = (msg) => {
+  if (import.meta.env.DEV) {
+    console.log('[AUDIO]', msg);
+  }
+};
+
+// Global Settings State
 let audioSettings = {
   voiceEnabled: true,
   musicVolume: 0.5,
   sfxVolume: 0.5,
 };
 
-// MUSIC STATE
+export const getAudioSettings = () => audioSettings;
+
+// Global State
 let currentMusicPhase = null;
 let currentAudioElement = null;
 let nextAudioElement = null;
 let isDucking = false;
+let isTransitioning = false;
+let activeTimers = new Set();
+let currentEnvOsc = null;
+let currentEnvGain = null;
+let activeSpeechBgNode = null;
+let activeSpeechBgGain = null;
+let activeGlitchInterval = null;
 
 const MUSIC_TRACKS = {
   MAP: "https://cdn.pixabay.com/download/audio/2022/11/22/audio_febc508520.mp3",
@@ -34,30 +55,91 @@ const MUSIC_TRACKS = {
   VOID: "https://cdn.pixabay.com/download/audio/2022/02/10/audio_5fb6660fc6.mp3"
 };
 
-const applyMusicVolume = (element, targetVol = audioSettings.musicVolume, isFadingIn = false) => {
-  if (!element) return;
+// Utility to track and clear intervals
+const safeSetInterval = (fn, ms) => {
+  const id = setInterval(fn, ms);
+  activeTimers.add(id);
+  return id;
+};
+
+const safeClearInterval = (id) => {
+  if (id) {
+    clearInterval(id);
+    activeTimers.delete(id);
+  }
+};
+
+export const cleanupAudio = () => {
+  logAudio('Cleanup Initiated');
   
-  if (element.fadeInterval) {
-    clearInterval(element.fadeInterval);
-    element.fadeInterval = null;
+  // Clear all pending transition logic
+  activeTimers.forEach(id => clearInterval(id));
+  activeTimers.clear();
+  
+  if (currentAudioElement) {
+    currentAudioElement.pause();
+    currentAudioElement.src = '';
+    currentAudioElement = null;
+  }
+  if (nextAudioElement) {
+    nextAudioElement.pause();
+    nextAudioElement.src = '';
+    nextAudioElement = null;
   }
   
-  const finalVolume = Math.max(0, Math.min(1, targetVol * (isDucking ? 0.2 : 1)));
-  if (isFadingIn) {
-    element.volume = 0;
-    let vol = 0;
-    element.fadeInterval = setInterval(() => {
-      vol += 0.05;
-      if (vol >= finalVolume) {
-        element.volume = finalVolume;
-        clearInterval(element.fadeInterval);
-        element.fadeInterval = null;
+  currentMusicPhase = null;
+  isTransitioning = false;
+  isDucking = false;
+  
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  stopSpeechBackground();
+  stopZoneAmbience(true); // true = force immediate
+  
+  logAudio('Cleanup Complete');
+};
+
+export const setGlobalDucking = (duck) => {
+  isDucking = duck;
+  logAudio(`Ducking ${duck ? 'Enabled' : 'Disabled'}`);
+  
+  if (!currentAudioElement || isTransitioning) return;
+  
+  safeClearInterval(currentAudioElement.fadeInterval);
+  
+  const targetVol = audioSettings.musicVolume * (duck ? 0.2 : 1);
+  let vol = currentAudioElement.volume;
+  const step = duck ? -0.05 : 0.05;
+  
+  currentAudioElement.fadeInterval = safeSetInterval(() => {
+    vol += step;
+    if ((duck && vol <= targetVol) || (!duck && vol >= targetVol)) {
+      currentAudioElement.volume = Math.max(0, Math.min(1, targetVol));
+      safeClearInterval(currentAudioElement.fadeInterval);
+      currentAudioElement.fadeInterval = null;
+    } else {
+      currentAudioElement.volume = Math.max(0, Math.min(1, vol));
+    }
+  }, 50);
+};
+
+export const setMusicTension = (multiplier) => {
+  if (currentAudioElement && !isTransitioning) {
+    const targetRate = Math.max(1, Math.min(2.0, multiplier));
+    let currentRate = currentAudioElement.playbackRate;
+    
+    safeClearInterval(currentAudioElement.tensionInterval);
+    
+    currentAudioElement.tensionInterval = safeSetInterval(() => {
+      if (Math.abs(currentRate - targetRate) < 0.02) {
+        currentAudioElement.playbackRate = targetRate;
+        safeClearInterval(currentAudioElement.tensionInterval);
       } else {
-        element.volume = vol;
+        currentRate += (targetRate > currentRate ? 0.01 : -0.01);
+        currentAudioElement.playbackRate = currentRate;
       }
     }, 100);
-  } else {
-    element.volume = finalVolume;
   }
 };
 
@@ -68,158 +150,136 @@ export const updateAudioSettings = (settings) => {
     window.speechSynthesis.cancel();
   }
   
-  if (currentAudioElement) {
-    applyMusicVolume(currentAudioElement, audioSettings.musicVolume);
+  if (currentAudioElement && !isTransitioning) {
+    const targetVol = Math.max(0, Math.min(1, audioSettings.musicVolume * (isDucking ? 0.2 : 1)));
+    currentAudioElement.volume = targetVol;
   }
 };
 
 export const setMusicPhase = (phase) => {
-  if (currentMusicPhase === phase) return;
+  if (currentMusicPhase === phase) {
+    return;
+  }
+  
   const trackUrl = MUSIC_TRACKS[phase];
   if (!trackUrl) return;
 
+  logAudio(`Phase Transition Requested: ${currentMusicPhase || 'NONE'} -> ${phase}`);
   currentMusicPhase = phase;
   
-  // Crossfade setup
-  nextAudioElement = new Audio(trackUrl);
-  nextAudioElement.loop = true;
-  nextAudioElement.play().catch(e => console.warn('Audio play prevented by browser', e));
+  // If we are already transitioning, we immediately force-stop the old transition logic
+  // and jump to fading out whatever is currently playing
+  if (isTransitioning) {
+    logAudio('Interrupting active transition.');
+    if (nextAudioElement) {
+      nextAudioElement.pause();
+      nextAudioElement.src = '';
+      nextAudioElement = null;
+    }
+  }
+
+  isTransitioning = true;
   
-  applyMusicVolume(nextAudioElement, audioSettings.musicVolume, true);
+  // 1. Fade Out Current Element Sequence
+  const fadeOutAndPlayNext = () => {
+    nextAudioElement = new Audio(trackUrl);
+    nextAudioElement.loop = true;
+    nextAudioElement.volume = 0;
+    
+    // Play interaction needs to happen, catch browser policy errors
+    nextAudioElement.play().then(() => {
+      currentAudioElement = nextAudioElement;
+      nextAudioElement = null;
+      
+      const targetVol = Math.max(0, Math.min(1, audioSettings.musicVolume * (isDucking ? 0.2 : 1)));
+      let vol = 0;
+      
+      currentAudioElement.fadeInterval = safeSetInterval(() => {
+        vol += 0.05;
+        if (vol >= targetVol) {
+          currentAudioElement.volume = targetVol;
+          safeClearInterval(currentAudioElement.fadeInterval);
+          currentAudioElement.fadeInterval = null;
+          isTransitioning = false;
+          logAudio('Music Transition Complete');
+        } else {
+          currentAudioElement.volume = Math.max(0, Math.min(1, vol));
+        }
+      }, 100);
+    }).catch(e => {
+      console.warn('Audio play prevented by browser', e);
+      logAudio('Audio playback blocked by browser policies.');
+      isTransitioning = false;
+    });
+  };
 
   if (currentAudioElement) {
-    const fadeOutEl = currentAudioElement;
+    safeClearInterval(currentAudioElement.fadeInterval);
     
-    if (fadeOutEl.fadeInterval) {
-      clearInterval(fadeOutEl.fadeInterval);
-      fadeOutEl.fadeInterval = null;
-    }
-    
-    let vol = fadeOutEl.volume;
-    fadeOutEl.fadeInterval = setInterval(() => {
+    let vol = currentAudioElement.volume;
+    currentAudioElement.fadeInterval = safeSetInterval(() => {
       vol -= 0.05;
       if (vol <= 0) {
-        fadeOutEl.pause();
-        fadeOutEl.src = '';
-        clearInterval(fadeOutEl.fadeInterval);
-        fadeOutEl.fadeInterval = null;
+        currentAudioElement.pause();
+        currentAudioElement.src = '';
+        safeClearInterval(currentAudioElement.fadeInterval);
+        currentAudioElement.fadeInterval = null;
+        currentAudioElement = null;
+        fadeOutAndPlayNext();
       } else {
-        fadeOutEl.volume = Math.max(0, vol);
+        currentAudioElement.volume = Math.max(0, vol);
       }
     }, 100);
+  } else {
+    // Nothing playing, just fade in the new track
+    fadeOutAndPlayNext();
   }
-  
-  currentAudioElement = nextAudioElement;
 };
 
 // ==========================================
 // VOICE SYNTHESIS & IDENTITIES
 // ==========================================
 
-export const getVoiceIdentity = (text) => {
-  let identity = 'NARRATOR';
+import { VoiceEngine } from './VoiceEngine';
+
+export const playVoiceLine = (text, onEnd, options = {}) => {
+  // Legacy wrapper to maintain compatibility while transitioning to Promises
+  const identityMatch = text.match(/\[(.*?)\]/);
+  let character = 'NARRATOR';
   let cleanText = text;
 
-  if (text.startsWith('[UNIT-7')) {
-    identity = 'UNIT-7';
-    cleanText = text.replace(/\[UNIT-7[^\]]*\]:\s*/i, '');
-  } else if (text.startsWith('[SARAH')) {
-    identity = 'SARAH';
-    cleanText = text.replace(/\[SARAH[^\]]*\]:\s*/i, '');
-  } else if (text.startsWith('[THE VOID')) {
-    identity = 'THE_VOID';
-    cleanText = text.replace(/\[THE VOID[^\]]*\]:\s*/i, '');
-  }
-
-  return { identity, cleanText };
-};
-
-export const playVoiceLine = (text, onEnd) => {
-  if (!audioSettings.voiceEnabled || !('speechSynthesis' in window)) {
-    if (onEnd) setTimeout(onEnd, text.length * 50); // Simulate reading time if disabled
-    return;
-  }
-
-  window.speechSynthesis.cancel();
-  
-  const { identity, cleanText } = getVoiceIdentity(text);
-  const utterance = new SpeechSynthesisUtterance(cleanText);
-  
-  const voices = window.speechSynthesis.getVoices();
-  let selectedVoice = voices[0];
-  
-  // Voice Personalities
-  if (identity === 'UNIT-7') {
-    utterance.pitch = 0.9;
-    utterance.rate = 1.0;
-    selectedVoice = voices.find(v => v.name.includes('Microsoft Mark') || v.name.includes('Google UK English Male') || v.name.includes('David')) || voices[0];
-    playUIBeep();
-  } else if (identity === 'SARAH') {
-    utterance.pitch = 1.1;
-    utterance.rate = 1.0;
-    selectedVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Samantha') || v.name.includes('Victoria')) || voices[0];
-    playRadioClick();
-  } else if (identity === 'THE_VOID') {
-    utterance.pitch = 0.2;
-    utterance.rate = 0.7;
-  } else {
-    // Default narrator
-    utterance.pitch = 1.0;
-    utterance.rate = 1.0;
-  }
-
-  if (selectedVoice) utterance.voice = selectedVoice;
-  
-  utterance.volume = audioSettings.sfxVolume * 1.5;
-
-  // Audio Ducking Start
-  isDucking = true;
-  if (currentAudioElement) applyMusicVolume(currentAudioElement);
-
-  utterance.onend = () => {
-    // Audio Ducking End
-    isDucking = false;
-    if (currentAudioElement) {
-      // Smooth fade back up
-      if (currentAudioElement.fadeInterval) {
-        clearInterval(currentAudioElement.fadeInterval);
-        currentAudioElement.fadeInterval = null;
-      }
-      
-      let vol = currentAudioElement.volume;
-      const targetVol = audioSettings.musicVolume;
-      currentAudioElement.fadeInterval = setInterval(() => {
-        vol += 0.05;
-        if (vol >= targetVol) {
-          currentAudioElement.volume = targetVol;
-          clearInterval(currentAudioElement.fadeInterval);
-          currentAudioElement.fadeInterval = null;
-        } else {
-          currentAudioElement.volume = vol;
-        }
-      }, 50);
+  if (identityMatch) {
+    cleanText = text.replace(/\[.*?\]:\s*/, '').trim();
+    if (cleanText.startsWith('[')) { 
+      // in case it didn't have a colon, fallback strip
+      cleanText = text.replace(/\[.*?\]\s*/, '').trim();
     }
     
-    if (identity === 'SARAH') {
-      setTimeout(playRadioClick, 200);
-    }
+    const tag = identityMatch[1].toUpperCase();
+    if (tag.includes('UNIT-7')) character = 'UNIT-7';
+    if (tag.includes('SARAH')) character = 'SARAH';
+    if (tag.includes('VOID')) character = 'THE_VOID';
+  }
+
+  VoiceEngine.play(cleanText, character, { 
+    ...options,
+    sfxVolume: audioSettings.sfxVolume,
+    voiceEnabled: audioSettings.voiceEnabled
+  }).then(() => {
     if (onEnd) onEnd();
-  };
-  
-  window.speechSynthesis.speak(utterance);
+  });
 };
 
 export const stopVoice = () => {
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-  }
-  isDucking = false;
-  if (currentAudioElement) applyMusicVolume(currentAudioElement);
+  VoiceEngine.stop();
 };
 
+export const stopSpeechBackground = () => {
+  VoiceEngine.stopSpeechBackground();
+};
 
 // ==========================================
-// SOUND EFFECTS
+// SOUND EFFECTS & UI
 // ==========================================
 
 export const playUIBeep = () => {
@@ -242,10 +302,36 @@ export const playUIBeep = () => {
   osc.stop(ctx.currentTime + 0.1);
 };
 
+export const playTypingSound = () => {
+  if (audioSettings.sfxVolume === 0) return;
+  if (window.speechSynthesis && window.speechSynthesis.speaking) return;
+
+  const ctx = getAudioContext();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  
+  const frequencies = [600, 750, 800, 950];
+  const baseFreq = frequencies[Math.floor(Math.random() * frequencies.length)];
+  
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.5, ctx.currentTime + 0.02);
+  
+  const targetVolume = audioSettings.sfxVolume * 0.03; 
+  gain.gain.setValueAtTime(targetVolume, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.02);
+  
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  
+  osc.start();
+  osc.stop(ctx.currentTime + 0.03);
+};
+
 export const playRadioClick = () => {
   if (audioSettings.sfxVolume === 0) return;
   const ctx = getAudioContext();
-  const bufferSize = ctx.sampleRate * 0.05; // 50ms click
+  const bufferSize = ctx.sampleRate * 0.05;
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
   const data = buffer.getChannelData(0);
   for (let i = 0; i < bufferSize; i++) {
@@ -295,21 +381,17 @@ export const playSuccessSound = () => {
 // ENVIRONMENTAL AMBIENCE
 // ==========================================
 
-let currentEnvOsc = null;
-let currentEnvGain = null;
-
 export const playZoneAmbience = (zoneName) => {
   if (audioSettings.sfxVolume === 0) return;
   const ctx = getAudioContext();
   
-  stopZoneAmbience(); // clear existing
+  stopZoneAmbience(true); // Force stop previous seamlessly
   
   const gain = ctx.createGain();
   gain.gain.setValueAtTime(0, ctx.currentTime);
   gain.gain.linearRampToValueAtTime(audioSettings.sfxVolume * 0.05, ctx.currentTime + 2); // Fade in
   
   if (zoneName === 'FOUNDATION ZONE') {
-    // Soft wind noise
     const bufferSize = ctx.sampleRate * 2;
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
@@ -325,14 +407,11 @@ export const playZoneAmbience = (zoneName) => {
     
     currentEnvOsc.connect(filter);
     filter.connect(gain);
-    
   } else if (zoneName === 'CLOUD ZONE') {
-    // Magical synth hum
     currentEnvOsc = ctx.createOscillator();
     currentEnvOsc.type = 'sine';
-    currentEnvOsc.frequency.value = 120; // Low hum
+    currentEnvOsc.frequency.value = 120;
     
-    // Add LFO for modulation
     const lfo = ctx.createOscillator();
     lfo.frequency.value = 0.5;
     const lfoGain = ctx.createGain();
@@ -342,9 +421,7 @@ export const playZoneAmbience = (zoneName) => {
     lfo.start();
     
     currentEnvOsc.connect(gain);
-    
   } else {
-    // Default low drone for other zones (Security, Infrastructure)
     currentEnvOsc = ctx.createOscillator();
     currentEnvOsc.type = 'square';
     currentEnvOsc.frequency.value = 50; 
@@ -362,14 +439,19 @@ export const playZoneAmbience = (zoneName) => {
   currentEnvGain = gain;
 };
 
-export const stopZoneAmbience = () => {
+export const stopZoneAmbience = (immediate = false) => {
   if (currentEnvGain && currentEnvOsc) {
     const ctx = getAudioContext();
-    currentEnvGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1);
-    const oscToStop = currentEnvOsc;
-    setTimeout(() => {
-      try { oscToStop.stop(); } catch(e){}
-    }, 1000);
+    if (immediate) {
+      currentEnvGain.gain.setValueAtTime(0, ctx.currentTime);
+      try { currentEnvOsc.stop(); } catch(e){}
+    } else {
+      currentEnvGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1);
+      const oscToStop = currentEnvOsc;
+      setTimeout(() => {
+        try { oscToStop.stop(); } catch(e){}
+      }, 1000);
+    }
     currentEnvOsc = null;
     currentEnvGain = null;
   }

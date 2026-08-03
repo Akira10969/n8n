@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './BootSequence.css';
+import { playTypingSound, playUIBeep, setGlobalDucking, setMusicTension, playVoiceLine, stopVoice } from '../utils/audioUtils';
 
 const Typewriter = ({ text, delay = 20, onComplete }) => {
   const [displayed, setDisplayed] = useState('');
@@ -25,39 +26,46 @@ const Typewriter = ({ text, delay = 20, onComplete }) => {
     setDisplayed('');
     setIdx(0);
 
-    if ('speechSynthesis' in window && text) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.pitch = 1.2; // Higher pitch for a more natural, female tone with feeling
-      utterance.rate = 0.95; // Slightly slower for expressiveness
-      
-      const voices = window.speechSynthesis.getVoices();
-      const voice = voices.find(v => 
-        v.name.includes('Female') || 
-        v.name.includes('Zira') || 
-        v.name.includes('Samantha') || 
-        v.name.includes('Victoria')
-      ) || voices.find(v => v.name.includes('Google')) || voices[0];
-      
-      if (voice) utterance.voice = voice;
-      
-      // Lower background music to 20% when speaking
-      const bgMusic = document.querySelector('audio');
-      if (bgMusic) bgMusic.volume = 0.2;
-      
-      utterance.onend = () => {
-        if (bgMusic) bgMusic.volume = 0.5;
+    let voiceCompleted = false;
+
+    if (text) {
+      const isSerious = text.includes('ELEVATED') || text.includes('Incident reports') || text.includes('anomalies') || text.includes('testing our defenses') || text.includes('Warning');
+      const isUrgent = text.includes('CRITICAL') || text.includes('latency') || text.includes('timing out') || text.includes('Trust nothing') || text.includes('Anomaly');
+      const isExtreme = text.includes('FAILURE') || text.includes('EXTREME') || text.includes('Void') || text.includes('never recover') || text.includes('core services');
+
+      let pitch = 1.2;
+      let rate = 0.95;
+
+      if (isExtreme) {
+        pitch = 0.8;
+        rate = 1.1;
+        setMusicTension(1.4);
+      } else if (isUrgent) {
+        pitch = 0.9;
+        rate = 0.85;
+        setMusicTension(1.2);
+      } else if (isSerious) {
+        pitch = 1.0;
+        rate = 0.9;
+        setMusicTension(1.1);
+      } else {
+        setMusicTension(1.0);
+      }
+
+      playVoiceLine(text, () => {
+        if (voiceCompleted) return;
+        voiceCompleted = true;
         isVoiceComplete.current = true;
         checkCompletion();
-      };
-      
-      window.speechSynthesis.speak(utterance);
+      }, { pitch, rate });
+
     } else {
       isVoiceComplete.current = true;
     }
 
     return () => {
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      voiceCompleted = true;
+      stopVoice();
     };
   }, [text]);
 
@@ -74,7 +82,12 @@ const Typewriter = ({ text, delay = 20, onComplete }) => {
       
       const t = setTimeout(() => {
         setDisplayed(p => p + char);
-        setIdx(i => i + 1);
+        setIdx(prev => prev + 1);
+        
+        // Play typing sound on ~1/3 of the characters to avoid being repetitive
+        if (idx % 3 === 0 && char !== ' ') {
+          playTypingSound();
+        }
       }, currentDelay);
       return () => clearTimeout(t);
     } else {
@@ -166,12 +179,12 @@ export default function BootSequence({ highestUnlockedIndex, onBootComplete }) {
   useEffect(() => {
     // 1. Initializing
     const timers = [];
-    timers.push(setTimeout(() => setStep(1), 1000)); // Connect
-    timers.push(setTimeout(() => setStep(2), 2500)); // Auth
-    timers.push(setTimeout(() => setStep(3), 4000)); // Load infra
-    timers.push(setTimeout(() => setStep(4), 5500)); // Sync complete
-    timers.push(setTimeout(() => setStep(5), 7000)); // Welcome
-    timers.push(setTimeout(() => setStep(6), 8500)); // Narrative start
+    timers.push(setTimeout(() => { setStep(1); playUIBeep(); }, 1000)); // Connect
+    timers.push(setTimeout(() => { setStep(2); playUIBeep(); }, 2500)); // Auth
+    timers.push(setTimeout(() => { setStep(3); playUIBeep(); }, 4000)); // Load infra
+    timers.push(setTimeout(() => { setStep(4); playUIBeep(); }, 5500)); // Sync complete
+    timers.push(setTimeout(() => { setStep(5); playUIBeep(); }, 7000)); // Welcome
+    timers.push(setTimeout(() => { setStep(6); }, 8500)); // Narrative start
     
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -180,23 +193,28 @@ export default function BootSequence({ highestUnlockedIndex, onBootComplete }) {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
     
-    osc.type = 'sawtooth';
+    osc.type = 'sine'; // Soft ambient hum instead of harsh sawtooth
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(300, audioCtx.currentTime); // Filter out high frequencies
+    
     // Slightly lower frequency for higher levels to make it more menacing
-    const baseFreq = highestUnlockedIndex >= 24 ? 40 : 45;
+    const baseFreq = highestUnlockedIndex >= 24 ? 40 : 50;
     osc.frequency.setValueAtTime(baseFreq, audioCtx.currentTime); 
     
     gain.gain.setValueAtTime(0, audioCtx.currentTime);
     
-    let targetVolume = 0.03;
-    if (highestUnlockedIndex >= 5) targetVolume = 0.05;
-    if (highestUnlockedIndex >= 15) targetVolume = 0.08;
-    if (highestUnlockedIndex >= 24) targetVolume = 0.12;
+    let targetVolume = 0.05;
+    if (highestUnlockedIndex >= 5) targetVolume = 0.1;
+    if (highestUnlockedIndex >= 15) targetVolume = 0.15;
+    if (highestUnlockedIndex >= 24) targetVolume = 0.2;
     
     // Slow build up over 8 seconds
     gain.gain.linearRampToValueAtTime(targetVolume, audioCtx.currentTime + 8);
     
-    osc.connect(gain);
+    osc.connect(filter);
+    filter.connect(gain);
     gain.connect(audioCtx.destination);
     
     if (audioCtx.state === 'suspended') {

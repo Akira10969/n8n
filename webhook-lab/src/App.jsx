@@ -36,7 +36,7 @@ function App() {
   const [currentView, setCurrentView] = useState('map'); // 'map', 'learning', 'dashboard'
   const [missionState, setMissionState] = useState('episode-card'); // 'episode-card', 'briefing', 'content', 'reward'
   const [hasBooted, setHasBooted] = useState(() => sessionStorage.getItem('webhook_has_booted') === 'true');
-  const [hasStarted, setHasStarted] = useState(() => sessionStorage.getItem('webhook_has_started') === 'true');
+  const [hasStarted, setHasStarted] = useState(false); // Always false on hard load to ensure audio interaction
   const [hasSeenMapIntro, setHasSeenMapIntro] = useState(() => sessionStorage.getItem('webhook_has_seen_map_intro') === 'true');
   const [hasSeenVoidReveal, setHasSeenVoidReveal] = useState(() => localStorage.getItem('webhook_has_seen_void_reveal') === 'true');
   const [hasCompletedGame, setHasCompletedGame] = useState(() => localStorage.getItem('webhook_has_completed_game') === 'true');
@@ -128,10 +128,9 @@ function App() {
     localStorage.setItem('webhook_has_seen_void_reveal', hasSeenVoidReveal);
     localStorage.setItem('webhook_has_completed_game', hasCompletedGame);
     sessionStorage.setItem('webhook_has_booted', hasBooted);
-    sessionStorage.setItem('webhook_has_started', hasStarted);
     sessionStorage.setItem('webhook_has_seen_map_intro', hasSeenMapIntro);
     localStorage.setItem('webhook_settings', JSON.stringify(settings));
-  }, [currentIndex, highestUnlockedIndex, absoluteHighestIndex, xp, hearts, hasBooted, hasStarted, hasSeenMapIntro, hasSeenVoidReveal, hasCompletedGame, settings]);
+  }, [currentIndex, highestUnlockedIndex, absoluteHighestIndex, xp, hearts, hasBooted, hasSeenMapIntro, hasSeenVoidReveal, hasCompletedGame, settings]);
 
   // Check if we need to apply corrupted mode
   useEffect(() => {

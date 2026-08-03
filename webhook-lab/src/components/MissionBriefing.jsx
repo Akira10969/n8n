@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AlertOctagon, Target, Play, Radio, CheckCircle2, Terminal, ShieldAlert, Cpu, Activity, Server, Clock } from 'lucide-react';
 import './MissionBriefing.css';
-import { playVoiceLine, stopVoice, playUIBeep, playSuccessSound, playZoneAmbience, stopZoneAmbience, getAudioContext, setMusicPhase } from '../utils/audioUtils';
+import { playVoiceLine, stopVoice, playUIBeep, playSuccessSound, playZoneAmbience, stopZoneAmbience, getAudioContext, setMusicPhase, playTypingSound } from '../utils/audioUtils';
 
 // ─── Typewriter component ────────────────────────────────────────────────────
 function Typewriter({ text, delay = 18, onDone, speedMultiplier = 1, showCursor = true }) {
@@ -18,6 +18,11 @@ function Typewriter({ text, delay = 18, onDone, speedMultiplier = 1, showCursor 
       const t = setTimeout(() => {
         setDisplayed(p => p + text[idx]);
         setIdx(i => i + 1);
+        
+        // Play typing sound on ~1/3 of characters to avoid being repetitive
+        if (idx % 3 === 0 && text[idx] !== ' ') {
+          playTypingSound();
+        }
       }, delay / speedMultiplier);
       return () => clearTimeout(t);
     } else if (onDone) {
