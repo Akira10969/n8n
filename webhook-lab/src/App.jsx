@@ -19,7 +19,7 @@ import TheVoidReveal from './components/TheVoidReveal';
 import GameEnding from './components/GameEnding';
 import AdminDashboard from './components/AdminDashboard';
 import SettingsModal from './components/SettingsModal';
-import { updateAudioSettings, setMusicPhase } from './utils/audioUtils';
+import { updateAudioSettings, setMusicPhase, playUIBeep } from './utils/audioUtils';
 import { registerPlayer, syncProgress, sendHeartbeat, getAuthTokens, logEvent } from './api';
 import './App.css';
 import './game.css';
