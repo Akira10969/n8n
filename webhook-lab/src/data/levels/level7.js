@@ -39,7 +39,16 @@ Unlike traditional APIs where you write code to make a request, a Webhook requir
 For this to work, the Fulfillment Service must be running a web server that listens for incoming HTTP POST requests on the \`/hooks/inventory-update\` route. When the Inventory Service detects a stock change, it builds an HTTP request containing the event data in JSON format, and fires it off to the \`target_url\`.
 
 ### Verifying the Fix
-You tail the logs of the Fulfillment Service to ensure the Webhooks are arriving correctly:
+
+With the endpoint registered, it's best practice to trigger a test event to ensure the connection works. The provider API offers a \`/retry\` endpoint that replays an event for a specific webhook ID.
+
+The registration step returned a \`webhook_id\`. We pass this ID into the URL to trigger the replay:
+
+\`\`\`bash
+curl -X POST https://api.business.local/webhooks/wh_8912384a/retry
+\`\`\`
+
+If successful, you can tail the logs of the Fulfillment Service to ensure the Webhook payload arrived correctly:
 
 \`\`\`log
 [INFO] Listening on port 8080...
