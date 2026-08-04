@@ -13,15 +13,22 @@ export const level7 = {
 **Operator:** Player_One
 **Action:** Webhook Registration
 
-To establish the Webhook, you register the Fulfillment Service's endpoint with the Inventory Service's event registry:
+To establish the Webhook, you register the Fulfillment Service's endpoint with the Inventory Service's event registry. We do this by sending an HTTP POST request.
 
-\`\`\`JSON
-POST /API/v1/webhooks/register
-{
-  "target_url": "https://fulfillment.mei.internal/hooks/inventory-update",
-  "events": ["inventory.stock.increased", "inventory.stock.depleted"]
-}
+In a terminal, we use the \`curl\` command to send HTTP requests. Instead of typing the entire command at once, let's break down how we construct a JSON POST request step-by-step:
+
+1. **The Base Command**: \`curl\` is the tool we use to send network requests.
+2. **The Method**: \`-X POST\` tells curl to use the HTTP POST method (by default, it uses GET).
+3. **The URL**: \`http://api.mei.internal/v1/webhooks/register\` is the destination API endpoint.
+4. **The Payload**: \`-d\` (data) tells curl we are attaching data. We then wrap our JSON string in single quotes: \`'{"target_url":"...","events":["..."]}'\`
+
+When we put it all together, the final command looks like this:
+
+\`\`\`bash
+curl -X POST http://api.mei.internal/v1/webhooks/register -d '{"target_url":"https://fulfillment.mei.internal/hooks/inventory-update","events":["inventory.stock.increased"]}'
 \`\`\`
+
+This tells the Inventory Service: *"Whenever stock increases, send the payload to my Fulfillment Webhook at this URL."*
 
 The server responds with a \`201 Created\`. The connection is established. 
 
@@ -70,26 +77,26 @@ Before you can investigate further, your console flashes with a new alert from t
   simulator: {
     tasks: [
       {
-        command: 'curl -X POST http://api.mei.internal/v1/webhooks/register -d \'{"target_url":"https://fulfillment.mei.internal/hooks/inventory-update","events":["inventory.stock.increased"]}\'',
-        instruction: 'Register the new webhook listener URL with the fulfillment service.',
+        command: /^curl\s+-X\s+POST\s+http:\/\/api\.mei\.internal\/v1\/webhooks\/register\s+-d\s+'?\{"target_url":"https:\/\/fulfillment\.mei\.internal\/hooks\/inventory-update","events":\["inventory\.stock\.increased"\]\}'?/i,
+        instruction: 'Register the new webhook listener URL with the fulfillment service by sending a POST request to the API.',
         hints: [
           "How do we construct an HTTP POST request to send JSON data to an API?",
-          "Use `curl -X POST` to send the JSON payload to the registration endpoint, ensuring you include the target_url.",
-          "Run `curl -X POST http://api.mei.internal/v1/webhooks/register -d '{\"target_url\":\"https://fulfillment.mei.internal/hooks/inventory-update\",\"events\":[\"inventory.stock.increased\"]}'`"
+          "Use `curl -X POST <url> -d '<json>'` to send the JSON payload to the registration endpoint.",
+          "Solution: curl -X POST http://api.mei.internal/v1/webhooks/register -d '{\"target_url\":\"https://fulfillment.mei.internal/hooks/inventory-update\",\"events\":[\"inventory.stock.increased\"]}'"
         ],
-        solution: 'curl -X POST -d \'{"target_url":"http://10.4.55.2/webhook"}\' http://10.4.12.88/register',
+        solution: 'curl -X POST http://api.mei.internal/v1/webhooks/register -d \'{"target_url":"https://fulfillment.mei.internal/hooks/inventory-update","events":["inventory.stock.increased"]}\'',
         successMessage: 'HTTP/1.1 201 Created\n{"status": "success", "webhook_id": "wh_8912384a"}',
-        errorMessage: 'Invalid syntax. Example: curl -X POST http://url -d \'{"key":"value"}\''
+        errorMessage: 'Invalid syntax. Ensure you use -X POST and wrap the JSON payload in single quotes after -d.'
       },
       {
-        command: 'curl -X POST https://api.business.local/webhooks/wh_8912384a/retry',
-        instruction: 'Trigger a test event to verify the provider successfully calls your webhook.',
+        command: /^curl\s+-X\s+POST\s+https:\/\/api\.business\.local\/webhooks\/wh_8912384a\/retry/i,
+        instruction: 'Trigger a test event to verify the provider successfully calls your webhook using the webhook_id you just received.',
         hints: [
-          "How do we trigger an API endpoint to retry a specific webhook event?",
-          "Use `curl -X POST` to hit the retry endpoint for the registered webhook ID.",
-          "Run `curl -X POST https://api.business.local/webhooks/wh_8912384a/retry`"
+          "The previous step returned a webhook_id: wh_8912384a.",
+          "Use `curl -X POST` to hit the retry endpoint for that specific registered webhook ID: https://api.business.local/webhooks/<id>/retry",
+          "Solution: curl -X POST https://api.business.local/webhooks/wh_8912384a/retry"
         ],
-        solution: 'curl -X POST',
+        solution: 'curl -X POST https://api.business.local/webhooks/wh_8912384a/retry',
         successMessage: '[OK] Event replayed. Fulfillment Service responded with 200 OK. Connection stable.',
         errorMessage: 'Invalid command. Try `curl -X POST https://api.business.local/webhooks/<webhook_id>/retry`'
       }
