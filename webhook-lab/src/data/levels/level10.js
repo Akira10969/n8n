@@ -68,7 +68,25 @@ The rogue entity deployed a silent proxy specifically designed to strip the 'Aut
 
 You bypass the malicious proxy, restoring the 'Authorization' headers, and the transactions begin flowing again. the rogue entity is no longer just causing errors; they are actively manipulating the network topology.
 
-> **SYSTEM ALERT:** The endpoint is now secure. Prove you can access it by passing the Bearer token via curlHTTP/1.1 200 OK\n\n### Platform Engineer Insight\n**Troubleshooting:** When you see a sudden wave of '401 Unauthorized' errors from your Webhook receiver, your first step is to verify if the Sender's API keys or HMAC secrets were recently rotated and if your infrastructure was updated to match.
+### Before You Act: Injecting HTTP Headers
+
+You need to manually bypass the malicious proxy and send a request with the correct \`Authorization\` header. We use \`curl\` to manually construct this HTTP request.
+
+**Command:** \`curl\`
+**Purpose:** Transfer data from or to a server.
+
+**Important Flags:**
+- \`-H "Key: Value"\`: The header flag. This allows you to inject custom HTTP headers into your request. You must wrap the header key-value pair in quotes.
+
+**Real-world Use Case:** Every modern API requires authentication. Platform Engineers constantly use \`curl -H "Authorization: Bearer <token>"\` to quickly test if an API endpoint is up, or if their token has expired, without having to write a full script in Python or Node.js.
+**Common Mistake:** Forgetting the quotes around the header string. If you type \`curl -H Authorization: Bearer token\`, the shell will treat \`Bearer\` and \`token\` as separate arguments, breaking the command.
+
+**Example Syntax:**
+\`\`\`bash
+curl -H "Authorization: Bearer secret_token" http://api.example.com
+\`\`\`
+
+> **SYSTEM ALERT:** The endpoint is now secure. Prove you can access it by passing the \`secret_token\` as a Bearer Authorization header to \`http://10.4.55.2/webhook\`.\n\n### Platform Engineer Insight\n**Troubleshooting:** When you see a sudden wave of '401 Unauthorized' errors from your Webhook receiver, your first step is to verify if the Sender's API keys or HMAC secrets were recently rotated and if your infrastructure was updated to match.
 `,
   simulator: {
     tasks: [

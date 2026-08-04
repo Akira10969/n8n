@@ -59,7 +59,27 @@ The attacker attempts to send another fake upgrade. It fails. They try to alter 
 
 You have cryptographically locked them out. But a rogue entity with this level of access won't just give up. If they can't forge the data, they will try to destroy it.
 
-> **SYSTEM ALERT:** We must verify payload integrity. Use openssl to compute the HMAC signature.
+### Before You Act: Computing HMAC Signatures
+
+You need to manually generate an HMAC signature to prove that the validation math works. We use the \`openssl\` command-line toolkit for this.
+
+**Command:** \`openssl dgst\`
+**Purpose:** Computes cryptographic hashes (digests) of files or data.
+
+**Important Flags:**
+- \`-sha256\`: Specifies the hashing algorithm to use (SHA-256).
+- \`-hmac <secret>\`: Tells openssl to generate an HMAC signature using the provided secret key string.
+- \`<filename>\`: The final argument is the path to the file containing the payload you want to hash (e.g., \`payload.json\`).
+
+**Real-world Use Case:** When a developer claims their webhook receiver is failing signature verification, Platform Engineers use this command to manually compute the expected signature of the raw JSON payload and compare it against the header sent by the provider (like Stripe).
+**Common Mistake:** Hashing pretty-printed JSON instead of the exact raw string bytes sent over the wire. A single extra space or newline will completely change the resulting signature!
+
+**Example Syntax:**
+\`\`\`bash
+openssl dgst -sha256 -hmac 'my_secret_key' data.json
+\`\`\`
+
+> **SYSTEM ALERT:** We must verify payload integrity. Use openssl to compute a SHA-256 HMAC signature using the key 'secret_key' on the \`payload.json\` file.
 
 ### Platform Engineer Insight
 **What is this concept?** HMAC (Hash-based Message Authentication Code).

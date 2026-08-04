@@ -22,6 +22,7 @@ The game teaches **real Platform Engineering skills** through an investigation-b
 
 - **31 Story-Driven Missions** across 7 progressive zones
 - **Platform Engineer Insights** in every mission — explaining What / Why / How / How to Monitor each concept in production
+- **"Before You Act" Deep Dives** — detailed breakdowns of every terminal command (what it is, why it's used, important flags) before execution
 - **Cognitive Hint Funnel** — a 3-step hint system that guides from *question* → *concept explanation* → *solution*, encouraging reasoning before revealing answers
 - **8,940 XP** available across the full campaign
 - **10 HP / Hearts** — incident-response pressure without frustration
@@ -44,10 +45,12 @@ The game teaches **real Platform Engineering skills** through an investigation-b
 - **System Integrity (Hearts)** — incorrect answers cost HP; losing all hearts returns you to Mission 1
 - **Badges** — milestone awards for completing each zone
 - **Interactive World Map** — an isometric map where corrupted biomes visually heal as you progress
+- **Cinematic Environment & NOC Dashboard** — the map dynamically reacts to platform health with fog, glitches, 'Void' overlays, and real-time dashboard metrics during incidents
 
-### 🖥️ Terminal Simulator
+### 🖥️ Terminal Simulator & Deployment
 
-A custom React-based terminal emulator where players execute real commands (validated against regex patterns), receive authentic-looking system output, and solve live incident scenarios.
+- **Custom React Terminal Emulator** — players execute real commands (validated against regex patterns), receive authentic system output, and solve live incident scenarios.
+- **5-Step Deployment Sequence** — immersive "Quick Deploy" animations (Validating, Building, Deploying) that synchronize with Live Monitoring component health states.
 
 ### 🔊 Advanced Audio Engine
 

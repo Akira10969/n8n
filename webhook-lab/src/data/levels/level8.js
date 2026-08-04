@@ -65,13 +65,22 @@ But the mystery deepens. Configuration drift like this doesn't happen accidental
 **How does it work?** The web server framework (e.g., Express.js) maps specific HTTP methods and routes to handler functions. If a request arrives with an unsupported method for a route, it is automatically rejected.
 **How do we monitor it in production?** We monitor API Gateway and application logs for 405 Method Not Allowed errors, which can indicate misconfigured clients, malicious probing, or regression in routing configuration.
 
-> **SYSTEM ALERT:** You must inspect the live logs to find the silent failure. Run the appropriate \`tail\` command.
+### Before You Act: Real-time Log Monitoring
+**What is this command?** \`tail\`
+**Why is it used?** To output the last part of files. In Platform Engineering, you rarely want to open a massive 500MB log file in a text editor. Instead, you just want to see the most recent events, or watch new events as they happen.
+
+**Important Flags:**
+* \`-f\` (follow): This is the magic flag. Instead of just printing the last 10 lines and exiting, \`tail -f\` keeps the file open and continuously prints new lines as they are appended to the file. 
+
+**Common Mistake:** Forgetting the \`-f\` flag will just print the end of the file and immediately return you to the prompt, which won't help you catch events as they happen live!
+
+> **SYSTEM ALERT:** You must inspect the live logs to find the silent failure. Run the appropriate \`tail\` command to follow \`/var/log/mei_webhook_receiver.log\` in real-time.
 `,
   simulator: {
     tasks: [
       {
         command: /^tail\s+-f\s+\/var\/log\/mei_webhook_receiver\.log$/i,
-        instruction: 'Inspect the live output of the webhook receiver\'s log file to monitor incoming events.',
+        instruction: 'Monitor the webhook receiver\'s log file in real-time to intercept incoming events.',
         hints: [
           "How can we view the continuously updating output of a log file in real-time?",
           "Use the \`tail\` command with the follow flag to monitor the specified log file.",

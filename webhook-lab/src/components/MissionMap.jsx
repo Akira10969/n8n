@@ -158,7 +158,7 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
   if (attackPhase === 4) transitionStyle = 'transform 4s cubic-bezier(0.2, 0.8, 0.2, 1)'; // Slow dramatic pull back
 
   const isUIVisible = introPhase === 'zoom-out' || introPhase === 'done';
-  const isFogHeavy = introPhase === 'init' || introPhase === 'pan' || worldState === 'CORRUPTED';
+  const isFogHeavy = introPhase === 'init' || introPhase === 'pan';
 
   // NOC Dashboard Values dynamically based on attackPhase and worldState
   const getDashboardData = () => {
@@ -257,8 +257,8 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
             <div 
               className={`void-map-overlay ${worldState === 'UNDER_ATTACK' && attackPhase === 5 ? 'sweeping' : ''}`}
               style={{
-                background: `radial-gradient(circle at 100% 50%, #000 0%, #000 ${100 - corruptionX - 10}%, transparent ${100 - corruptionX + 20}%)`,
-                opacity: 0.95,
+                background: `radial-gradient(circle at 100% 50%, rgba(20, 0, 0, 0.85) 0%, rgba(20, 0, 0, 0.85) ${100 - corruptionX - 10}%, transparent ${100 - corruptionX + 20}%)`,
+                opacity: 0.85,
                 transition: worldState === 'UNDER_ATTACK' ? 'background 5s cubic-bezier(0.4, 0, 0.2, 1)' : 'background 2s ease-in-out'
               }}
             ></div>
@@ -367,7 +367,10 @@ export default function MissionMap({ curriculum, highestUnlockedIndex, activeMis
                 </div>
 
                 {isNext && (
-                  <div className={`node-active-label ${isCorrupted ? 'corrupted-pulse' : ''}`}>YOU ARE HERE</div>
+                  <>
+                    <div className="node-deploy-halo" style={{ backgroundColor: zoneColor }}></div>
+                    <div className={`node-active-label ${isCorrupted ? 'corrupted-pulse' : ''}`}>DEPLOY HERE</div>
+                  </>
                 )}
                 
                 <div className="node-hover-card">

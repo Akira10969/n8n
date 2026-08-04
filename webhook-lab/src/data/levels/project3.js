@@ -20,7 +20,7 @@ Add cryptographic signature verification using the crypto library.\
 **What is this concept?** Cryptographic Libraries.\
 **Why is it used?** We need standardized, tested cryptographic algorithms to implement HMAC signatures securely.\
 **How does it work?** The crypto-js package provides standard cryptographic functions (like SHA-256 and HMAC) to our application layer.\
-**How do we monitor it in production?** We monitor application dependencies using SCA (Software Composition Analysis) tools to ensure libraries like crypto-js don't contain known vulnerabilities.",
+**How do we monitor it in production?** We monitor application dependencies using SCA (Software Composition Analysis) tools to ensure libraries like crypto-js don't contain known vulnerabilities.\n\n### Before You Act: Installing Security Libraries\n**What is this command?** \`npm install crypto-js\`\n**Why is it used?** To install the required cryptographic library so we can compute HMAC signatures and verify Webhook authenticity.\n\n> **SYSTEM ALERT:** The cryptographic verification requires the 'crypto-js' package. Use the appropriate npm install command to add it.",
   "simulator": {
     "tasks": [
       {

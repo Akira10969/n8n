@@ -70,7 +70,26 @@ The 502s disappear. The servers stabilize. You've stopped the bleeding, but the 
 **How does it work?** The server computes the result of an operation and sets the appropriate 3-digit status code in the HTTP response header. Properly written clients use this code to determine whether to retry (for transient 5xx) or fail permanently (for 4xx).
 **How do we monitor it in production?** We monitor the ratio of 2xx to 4xx and 5xx responses using tools like Datadog or Prometheus. A sudden spike in 5xx errors triggers a critical PagerDuty alert to the on-call engineer, as it indicates system degradation.
 
-> **SYSTEM ALERT:** Use curl to inspect the HTTP response headers of our receiver to see what error code it is throwing.
+### Before You Act: Fetching HTTP Headers
+
+To see exactly what error code the receiver is throwing without downloading a massive corrupted payload, we use \`curl\`.
+
+**Command:** \`curl\`
+**Purpose:** Transfer data from or to a server.
+
+**Important Flags:**
+- \`-I\` (or \`--head\`): Fetches the HTTP headers only! It sends an HTTP HEAD request instead of GET, but you can combine it with \`-X POST\` to force a POST request while still only asking the server to return the headers.
+- \`-X POST\`: Specifies the request method.
+
+**Real-world Use Case:** When a server is crashing or returning 500s, downloading the full response body might hang your terminal or flood it with HTML. Using \`-I\` instantly tells you the Status Code (like \`502 Bad Gateway\`) so you can diagnose the routing layer.
+**Common Mistake:** Forgetting to capitalize the \`-I\`. Lowercase \`-i\` includes the headers *along with* the body, which defeats the purpose of a fast, header-only diagnostic check.
+
+**Example Syntax:**
+\`\`\`bash
+curl -I -X POST http://api.example.com/endpoint
+\`\`\`
+
+> **SYSTEM ALERT:** Use curl to fetch only the HTTP headers from our receiver at \`http://10.4.55.2/webhook\` via a POST request.
 `,
   simulator: {
     tasks: [

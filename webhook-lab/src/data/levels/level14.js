@@ -50,7 +50,25 @@ You watch the dashboard as a wave of DoS traffic hits. The receivers go offline.
 
 You have thwarted the network attack. But what happens to the Webhooks that *never* succeed, even after 10 retries?
 
-> **SYSTEM ALERT:** The network is flapping. Send a 10-count ping to verify the packet loss.
+### Before You Act: Diagnosing Network Drops
+
+You need to verify if the server is actually unreachable or just responding slowly. The classic tool for this is \`ping\`.
+
+**Command:** \`ping\`
+**Purpose:** Sends ICMP ECHO_REQUEST packets to a network host to check connectivity.
+
+**Important Flags:**
+- \`-c <count>\`: Specifies exactly how many ping packets to send before stopping. If you omit this on Linux, \`ping\` will run forever until you press Ctrl+C!
+
+**Real-world Use Case:** When a monitoring dashboard shows a service as "down," Platform Engineers use \`ping -c 10\` to check for packet loss. If 10 packets are sent and only 8 are received, the 20% packet loss confirms a flaky network layer, not a crashed application.
+**Common Mistake:** Assuming a failed ping means the server is down. Many modern firewalls and AWS Security Groups block ICMP (ping) traffic by default for security, even if the web server on port 443 is perfectly healthy!
+
+**Example Syntax:**
+\`\`\`bash
+ping -c 5 8.8.8.8
+\`\`\`
+
+> **SYSTEM ALERT:** The network is flapping. Send exactly 10 ping packets to \`10.4.88.9\` to quantify the packet loss.
 
 ### Platform Engineer Insight
 **What is this concept?** Retry Logic and Exponential Backoff.

@@ -16,6 +16,19 @@ export const project1 = {
 ## Objective\
 Deploy a local webhook receiver server that can accept and log incoming HTTP POST payloads.\
 \
+### Before You Act: Running Node.js Scripts\
+\
+To boot up the server you just built, you must instruct the runtime engine to execute your code.\
+\
+**Command:** `node`\
+**Purpose:** Executes JavaScript code outside of a web browser using the V8 engine.\
+\
+**Important Usage:**\
+- `node <filename.js>`: Executes the specified file.\
+\
+**Real-world Use Case:** While many modern apps are launched using orchestrators like Docker or PM2, underneath the hood, they are all ultimately running `node server.js` to initialize the HTTP listener on the given port.\
+**Common Mistake:** Trying to run the command without being in the correct directory. If your terminal is in `/usr/home/` but the file is in `/var/www/`, `node index.js` will throw a \"Cannot find module\" error!\
+\
 ### Platform Engineer Insight\
 **What is this concept?** A Webhook Receiver — the HTTP server endpoint that accepts incoming webhook events.\
 **Why is it used?** Every webhook integration needs a running HTTP server. The receiver is the first and most critical component in the entire pipeline.\
@@ -25,7 +38,7 @@ Deploy a local webhook receiver server that can accept and log incoming HTTP POS
     "tasks": [
       {
         "command": /^node index\.js$/i,
-        "instruction": "Start your local webhook receiver server to begin capturing incoming payloads.",
+        "instruction": "Instruct the Node.js runtime to execute your server's entry point file to begin capturing payloads.",
         "hints": [
           "How do we start a Node.js application from the command line?",
           "Node.js scripts are executed directly using the `node` runtime followed by the filename.",

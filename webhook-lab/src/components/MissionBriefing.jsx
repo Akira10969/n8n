@@ -183,16 +183,35 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission,
   };
 
   const handleStage5 = () => {
-    // Stage 5 Checklist animation handled in render, just wait for it.
+    // Force the incident error state immediately so the player can see what component is failing
+    setDashboardStatus(prev => ({
+      ...prev, 
+      api: incidentLevel.level === 'CRITICAL' ? 'DEGRADED' : 'ONLINE',
+      webhook: 'CRITICAL',
+      alerts: 3
+    }));
+
+    // Timed dynamic dashboard updates during deployment sequence
+    timeoutsRef.current.push(setTimeout(() => setDashboardStatus(p => ({ ...p, api: 'DEPLOYING', webhook: 'DEPLOYING' })), 1000));
+    timeoutsRef.current.push(setTimeout(() => setDashboardStatus(p => ({ ...p, db: 'SYNCING' })), 2000));
+    // Restore the broken incident state when deployment is finished (because they still need to fix it in the terminal)
+    timeoutsRef.current.push(setTimeout(() => setDashboardStatus(p => ({
+      ...p, 
+      api: incidentLevel.level === 'CRITICAL' ? 'DEGRADED' : 'ONLINE',
+      webhook: 'CRITICAL',
+      db: 'ONLINE'
+    })), 3500));
+
+    // Stage 5 Checklist animation handled in render, wait for it.
     const t = setTimeout(() => {
       if (settings?.voiceEnabled !== false) {
-        playVoiceLine("[UNIT-7]: Mission environment ready. Good luck, Engineer.", () => {
+        playVoiceLine("[UNIT-7]: Deployment Successful. Handing over control.", () => {
           startCountdown();
         });
       } else {
         startCountdown();
       }
-    }, 4000); // Wait for checklist to render
+    }, 4500); // Wait for checklist to render
     timeoutsRef.current.push(t);
   };
 
@@ -281,13 +300,12 @@ export default function MissionBriefing({ mission, missionIndex, onStartMission,
                   <span>DEPLOYMENT AUTHORIZATION</span>
                 </div>
                 <div className="mb-checklist">
-                  <Typewriter text="Initializing Mission..." onDone={() => {}} showCursor={false} delay={10} /><br/><br/>
-                  <Typewriter text="✓ Network Connected" delay={200} showCursor={false}/><br/>
-                  <Typewriter text="✓ API Gateway Online" delay={400} showCursor={false}/><br/>
-                  <Typewriter text="✓ Authentication Verified" delay={600} showCursor={false}/><br/>
-                  <Typewriter text="✓ Terminal Ready" delay={800} showCursor={false}/><br/>
-                  <Typewriter text="✓ Environment Loaded" delay={1000} showCursor={false}/><br/>
-                  <Typewriter text="✓ Mission Authorization Granted" delay={1200} showCursor={false}/>
+                  <Typewriter text="Executing Deployment Sequence..." onDone={() => {}} showCursor={false} delay={10} /><br/><br/>
+                  <Typewriter text="> [1/5] Validating Configuration..." delay={200} showCursor={false}/><br/>
+                  <Typewriter text="> [2/5] Building Deployment Package..." delay={1000} showCursor={false}/><br/>
+                  <Typewriter text="> [3/5] Deploying Services..." delay={2000} showCursor={false}/><br/>
+                  <Typewriter text="> [4/5] Running Health Checks..." delay={3200} showCursor={false}/><br/>
+                  <Typewriter text="> [5/5] Deployment Successful." delay={4500} showCursor={false}/>
                 </div>
                 
                 {countdown !== null && (

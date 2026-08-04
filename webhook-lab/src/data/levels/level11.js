@@ -71,7 +71,7 @@ The fraudulent upgrades stop immediately. The attacker's requests are now bounci
     tasks: [
       {
         command: /^iptables\s+-A\s+INPUT\s+-s\s+10\.4\.99\.0\/24\s+-j\s+DROP$/i,
-        instruction: 'Block malicious traffic at the network level.',
+        instruction: 'Configure the network firewall to drop incoming traffic from the malicious subnet.',
         hints: [
           "How can we prevent the server from even processing requests from the rogue subnet?",
           "Use the iptables utility to append a rule to the INPUT chain dropping traffic from 10.4.99.0/24.",
