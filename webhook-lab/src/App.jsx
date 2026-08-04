@@ -29,7 +29,7 @@ function App() {
   const [highestUnlockedIndex, setHighestUnlockedIndex] = useState(() => parseInt(localStorage.getItem('webhook_highest_index') || '0', 10));
   const [absoluteHighestIndex, setAbsoluteHighestIndex] = useState(() => parseInt(localStorage.getItem('webhook_absolute_highest_index') || '0', 10));
   const [xp, setXp] = useState(() => parseInt(localStorage.getItem('webhook_xp') || '0', 10));
-  const [hearts, setHearts] = useState(() => parseInt(localStorage.getItem('webhook_hearts') || '3', 10));
+  const [hearts, setHearts] = useState(() => parseInt(localStorage.getItem('webhook_hearts') || '10', 10));
   const [quizKey, setQuizKey] = useState(0);
   const [currentView, setCurrentView] = useState('map'); // 'map', 'learning', 'dashboard'
   const [missionState, setMissionState] = useState('episode-card'); // 'episode-card', 'briefing', 'content', 'reward'
@@ -228,7 +228,7 @@ function App() {
       setHearts(prev => prev - 1);
     } else {
       alert("💔 Game Over! You lost all your hearts. Returning to Mission 1 to rebuild your progress!");
-      setHearts(3);
+      setHearts(10);
       setCurrentIndex(0);
       setHighestUnlockedIndex(0);
       setQuizKey(prev => prev + 1);

@@ -51,18 +51,22 @@ You watch the dashboard as a wave of DoS traffic hits. The receivers go offline.
 You have thwarted the network attack. But what happens to the Webhooks that *never* succeed, even after 10 retries?
 
 > **SYSTEM ALERT:** The network is flapping. Send a 10-count ping to verify the packet loss.
-`
 
-  ,
+### Platform Engineer Insight
+**What is this concept?** Retry Logic and Exponential Backoff.
+**Why is it used?** Networks are inherently unreliable. Retries ensure data isn't lost during temporary outages, while exponential backoff prevents a thundering herd from overwhelming a recovering service.
+**How does it work?** When a webhook delivery fails, instead of retrying immediately, the system waits for an exponentially increasing delay (e.g., 2s, 4s, 8s).
+**How do we monitor it in production?** We track the size of our retry queues and the average number of delivery attempts per webhook. An increasing retry queue depth alerts us to a sustained downstream outage.
+`,
   simulator: {
     tasks: [
       {
         command: /^ping\s+-c\s+10\s+10\.4\.88\.9$/i,
-        instruction: 'Test the network stability to the remote node by sending a specific, limited number of ping packets.',
+        instruction: 'Diagnose the intermittent connection by sending exactly 10 ping packets to the remote node.',
         hints: [
-          "You need to use the 'ping' command.",
-          "Use a flag to limit the number of packets (count).",
-          "The flag is '-c 10'."
+          "How can we diagnose intermittent packet loss to a specific IP?",
+          "Use the ping command with the -c flag to send exactly 10 packets.",
+          "ping -c 10 10.4.88.9"
         ],
         solution: 'ping -c 10 10.4.88.9',
         successMessage: "10 packets transmitted, 4 received, 60% packet loss, time 9014ms\n[SARAH]: \"60% packet loss! The connection is flapping. We need retries.\"",

@@ -96,7 +96,7 @@ export default function Dashboard({ xp, hearts, rank, absoluteHighestIndex, tota
         <div style={{ background: 'rgba(11, 15, 25, 0.8)', border: '1px solid var(--accent-red)', padding: '1.5rem', position: 'relative' }}>
           <div style={{ position: 'absolute', top: '-10px', left: '10px', background: 'var(--bg-main)', padding: '0 5px', color: 'var(--accent-red)', fontSize: '0.8rem', fontWeight: 'bold' }}>[ SYSTEM_INTEGRITY ]</div>
           <Heart size={28} color="var(--accent-red)" style={{ marginBottom: '1rem' }} />
-          <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-main)' }}>{hearts} / 3</div>
+          <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-main)' }}>{hearts} / 10</div>
         </div>
 
         <div style={{ background: 'rgba(11, 15, 25, 0.8)', border: '1px solid var(--accent-green)', padding: '1.5rem', position: 'relative' }}>

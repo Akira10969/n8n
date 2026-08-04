@@ -52,8 +52,13 @@ the rogue entity knew you would implement a DLQ. They intentionally crafted an u
 The Platform Operations Zone is secure for now, but the attack is moving deeper into the core architecture. You must proceed to the Distributed Systems Zone.
 
 > **SYSTEM ALERT:** Some Webhooks failed their maximum retries. Inspect the DLQ for the \`billing_failures\` queue.
-`
 
+### Platform Engineer Insight
+**What is this concept?** Dead Letter Queues (DLQ).
+**Why is it used?** To ensure zero data loss in asynchronous systems. If a webhook cannot be delivered, it shouldn't just vanish.
+**How does it work?** When a message exceeds its maximum retry count in the primary queue, the broker automatically routes it to the DLQ. Engineers can then inspect the payload, fix the underlying bug, and replay the message.
+**How do we monitor it in production?** We set critical alerts for \`DLQ Depth > 0\`. A healthy system should have an empty DLQ. Any message in the DLQ represents a customer transaction that has silently failed.
+`
   ,
   simulator: {
     tasks: [
@@ -61,11 +66,11 @@ The Platform Operations Zone is secure for now, but the attack is moving deeper 
         command: /^aws\s+sqs\s+receive-message\s+--queue-url\s+billing_failures$/i,
         instruction: 'Use the system CLI to inspect the Dead Letter Queue (DLQ) and identify the webhooks that failed their final retry.',
         hints: [
-          "Use the AWS CLI (`aws sqs`) to receive messages from the queue.",
-          "The subsystem is 'dlq'.",
-          "The action is 'view'."
+          "How can we examine the contents of a specific queue from the command line?",
+          "Use the AWS CLI to receive messages from the billing_failures queue.",
+          "Solution: Run `aws sqs receive-message --queue-url billing_failures`"
         ],
-        solution: 'aws sqs receive-message',
+        solution: 'aws sqs receive-message --queue-url billing_failures',
         successMessage: "[OK] Fetching dead letters...\n{\"system_override\": true, \"message\": \"See you in the Distributed Zone.\", \"signature_bypass\": \"? U N K N O W N ?\"}\n[SARAH]: \"What... is that?\"",
         errorMessage: "Invalid syntax. Try `aws sqs receive-message --queue-url billing_failures`"
       }

@@ -60,22 +60,26 @@ The attacker attempts to send another fake upgrade. It fails. They try to alter 
 You have cryptographically locked them out. But a rogue entity with this level of access won't just give up. If they can't forge the data, they will try to destroy it.
 
 > **SYSTEM ALERT:** We must verify payload integrity. Use openssl to compute the HMAC signature.
-`
 
-  ,
+### Platform Engineer Insight
+**What is this concept?** HMAC (Hash-based Message Authentication Code).
+**Why is it used?** To verify both the data integrity and authenticity of a message. It prevents man-in-the-middle attacks from modifying the payload or forging requests.
+**How does it work?** The sender generates a cryptographic hash of the payload using a shared secret key, and sends the hash in a header. The receiver computes the hash on their end using the same secret key and compares the two hashes.
+**How do we monitor it in production?** We monitor the rate of HMAC verification failures. A sustained spike often indicates an attacker attempting to brute-force or bypass our webhook endpoints, or a misconfigured sender.
+`,
   simulator: {
     tasks: [
       {
         command: /^openssl\s+dgst\s+-sha256\s+-hmac\s+["']secret["']\s+payload\.JSON$/i,
-        instruction: 'Verify the integrity of the payload by manually computing its HMAC SHA-256 signature using the shared secret key.',
+        instruction: 'Compute the HMAC signature to verify payload integrity.',
         hints: [
-          "Use the 'openssl' command line tool.",
-          "Use the 'dgst' command with the '-sha256' algorithm.",
-          "Provide the HMAC key using '-hmac secret_key' and pass the 'payload.json' file."
+          "How can we mathematically prove the payload hasn't been tampered with?",
+          "Use the openssl dgst tool with the -sha256 algorithm and the -hmac flag.",
+          "openssl dgst -sha256 -hmac \"secret\" payload.json"
         ],
         solution: 'openssl dgst -sha256 -hmac secret_key payload.json',
         successMessage: "HMAC-SHA256(payload.JSON)= 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08\n[SARAH]: \"The signatures match! The cryptographic seal holds.\"",
-        errorMessage: "Invalid syntax. Use `openssl dgst -sha256 -hmac \"secret\" payload.json`"
+        errorMessage: "Invalid syntax. Use \`openssl dgst -sha256 -hmac \"secret\" payload.json\`"
       }
     ]
   }

@@ -35,9 +35,9 @@ I want you to send one final curl request. Use \`-X POST\`, include the correct 
         command: 'curl -X POST -H "Content-Type: application/JSON" -d \'{"name": "John"}\' http://10.4.12.88:80/API/submit_lead',
         instruction: 'Send the POST request again, this time attaching the required JSON payload in the request body.',
         hints: [
-          "You need to send data with your request.",
-          "Use the -d flag to attach data.",
-          "Make sure your JSON is properly formatted with quotes."
+          "What flag do we use with curl to attach a JSON body to the request?",
+          "Use `-X POST` for the method, `-H 'Content-Type: application/json'` for the header, and `-d` to provide the JSON body.",
+          "Solution: curl -X POST -H \"Content-Type: application/JSON\" -d '{\"name\": \"John\"}' http://10.4.12.88:80/API/submit_lead"
         ],
         solution: 'curl -X POST -d \'{"event":"test","valid":true}\' http://10.4.55.2/webhook',
         successMessage: 'HTTP/1.1 201 Created\n{"success": true, "lead_id": 9912}\n[SARAH]: "Nailed it. The lead was created successfully. Ticket closed."\n\n[UNIT-7 NOC-BOT]: ALERT. Traffic anomaly detected. While testing was underway, unauthorized internal IP 192.168.99.114 initiated 15,000 requests to the Inventory Service.',

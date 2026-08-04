@@ -64,23 +64,27 @@ You immediately push a patch to the Analytics Engine to safely try-catch JSON pa
 
 The 502s disappear. The servers stabilize. You've stopped the bleeding, but the rogue entity is still out there, actively modifying our systems.
 
-> **SYSTEM ALERT:** Use curl to inspect the HTTP response headers of our receiver to see what error code it is throwing.
-`
+### Platform Engineer Insight
+**What is this concept?** HTTP Status Codes and Error Handling.
+**Why is it used?** To standardized communication between systems about the outcome of a request, specifically differentiating between client faults (4xx) and server faults (5xx).
+**How does it work?** The server computes the result of an operation and sets the appropriate 3-digit status code in the HTTP response header. Properly written clients use this code to determine whether to retry (for transient 5xx) or fail permanently (for 4xx).
+**How do we monitor it in production?** We monitor the ratio of 2xx to 4xx and 5xx responses using tools like Datadog or Prometheus. A sudden spike in 5xx errors triggers a critical PagerDuty alert to the on-call engineer, as it indicates system degradation.
 
-  ,
+> **SYSTEM ALERT:** Use curl to inspect the HTTP response headers of our receiver to see what error code it is throwing.
+`,
   simulator: {
     tasks: [
       {
         command: /^curl\s+-I\s+-X\s+POST\s+(HTTP:\/\/)?10\.4\.55\.2\/Webhook\/?$/i,
-        instruction: 'Send a diagnostic HTTP request to the receiver that only returns the response headers, so we can inspect the status codes.',
+        instruction: 'Send a diagnostic HTTP request to fetch only the response headers from the receiver.',
         hints: [
-          "You need to make a POST request but only fetch the headers.",
-          "Check the curl documentation for the 'head' or 'include' flag.",
-          "The flag is '-I'."
+          "How do we use curl to retrieve only the headers of an HTTP response?",
+          "You need to make a POST request but use the head or include flag to fetch just the headers.",
+          "Run \`curl -I -X POST http://10.4.55.2/webhook\`"
         ],
         solution: 'curl -I -X POST http://10.4.55.2/webhook',
         successMessage: "HTTP/1.1 500 Internal Server Error\nContent-Type: text/plain\n\n[SARAH]: \"A 500 error! Our receiver is crashing when it parses the payload!\"",
-        errorMessage: "Invalid syntax. Try `curl -I -X POST http://10.4.55.2/webhook`"
+        errorMessage: "Invalid syntax. Try \`curl -I -X POST http://10.4.55.2/webhook\`"
       }
     ]
   }

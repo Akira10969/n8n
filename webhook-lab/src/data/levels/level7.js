@@ -43,6 +43,12 @@ You tail the logs of the Fulfillment Service to ensure the Webhooks are arriving
 
 It worked perfectly. The CPU graph on your dashboard turns from critical red back to a healthy green. The Foundation Zone is stable.
 
+### Platform Engineer Insight
+**What is this concept?** Webhook Registration and Verification.
+**Why is it used?** To dynamically inform a sender where they should dispatch payloads without hardcoding destinations into the sender's source code.
+**How does it work?** A developer registers a URL endpoint with a provider's API. The provider stores this URL in a database and uses it as the destination for future HTTP POST events.
+**How do we monitor it in production?** We monitor the HTTP response codes returned by the registered endpoint. Constant 4xx or 5xx responses usually result in the provider automatically disabling (blacklisting) the webhook.
+
 ## Anomalous Activity Detected
 
 Just as you are about to close the terminal, you notice something strange in the Inventory Service's raw access logs. 
@@ -65,11 +71,11 @@ Before you can investigate further, your console flashes with a new alert from t
     tasks: [
       {
         command: 'curl -X POST http://api.mei.internal/v1/webhooks/register -d \'{"target_url":"https://fulfillment.mei.internal/hooks/inventory-update","events":["inventory.stock.increased"]}\'',
-        instruction: 'Construct an HTTP request to register your new webhook listener URL with the fulfillment service.',
+        instruction: 'Register the new webhook listener URL with the fulfillment service.',
         hints: [
-          "You are making a POST request to the provider's registration endpoint.",
-          "You need to send JSON data.",
-          "The payload must contain a 'target_url' property pointing to your listener."
+          "How do we construct an HTTP POST request to send JSON data to an API?",
+          "Use `curl -X POST` to send the JSON payload to the registration endpoint, ensuring you include the target_url.",
+          "Run `curl -X POST http://api.mei.internal/v1/webhooks/register -d '{\"target_url\":\"https://fulfillment.mei.internal/hooks/inventory-update\",\"events\":[\"inventory.stock.increased\"]}'`"
         ],
         solution: 'curl -X POST -d \'{"target_url":"http://10.4.55.2/webhook"}\' http://10.4.12.88/register',
         successMessage: 'HTTP/1.1 201 Created\n{"status": "success", "webhook_id": "wh_8912384a"}',
@@ -77,11 +83,11 @@ Before you can investigate further, your console flashes with a new alert from t
       },
       {
         command: 'curl -X POST https://api.business.local/webhooks/wh_8912384a/retry',
-        instruction: 'Use the system CLI to trigger a test event and verify the provider successfully calls your webhook.',
+        instruction: 'Trigger a test event to verify the provider successfully calls your webhook.',
         hints: [
-          "Use curl to send a POST request to the retry endpoint.",
-          "The subsystem is 'webhook'.",
-          "The action is 'trigger_test'."
+          "How do we trigger an API endpoint to retry a specific webhook event?",
+          "Use `curl -X POST` to hit the retry endpoint for the registered webhook ID.",
+          "Run `curl -X POST https://api.business.local/webhooks/wh_8912384a/retry`"
         ],
         solution: 'curl -X POST',
         successMessage: '[OK] Event replayed. Fulfillment Service responded with 200 OK. Connection stable.',

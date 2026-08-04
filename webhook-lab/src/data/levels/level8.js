@@ -59,23 +59,27 @@ You quickly deploy a hotfix, changing the router back to \`router.post\`. The lo
 
 But the mystery deepens. Configuration drift like this doesn't happen accidentally. The rogue entity is testing our defenses, probing how quickly we can identify and resolve integration failures.
 
-> **SYSTEM ALERT:** You must inspect the live logs to find the silent failure. Run the appropriate \`tail\` command.
-`
+### Platform Engineer Insight
+**What is this concept?** HTTP Methods (Verbs) and Endpoint Configuration.
+**Why is it used?** To define the semantics and intended action of an HTTP request, ensuring the server handles incoming data correctly according to RESTful principles.
+**How does it work?** The web server framework (e.g., Express.js) maps specific HTTP methods and routes to handler functions. If a request arrives with an unsupported method for a route, it is automatically rejected.
+**How do we monitor it in production?** We monitor API Gateway and application logs for 405 Method Not Allowed errors, which can indicate misconfigured clients, malicious probing, or regression in routing configuration.
 
-  ,
+> **SYSTEM ALERT:** You must inspect the live logs to find the silent failure. Run the appropriate \`tail\` command.
+`,
   simulator: {
     tasks: [
       {
         command: /^tail\s+-f\s+\/var\/log\/mei_webhook_receiver\.log$/i,
-        instruction: 'Inspect the live, real-time output of the webhook receiver\'s log file to catch the incoming events as they happen.',
+        instruction: 'Inspect the live output of the webhook receiver\'s log file to monitor incoming events.',
         hints: [
-          "You need to view the end of a file and keep watching it.",
-          "The tool is 'tail'.",
-          "Use the '-f' (follow) flag to watch for changes."
+          "How can we view the continuously updating output of a log file in real-time?",
+          "Use the \`tail\` command with the follow flag to monitor the specified log file.",
+          "Run \`tail -f /var/log/mei_webhook_receiver.log\`"
         ],
         solution: 'tail -f /var/log/mei_webhook_receiver.log',
         successMessage: "[INFO] Listening for Webhooks...\n[ERROR] Payload rejected: Missing Content-Type application/JSON\n[SARAH]: \"Aha! The provider is sending plain text instead of JSON!\"",
-        errorMessage: "Invalid command. Try `tail -f /var/log/mei_webhook_receiver.log`"
+        errorMessage: "Invalid command. Try \`tail -f /var/log/mei_webhook_receiver.log\`"
       }
     ]
   }

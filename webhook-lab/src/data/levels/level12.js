@@ -55,18 +55,23 @@ if (!validTokens.includes(request.headers['x-API-key'])) {
 The fraudulent upgrades stop again. But as you monitor the logs, you realize that if the attacker can read network traffic, they can just steal the new API key as it flies across the wire. We need something mathematically unbreakable.
 
 > **SYSTEM ALERT:** Compromise detected. Use the MEI CLI to rotate the secrets for the \`billing_webhook\` service.
-`
 
+### Platform Engineer Insight
+**What is this concept?** Key Rotation and Secrets Management.
+**Why is it used?** Hardcoded secrets are easily leaked. Secrets managers store credentials securely, and rotation ensures that if a key is stolen, its window of usefulness is minimized.
+**How does it work?** Applications retrieve credentials dynamically from a vault (like AWS Secrets Manager) at runtime or via environment variables. Key rotation involves generating a new key, supporting both temporarily, and then deprecating the old one.
+**How do we monitor it in production?** We monitor audit logs from our secrets manager to track who and what is accessing keys, and alert on unauthorized access attempts or failed authentications during a rotation event.
+`
   ,
   simulator: {
     tasks: [
       {
         command: /^aws\s+secretsmanager\s+rotate-secret\s+--secret-id\s+billing_webhook$/i,
-        instruction: 'The API keys have been compromised. Use the system CLI to immediately rotate the secrets for the billing service.',
+        instruction: 'Rotate the compromised secrets using the AWS CLI.',
         hints: [
-          "Use the AWS CLI (`aws secretsmanager`) to rotate the secret.",
-          "The subsystem is 'secrets'.",
-          "The action is 'rotate' and the target is 'billing'."
+          "How can we securely generate and deploy new API keys?",
+          "Use the AWS CLI's secretsmanager to rotate the secret for billing_webhook.",
+          "aws secretsmanager rotate-secret --secret-id billing_webhook"
         ],
         solution: 'aws secretsmanager rotate-secret',
         successMessage: "[OK] Generating new 256-bit entropy keys...\n[OK] Keys rotated for billing_webhook. Old keys invalidated.",

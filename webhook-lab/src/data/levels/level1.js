@@ -18,7 +18,13 @@ But first, let's make sure you understand how data actually travels across the n
 
 These packets travel from your machine, bounce across multiple **Routers** (called **Hops**), until they reach their destination. If a router goes offline, packets get dropped, and the message never arrives.
 
-Whenever you need to check if a machine is alive on the network, the first tool in your belt is \`ping\`. 
+Whenever you need to check if a machine is alive on the network, the first tool in your belt is \`ping\`.
+
+### Platform Engineer Insight: The Ping Lifecycle
+*   **What is it?** A basic network diagnostic tool.
+*   **Why is it used?** To verify if a remote host is reachable across an IP network.
+*   **How does it work?** It sends ICMP Echo Request packets and waits for an ICMP Echo Reply.
+*   **How do we monitor this in production?** We don't manually run ping. We use synthetic monitoring tools (like Datadog or Prometheus Blackbox Exporter) to continuously ping endpoints and trigger PagerDuty alerts if packet loss exceeds 5%. 
 
 ### The Ping Command
 \`ping\` sends a tiny, specialized network packet (an ICMP Echo Request) to a target IP address. If the target is alive, it sends a reply back. It's exactly like a submarine using sonar. 
@@ -35,9 +41,9 @@ I need you to open your terminal and ping the marketing server's internal IP add
         command: /^ping\s+(.*?)10\.4\.12\.88(.*)$/i,
         instruction: 'Verify if the marketing server (10.4.12.88) is alive and responding on the network.',
         hints: [
-          "Think about how submarines check for targets.",
-          "The command is 4 letters and starts with 'p'.",
-          "You need to provide the IP address after the command."
+          "How does a submarine locate targets? (Sonar).",
+          "We need to send an ICMP Echo Request. There is a standard 4-letter networking tool for this.",
+          "Solution: Use the `ping` command followed by the IP address."
         ],
         solution: 'ping 10.4.12.88',
         successMessage: 'PING 10.4.12.88 (10.4.12.88): 56 data bytes\n64 bytes from 10.4.12.88: icmp_seq=0 ttl=64 time=42.1 ms\n64 bytes from 10.4.12.88: icmp_seq=1 ttl=64 time=45.3 ms\nRequest timeout for icmp_seq 2\n64 bytes from 10.4.12.88: icmp_seq=3 ttl=64 time=41.9 ms\n\n--- 10.4.12.88 ping statistics ---\n4 packets transmitted, 3 packets received, 25.0% packet loss\n[SARAH]: "25% packet loss? That\'s weird. Let\'s dig deeper."',

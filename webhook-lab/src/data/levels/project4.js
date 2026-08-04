@@ -20,7 +20,10 @@ To diagnose failures at scale, you need three things:\
 3. **DLQ (Dead Letter Queue):** A special queue where unprocessable events (like malformed JSON) are stored for manual review and replay, rather than being dropped entirely.\
 \
 ### Platform Engineer Insight\
-**Observability:** A DLQ is your ultimate safety net. If a developer accidentally deploys a bug that crashes the Business Logic processor, the DLQ catches all the Webhooks that arrived during the outage so you can manually replay them later.\
+**What is this concept?** A Dead Letter Queue (DLQ) is a designated storage area for events and messages that fail to process.\
+**Why is it used?** It serves as an ultimate safety net to ensure that malformed or continuously failing data isn't dropped entirely, preserving it for later manual review and replay.\
+**How does it work?** The primary processing queue is configured to route any message that exceeds its maximum retry threshold directly into the DLQ.\
+**How do we monitor it in production?** We set alarms on the DLQ size; a non-empty DLQ requires immediate engineering investigation to determine why processing failed.\
 \
 ## Objective\
 Configure a DLQ for the main processing queue.",
@@ -28,7 +31,12 @@ Configure a DLQ for the main processing queue.",
     "tasks": [
       {
         "command": /^node configure_dlq\.js$/i,
-        "instruction": "Run node configure_dlq.js to establish the Dead Letter Queue.",
+        "instruction": "Establish the Dead Letter Queue to capture failed Webhooks.",
+        "hints": [
+          "What script do we need to execute to set up the fallback queue?",
+          "Execute the Node.js script responsible for configuring the DLQ.",
+          "Run `node configure_dlq.js`"
+        ],
         "successMessage": "[SUCCESS] DLQ active. The Graveyard is secured.",
         "errorMessage": "Invalid command. Read the instructions carefully."
       }

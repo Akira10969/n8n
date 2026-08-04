@@ -59,18 +59,23 @@ if (request.headers['x-Webhook-token'] !== 'super_secret_token_123') {
 The fraudulent upgrades stop immediately. The attacker's requests are now bouncing off the 401 Unauthorized block. However, hardcoding a single token is a weak defense. It's only a matter of time before the rogue entity finds another way in.
 
 > **SYSTEM ALERT:** A rogue subnet is forging requests. Use iptables to drop all traffic from \`10.4.99.0/24\`.
-`
 
+### Platform Engineer Insight
+**What is this concept?** Webhook Authentication and Network Firewalls.
+**Why is it used?** To verify the identity of a sender and block unauthorized actors at the network layer before they consume application resources.
+**How does it work?** The application checks for a shared secret in the headers, while firewalls like \`iptables\` drop packets from untrusted IP ranges entirely.
+**How do we monitor it in production?** We monitor firewall dropped packet logs and application-level 401 Unauthorized metrics, alerting on sustained anomalies from specific IP addresses.
+`
   ,
   simulator: {
     tasks: [
       {
         command: /^iptables\s+-A\s+INPUT\s+-s\s+10\.4\.99\.0\/24\s+-j\s+DROP$/i,
-        instruction: 'Configure the server\'s firewall to block all incoming traffic from the compromised rogue subnet.',
+        instruction: 'Block malicious traffic at the network level.',
         hints: [
-          "You need to use the 'iptables' firewall utility.",
-          "Append a rule to the INPUT chain (-A INPUT).",
-          "Specify the source subnet (-s 10.4.99.0/24) and jump to the DROP target (-j DROP)."
+          "How can we prevent the server from even processing requests from the rogue subnet?",
+          "Use the iptables utility to append a rule to the INPUT chain dropping traffic from 10.4.99.0/24.",
+          "iptables -A INPUT -s 10.4.99.0/24 -j DROP"
         ],
         solution: 'iptables -A INPUT -s 10.4.99.0/24 -j DROP',
         successMessage: "iptables: rule added.\n[UNIT-7]: Rogue traffic dropping. Network stabilizing.\n[SARAH]: \"Good riddance. That stops the IP spoofing.\"",
