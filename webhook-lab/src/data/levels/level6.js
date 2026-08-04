@@ -78,9 +78,19 @@ As a Lead Operations Engineer, you must recognize when synchronous polling is cr
 
 ---
 
-## Before You Act: Understanding \`systemctl\`
+## Before You Act: Investigating with \`ps\` and \`grep\`
 
-**\`systemctl\`** is the command used to control **systemd** — the service manager that runs on almost every modern Linux system. It manages background services (daemons) that start on boot and keep running while the OS is live.
+When a server's CPU spikes, you can't just guess what's running. You have to investigate. Platform Engineers use two core Linux commands together to find rogue processes:
+
+1. **\`ps aux\`**: Lists every single running process on the server right now.
+2. **\`|\` (Pipe)**: Takes the massive output of \`ps aux\` and passes it into the next command.
+3. **\`grep <word>\`**: Filters the output so you only see lines containing your search word.
+
+By running **\`ps aux | grep polling\`**, you are saying: *"Show me all processes, but only print the ones that have 'polling' in their name."*
+
+## Understanding \`systemctl\`
+
+Once you find the runaway service, you must kill it. **\`systemctl\`** is the command used to control **systemd** — the service manager that runs on almost every modern Linux system. It manages background services (daemons) that start on boot and keep running while the OS is live.
 
 Common patterns:
 
