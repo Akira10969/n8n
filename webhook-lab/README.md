@@ -47,6 +47,7 @@ The game teaches **real Platform Engineering skills** through an investigation-b
 - **System Integrity (Hearts)** — incorrect answers cost HP; losing all hearts returns you to Mission 1
 - **Badges** — milestone awards for completing each zone
 - **Interactive World Map** — an isometric map where corrupted biomes visually heal as you progress
+- **In-Game How to Play Guide** — a header button beside Settings opens a quick reference for objectives, mission flow, activities, hearts, XP, and controls
 - **Cinematic Environment & NOC Dashboard** — the map dynamically reacts to platform health with fog, glitches, 'Void' overlays, and real-time dashboard metrics during incidents
 
 ### 🖥️ Terminal Simulator & Deployment
@@ -138,6 +139,8 @@ public/audio/
 ---
 
 ## 🎮 How to Play
+
+Use the **HOW TO PLAY** button beside **SETTINGS** in the game header any time you need a quick guide to the mechanics, objectives, and controls.
 
 1. **Explore the Map** — click glowing nodes to start unlocked missions
 2. **Investigate** — read the incident report and understand the business impact before acting

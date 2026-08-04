@@ -19,6 +19,7 @@ import TheVoidReveal from './components/TheVoidReveal';
 import GameEnding from './components/GameEnding';
 import AdminDashboard from './components/AdminDashboard';
 import SettingsModal from './components/SettingsModal';
+import HowToPlayModal from './components/HowToPlayModal';
 import { updateAudioSettings, setMusicPhase, playUIBeep } from './utils/audioUtils';
 import { registerPlayer, syncProgress, sendHeartbeat, getAuthTokens, logEvent } from './api';
 import './App.css';
@@ -40,6 +41,7 @@ function App() {
   const [hasSeenVoidReveal, setHasSeenVoidReveal] = useState(() => localStorage.getItem('webhook_has_seen_void_reveal') === 'true');
   const [hasCompletedGame, setHasCompletedGame] = useState(() => localStorage.getItem('webhook_has_completed_game') === 'true');
   const [showSettings, setShowSettings] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [settings, setSettings] = useState(() => JSON.parse(localStorage.getItem('webhook_settings') || '{"voiceEnabled":true, "musicVolume":0.5, "sfxVolume":0.5, "autoPlayBriefings":true, "reduceMotion":false}'));
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [isOffline, setIsOffline] = useState(() => localStorage.getItem('webhook_engineer_id')?.startsWith('OFFLINE-') || false);
@@ -359,6 +361,13 @@ function App() {
                 padding: '0.35rem 0.9rem', color: 'var(--text-muted)', 
                 cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem', fontFamily: 'monospace', letterSpacing: '0.06em'
               }}>SETTINGS</button>
+            <button 
+              onClick={() => setShowHowToPlay(true)}
+              style={{ 
+                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', 
+                padding: '0.35rem 0.9rem', color: 'var(--text-muted)', 
+                cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem', fontFamily: 'monospace', letterSpacing: '0.06em'
+              }}>HOW TO PLAY</button>
             <div style={{ width: '1px', height: '20px', background: 'var(--glass-border)', margin: '0 0.25rem' }}></div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--accent-red)', fontWeight: 'bold', fontSize: '0.85rem' }}>
               <Heart fill="currentColor" size={16} /> {hearts}
@@ -417,6 +426,10 @@ function App() {
 
       {showSettings && (
         <SettingsModal settings={settings} setSettings={setSettings} onClose={() => setShowSettings(false)} />
+      )}
+
+      {showHowToPlay && (
+        <HowToPlayModal onClose={() => setShowHowToPlay(false)} />
       )}
 
       {currentView === 'learning' && (

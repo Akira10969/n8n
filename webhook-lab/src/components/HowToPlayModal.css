@@ -1,0 +1,169 @@
+.howto-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(10px);
+}
+
+.howto-panel {
+  width: min(780px, 94vw);
+  max-height: 88vh;
+  overflow: hidden;
+  background: rgba(10, 15, 30, 0.96);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(6, 182, 212, 0.1);
+}
+
+.howto-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--accent-cyan);
+}
+
+.howto-header h2 {
+  flex: 1;
+  margin: 0;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+}
+
+.howto-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  border-radius: 6px;
+}
+
+.howto-close:hover {
+  color: var(--accent-red);
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.howto-body {
+  max-height: calc(88vh - 76px);
+  overflow-y: auto;
+  padding: 1.25rem;
+}
+
+.howto-summary {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  border-radius: 8px;
+  background: rgba(6, 182, 212, 0.08);
+}
+
+.howto-kicker {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--accent-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.howto-summary p {
+  margin: 0;
+  color: var(--text-main);
+  line-height: 1.55;
+}
+
+.howto-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.howto-card {
+  padding: 1rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.howto-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.75rem;
+  color: var(--accent-cyan);
+}
+
+.howto-card-title h3 {
+  margin: 0;
+  font-size: 0.92rem;
+  letter-spacing: 0.06em;
+}
+
+.howto-card ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--text-muted);
+}
+
+.howto-card li {
+  margin-bottom: 0.45rem;
+  line-height: 1.45;
+}
+
+.howto-card li:last-child {
+  margin-bottom: 0;
+}
+
+.howto-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.howto-control-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 52px;
+  padding: 0.75rem;
+  color: var(--text-main);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.18);
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.howto-control-item svg {
+  flex: 0 0 auto;
+  color: var(--accent-purple);
+}
+
+
+@media (max-width: 760px) {
+  .howto-grid,
+  .howto-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .howto-panel {
+    max-height: 92vh;
+  }
+
+  .howto-body {
+    max-height: calc(92vh - 76px);
+  }
+}
