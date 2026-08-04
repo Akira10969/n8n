@@ -2,6 +2,10 @@
 
 Business Cloud OS is a fully self-contained, open-source educational platform. To ensure this project can be freely redistributed, remixed, and utilized by the community without restrictive licensing concerns, all third-party assets are sourced under permissive licenses.
 
+## 👨‍💻 Creator & Developer
+**Jemuel Agban** (@Akira10969)
+Platform Engineering, Game Design, Curriculum Development, and Programming.
+
 ## 🎵 Audio Soundtrack
 The cinematic background music is synthesized via code from the `uncle-sheepsky/duru-ai-cc0-bgm` repository. These tracks provide a professional cyberpunk/electronic atmosphere while remaining completely royalty-free.
 

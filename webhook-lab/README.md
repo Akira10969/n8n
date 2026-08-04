@@ -4,6 +4,8 @@
 
 Built with **React + Vite**, deployed on **cPanel via GitHub Actions**.
 
+**Created by Jemuel Agban (@Akira10969)**
+
 ---
 
 ## 🎮 The Experience
