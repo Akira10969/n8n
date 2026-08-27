@@ -108,5 +108,106 @@ export const genericContent: Record<string, { concept: string, explanation: stri
       answerIndex: 1,
       explanation: 'Always disconnect the power before making changes to prevent short circuits or shocks.'
     }
+  },
+  'what-is-circuit': {
+    concept: 'An electrical circuit is a closed loop or path that allows electricity to flow continuously.',
+    explanation: 'A basic circuit requires three things: a power source (like a battery), a conductive path (like wires), and a load (like a light bulb or resistor) that consumes the electrical energy.',
+    practice: {
+      q: 'Which of the following is NOT required for a basic electrical circuit?',
+      options: ['A power source', 'A conductive path', 'A switch'],
+      answerIndex: 2,
+      explanation: 'A switch is useful for controlling a circuit, but not strictly required for electricity to flow.'
+    }
+  },
+  'open-closed-circuit': {
+    concept: 'An open circuit has a break in the path, preventing current flow. A closed circuit has an unbroken path, allowing current to flow.',
+    explanation: 'Switches work by intentionally creating an open circuit (to turn things off) or a closed circuit (to turn things on).',
+    practice: {
+      q: 'Will a light bulb turn on in an open circuit?',
+      options: ['Yes', 'No', 'Only if the voltage is high enough'],
+      answerIndex: 1,
+      explanation: 'Current cannot flow across the break in an open circuit, so the bulb will not light.'
+    }
+  },
+  'circuit-paths': {
+    concept: 'Electricity always seeks to complete a circuit back to its source, generally taking the path of least resistance.',
+    explanation: 'If there are multiple parallel paths, current will split and flow through all of them, but more current will flow through the paths with lower resistance.',
+    practice: {
+      q: 'If a circuit has two parallel paths, one with 10Ω and one with 1000Ω, where does most of the current go?',
+      options: ['Through the 1000Ω path', 'Through the 10Ω path', 'It splits equally'],
+      answerIndex: 1,
+      explanation: 'Current prefers the path of least resistance.'
+    }
+  },
+  'circuit-symbols': {
+    concept: 'Circuit symbols are standardized drawings used to represent electrical components in schematics.',
+    explanation: 'For example, a jagged line represents a resistor, a straight line represents a wire, and a circle with a triangle inside represents a diode.',
+    practice: {
+      q: 'Why do engineers use standard circuit symbols?',
+      options: ['To make drawings look complicated', 'To allow anyone to understand the circuit design universally', 'Because they are easier to draw than physical components'],
+      answerIndex: 1,
+      explanation: 'Standard symbols provide a universal language for engineers to share and understand designs.'
+    }
+  },
+  'reading-schematics': {
+    concept: 'A schematic is a map of a circuit drawn using standard symbols. It shows how components are electrically connected, not necessarily their physical layout.',
+    explanation: 'Lines connecting symbols represent wires (ideal conductors with zero resistance). If lines cross with a dot, they are connected. If they cross without a dot, they are not connected.',
+    practice: {
+      q: 'Does a schematic show you exactly where to place components on a breadboard?',
+      options: ['Yes', 'No', 'Only for simple circuits'],
+      answerIndex: 1,
+      explanation: 'Schematics show logical electrical connections, not physical placement.'
+    }
+  },
+  'resistors': {
+    concept: 'A resistor is a passive component that limits or resists the flow of electrical current.',
+    explanation: 'They are used to reduce current flow, adjust signal levels, divide voltages, and dissipate power as heat.',
+    practice: {
+      q: 'What is the primary function of a resistor?',
+      options: ['To store energy', 'To increase voltage', 'To limit current flow'],
+      answerIndex: 2,
+      explanation: 'Resistors resist the flow of current.'
+    }
+  },
+  'series-circuits': {
+    concept: 'A series circuit has only one path for current to flow. All components are connected end-to-end.',
+    explanation: 'Because there is only one path, the current is exactly the same through every component in the series. If one component breaks, the entire circuit is broken.',
+    practice: {
+      q: 'In a series circuit with three resistors, how does the current compare across them?',
+      options: ['It is highest at the first resistor.', 'It is the same through all three.', 'It decreases across each resistor.'],
+      answerIndex: 1,
+      explanation: 'Current has nowhere else to go, so it is the same everywhere in a series loop.'
+    }
+  },
+  'parallel-circuits': {
+    concept: 'A parallel circuit has multiple paths for current to flow. Components are connected across the same two nodes.',
+    explanation: 'Because they are connected to the same nodes, the voltage across all parallel components is identical. If one path breaks, current can still flow through the others.',
+    practice: {
+      q: 'If you have two light bulbs in parallel and one burns out, what happens to the other?',
+      options: ['It goes out.', 'It gets brighter.', 'It stays on normally.'],
+      answerIndex: 2,
+      explanation: 'Parallel branches operate independently.'
+    }
+  },
+  'kcl': {
+    concept: 'Kirchhoff\'s Current Law (KCL) states that the total current entering a junction (node) must equal the total current leaving it.',
+    explanation: 'This is based on the conservation of charge. Electrons don\'t just disappear; what goes in must come out.',
+    practice: {
+      q: 'If 5A enters a node and splits into two paths, and 3A goes down the first path, how much goes down the second?',
+      options: ['2A', '3A', '5A'],
+      answerIndex: 0,
+      explanation: '5A (in) - 3A (path 1) = 2A (path 2).'
+    }
+  },
+  'kvl': {
+    concept: 'Kirchhoff\'s Voltage Law (KVL) states that the sum of all voltages around any closed loop in a circuit must equal zero.',
+    explanation: 'This means that whatever voltage is supplied by the power source is entirely dropped by the components in the loop.',
+    practice: {
+      q: 'If a battery provides 9V to a single closed loop, what is the total voltage drop across the components?',
+      options: ['0V', '4.5V', '9V'],
+      answerIndex: 2,
+      explanation: 'The voltage drops must equal the voltage supplied (9V - 9V = 0).'
+    }
   }
 };
+
