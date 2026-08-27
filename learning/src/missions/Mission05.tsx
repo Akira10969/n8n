@@ -1,0 +1,154 @@
+import React, { useState, useEffect } from 'react';
+import { MissionLayout, Section, Icons } from '../components/MissionLayout';
+import { motion } from 'framer-motion';
+import { Zap, Activity, Cpu } from 'lucide-react';
+
+export const Mission05: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+  const [voltage, setVoltage] = useState<number>(5);
+  const [resistance, setResistance] = useState<number>(1000); // in Ohms
+  
+  // Calculate current (I = V/R) and power (P = VI)
+  const current = voltage / resistance; // in Amperes
+  const currentMA = current * 1000; // in mA
+  const power = voltage * current; // in Watts
+  const powerMW = power * 1000; // in mW
+
+  const [challengeAnswered, setChallengeAnswered] = useState<boolean | null>(null);
+
+  // Speed of animation based on current
+  const animationDuration = Math.max(0.2, 5 / Math.max(0.1, currentMA));
+
+  return (
+    <MissionLayout number="05" title="Ohm's Law" onBack={onBack}>
+      <Section title="Learn" icon={Icons.Learn}>
+        <p>
+          Ohm's Law is the most fundamental equation in electronics. It describes the relationship between <strong>Voltage (V)</strong>, <strong>Current (I)</strong>, and <strong>Resistance (R)</strong>.
+        </p>
+        <div className="bg-engineering-dark border border-engineering-light rounded-lg p-6 my-6 text-center">
+          <span className="text-4xl font-mono text-engineering-accent font-bold">V = I × R</span>
+        </div>
+        <ul className="list-disc pl-5 space-y-2">
+          <li><strong>V (Voltage):</strong> The "push" or pressure from the power source (Volts, V).</li>
+          <li><strong>R (Resistance):</strong> The restriction to the flow of electrons (Ohms, Ω).</li>
+          <li><strong>I (Current):</strong> The actual rate of flow of electrons (Amperes, A).</li>
+        </ul>
+      </Section>
+
+      <Section title="Visualize & Experiment" icon={Icons.Experiment}>
+        <div className="bg-engineering-dark rounded-xl p-8 flex flex-col items-center border border-engineering-light">
+          {/* Circuit Visualization */}
+          <div className="relative w-full max-w-lg h-64 bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center border-2 border-slate-700 mb-8">
+            <svg viewBox="0 0 400 200" className="w-full h-full">
+              {/* Power Source */}
+              <rect x="40" y="70" width="40" height="60" rx="4" fill="#3b82f6" />
+              <text x="60" y="105" fill="white" fontSize="14" fontWeight="bold" textAnchor="middle">{voltage}V</text>
+              
+              {/* Resistor */}
+              <path d="M 180 40 L 190 20 L 210 60 L 230 20 L 250 60 L 270 20 L 290 40" fill="none" stroke="#f59e0b" strokeWidth="4" strokeLinejoin="round" />
+              <text x="235" y="80" fill="#f59e0b" fontSize="14" fontWeight="bold" textAnchor="middle">{resistance >= 1000 ? `${(resistance/1000).toFixed(1)}k` : resistance}Ω</text>
+              
+              {/* Wires */}
+              <path d="M 60 70 L 60 40 L 180 40" fill="none" stroke="#64748b" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M 290 40 L 340 40 L 340 160 L 60 160 L 60 130" fill="none" stroke="#64748b" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+              
+              {/* Current Animation (particles) */}
+              {Array.from({ length: 15 }).map((_, i) => (
+                <motion.circle
+                  key={i}
+                  r={Math.min(6, Math.max(2, currentMA / 5))}
+                  fill="#fbbf24"
+                  initial={{ offsetDistance: '0%' }}
+                  animate={{ offsetDistance: '100%' }}
+                  transition={{ 
+                    duration: animationDuration, 
+                    repeat: Infinity, 
+                    ease: "linear",
+                    delay: i * (animationDuration / 15)
+                  }}
+                  style={{
+                    offsetPath: "path('M 60 70 L 60 40 L 180 40 L 190 20 L 210 60 L 230 20 L 250 60 L 270 20 L 290 40 L 340 40 L 340 160 L 60 160 L 60 130')"
+                  }}
+                />
+              ))}
+            </svg>
+          </div>
+
+          {/* Controls */}
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              <div>
+                <label className="flex justify-between text-sm font-bold text-slate-300 mb-2">
+                  <span>Voltage (V)</span>
+                  <span className="text-engineering-accent">{voltage} V</span>
+                </label>
+                <input 
+                  type="range" min="1" max="24" step="1" 
+                  value={voltage} onChange={(e) => setVoltage(Number(e.target.value))}
+                  className="w-full accent-engineering-accent"
+                />
+              </div>
+              <div>
+                <label className="flex justify-between text-sm font-bold text-slate-300 mb-2">
+                  <span>Resistance (R)</span>
+                  <span className="text-engineering-warning">{resistance} Ω</span>
+                </label>
+                <input 
+                  type="range" min="10" max="10000" step="10" 
+                  value={resistance} onChange={(e) => setResistance(Number(e.target.value))}
+                  className="w-full accent-engineering-warning"
+                />
+              </div>
+            </div>
+
+            {/* Readouts */}
+            <div className="bg-engineering-base p-6 rounded-lg border border-engineering-light flex flex-col justify-center gap-4">
+              <div className="flex justify-between items-center border-b border-engineering-light/50 pb-2">
+                <span className="text-slate-400">Current (I = V/R)</span>
+                <span className="text-xl font-mono text-engineering-success font-bold">
+                  {currentMA < 1 ? currentMA.toFixed(3) : currentMA.toFixed(1)} mA
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Power (P = V×I)</span>
+                <span className="text-xl font-mono text-engineering-danger font-bold">
+                  {powerMW < 1 ? powerMW.toFixed(3) : powerMW.toFixed(1)} mW
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section title="Challenge" icon={Icons.Challenge}>
+        <div className="bg-engineering-dark p-6 rounded-lg border border-engineering-light">
+          <p className="mb-4 text-lg">You have a 5V power supply and a 1kΩ (1000Ω) resistor. What is the current flowing through the resistor?</p>
+          <div className="space-y-3">
+            <button 
+              className={`w-full text-left p-4 rounded border transition-colors ${challengeAnswered === false ? 'border-engineering-danger bg-engineering-danger/10' : 'border-engineering-light hover:bg-engineering-light/50'}`}
+              onClick={() => setChallengeAnswered(false)}
+            >
+              A) 5 A
+            </button>
+            <button 
+              className={`w-full text-left p-4 rounded border transition-colors ${challengeAnswered === true ? 'border-engineering-success bg-engineering-success/10' : 'border-engineering-light hover:bg-engineering-light/50'}`}
+              onClick={() => setChallengeAnswered(true)}
+            >
+              B) 5 mA (0.005 A)
+            </button>
+            <button 
+              className={`w-full text-left p-4 rounded border transition-colors ${challengeAnswered === false ? 'border-engineering-danger bg-engineering-danger/10' : 'border-engineering-light hover:bg-engineering-light/50'}`}
+              onClick={() => setChallengeAnswered(false)}
+            >
+              C) 500 mA
+            </button>
+          </div>
+          {challengeAnswered === true && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 p-4 bg-engineering-success/20 text-engineering-success rounded">
+              <strong>Correct!</strong> I = 5V / 1000Ω = 0.005 Amperes, which is 5 milliamperes (mA).
+            </motion.div>
+          )}
+        </div>
+      </Section>
+    </MissionLayout>
+  );
+};
