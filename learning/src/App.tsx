@@ -10,6 +10,10 @@ import { SeriesParallelSimulator } from './pages/SeriesParallelSimulator';
 import { ElectricCharge } from './pages/ElectricCharge';
 import { PowerEnergySimulator } from './pages/PowerEnergySimulator';
 import { VoltageCurrentResistance } from './pages/VoltageCurrentResistance';
+import { GroundReference } from './pages/GroundReference';
+import { UnitsPrefixes } from './pages/UnitsPrefixes';
+import { CircuitSafety } from './pages/CircuitSafety';
+import { WhatIsACircuit } from './pages/WhatIsACircuit';
 import { PlaceholderTopic } from './pages/PlaceholderTopic';
 import { CircuitBoard, Book, ChevronRight, Menu, X } from 'lucide-react';
 
@@ -41,20 +45,28 @@ function App() {
       case 'current':
       case 'resistance':
         return <VoltageCurrentResistance />;
+      case 'ground-reference':
+        return <GroundReference />;
       case 'conductors-insulators':
         return <ConductorsInsulators />;
       case 'dc-vs-ac':
         return <DCvsAC />;
-      case 'series-circuits':
-      case 'parallel-circuits':
-      case 'equivalent-resistance':
-        return <SeriesParallelSimulator />;
+      case 'units-prefixes':
+        return <UnitsPrefixes />;
       case 'ohms-law':
         return <OhmsLaw />;
       case 'electrical-power':
       case 'electrical-energy':
       case 'power-formulas':
         return <PowerEnergySimulator />;
+      case 'circuit-safety':
+        return <CircuitSafety />;
+      case 'what-is-circuit':
+        return <WhatIsACircuit />;
+      case 'series-circuits':
+      case 'parallel-circuits':
+      case 'equivalent-resistance':
+        return <SeriesParallelSimulator />;
       case 'what-is-breadboard':
         return <Breadboard />;
       case 'and-gate':

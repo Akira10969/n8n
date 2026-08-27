@@ -22,21 +22,21 @@ export const curriculum: Category[] = [
       { id: 'voltage', title: '5. Voltage', isImplemented: true },
       { id: 'current', title: '6. Current', isImplemented: true },
       { id: 'resistance', title: '7. Resistance', isImplemented: true },
-      { id: 'ground-reference', title: '8. Ground and Reference' },
+      { id: 'ground-reference', title: '8. Ground and Reference', isImplemented: true },
       { id: 'dc-vs-ac', title: '9. DC vs AC', isImplemented: true },
       { id: 'electrical-power', title: '10. Electrical Power', isImplemented: true },
       { id: 'electrical-energy', title: '11. Electrical Energy', isImplemented: true },
-      { id: 'units-prefixes', title: '12. Units and Prefixes' },
+      { id: 'units-prefixes', title: '12. Units and Prefixes', isImplemented: true },
       { id: 'ohms-law', title: '13. Ohm\'s Law', isImplemented: true },
       { id: 'power-formulas', title: '14. Electrical Power Formulas', isImplemented: true },
-      { id: 'circuit-safety', title: '15. Basic Circuit Safety' }
+      { id: 'circuit-safety', title: '15. Basic Circuit Safety', isImplemented: true }
     ]
   },
   {
     id: 'circuit-fundamentals',
     title: '2. Circuit Fundamentals',
     topics: [
-      { id: 'what-is-circuit', title: '16. What Is an Electrical Circuit?' },
+      { id: 'what-is-circuit', title: '16. What Is an Electrical Circuit?', isImplemented: true },
       { id: 'open-closed-circuit', title: '17. Open vs Closed Circuit' },
       { id: 'circuit-paths', title: '18. Circuit Paths' },
       { id: 'circuit-symbols', title: '19. Circuit Symbols' },
