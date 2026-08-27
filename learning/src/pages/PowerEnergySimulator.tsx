@@ -46,6 +46,27 @@ export const PowerEnergySimulator: React.FC = () => {
         </p>
       </Section>
 
+      <Section title="Key Terms" icon={Icons.Concept}>
+        <dl className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-yellow-400 text-lg mb-1">Electrical Power (W)</dt>
+            <dd className="text-slate-300">The rate at which electrical energy is transferred by an electric circuit. Measured in Watts.</dd>
+          </div>
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-engineering-accent text-lg mb-1">Electrical Energy (J)</dt>
+            <dd className="text-slate-300">The total amount of work done by an electrical circuit over a specific period of time. Measured in Joules or Watt-hours.</dd>
+          </div>
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-slate-100 text-lg mb-1">Watt (W)</dt>
+            <dd className="text-slate-300">The unit of Power. One Watt equals one Joule of energy transferred per second (1W = 1 J/s).</dd>
+          </div>
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-slate-100 text-lg mb-1">Joule (J)</dt>
+            <dd className="text-slate-300">The standard unit of Energy in the International System of Units (SI).</dd>
+          </div>
+        </dl>
+      </Section>
+
       <Section title="Interactive Visualization: Energy Consumption" icon={Icons.Experiment}>
         <div className="bg-engineering-dark p-6 rounded-lg border border-engineering-light shadow-inner">
           

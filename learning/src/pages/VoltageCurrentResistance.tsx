@@ -28,6 +28,27 @@ export const VoltageCurrentResistance: React.FC = () => {
         </ul>
       </Section>
 
+      <Section title="Key Terms" icon={Icons.Concept}>
+        <dl className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-blue-400 text-lg mb-1">Voltage (V)</dt>
+            <dd className="text-slate-300">Also known as electromotive force. It is the difference in electric potential between two points. It is the "pressure" that pushes electrons.</dd>
+          </div>
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-engineering-success text-lg mb-1">Current (I)</dt>
+            <dd className="text-slate-300">The rate at which electric charge (electrons) flows past a point in a circuit. Measured in Amperes (A).</dd>
+          </div>
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-engineering-warning text-lg mb-1">Resistance (R)</dt>
+            <dd className="text-slate-300">A material's opposition to the flow of electric current. Measured in Ohms (Ω).</dd>
+          </div>
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-slate-100 text-lg mb-1">Ampere (Amp)</dt>
+            <dd className="text-slate-300">The base unit of electric current. One ampere equals one coulomb of electrical charge moving past a specific point in one second.</dd>
+          </div>
+        </dl>
+      </Section>
+
       <Section title="Interactive Visualization: The Water Analogy" icon={Icons.Experiment}>
         <div className="bg-engineering-dark p-6 rounded-lg border border-engineering-light flex flex-col items-center shadow-inner">
           

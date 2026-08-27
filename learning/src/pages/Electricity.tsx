@@ -20,6 +20,27 @@ export const Electricity: React.FC = () => {
         </p>
       </Section>
 
+      <Section title="Key Terms" icon={Icons.Concept}>
+        <dl className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-engineering-accent text-lg mb-1">Electricity</dt>
+            <dd className="text-slate-300">The presence and flow of electric charge. Its most common form is the flow of electrons through a wire.</dd>
+          </div>
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-slate-100 text-lg mb-1">Conductor</dt>
+            <dd className="text-slate-300">A material that allows electric charge to flow freely through it. Copper, silver, and gold are excellent conductors.</dd>
+          </div>
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-slate-100 text-lg mb-1">Insulator</dt>
+            <dd className="text-slate-300">A material that blocks or heavily resists the flow of electric charge. Rubber, glass, and air are insulators.</dd>
+          </div>
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-slate-100 text-lg mb-1">Closed Circuit</dt>
+            <dd className="text-slate-300">An unbroken, continuous conductive path that allows electricity to travel from the power source and back.</dd>
+          </div>
+        </dl>
+      </Section>
+
       <Section title="Visual Explanation & Interactive Example" icon={Icons.Experiment}>
         <div className="bg-engineering-dark rounded-xl p-8 flex flex-col items-center border border-engineering-light">
           <div className="relative w-full max-w-md h-64 bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center border-2 border-slate-700">

@@ -36,6 +36,27 @@ export const ElectricCharge: React.FC = () => {
         </p>
       </Section>
 
+      <Section title="Key Terms" icon={Icons.Concept}>
+        <dl className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-engineering-danger text-lg mb-1">Proton</dt>
+            <dd className="text-slate-300">A subatomic particle found in the nucleus of every atom. It carries a positive electrical charge.</dd>
+          </div>
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-blue-400 text-lg mb-1">Electron</dt>
+            <dd className="text-slate-300">A subatomic particle that orbits the nucleus of an atom. It carries a negative electrical charge and is responsible for electricity.</dd>
+          </div>
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-slate-100 text-lg mb-1">Neutron</dt>
+            <dd className="text-slate-300">A subatomic particle found in the nucleus of an atom with no net electric charge (neutral).</dd>
+          </div>
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-engineering-accent text-lg mb-1">Ion</dt>
+            <dd className="text-slate-300">An atom or molecule that has a net electrical charge because it has either gained or lost electrons.</dd>
+          </div>
+        </dl>
+      </Section>
+
       <Section title="Interactive Visualization: The Atom" icon={Icons.Experiment}>
         <div className="bg-engineering-dark p-6 rounded-lg border border-engineering-light flex flex-col items-center">
           
