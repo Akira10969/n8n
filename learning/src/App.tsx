@@ -3,6 +3,7 @@ import { curriculum } from './data/curriculum';
 import { Electricity } from './pages/Electricity';
 import { OhmsLaw } from './pages/OhmsLaw';
 import { Breadboard } from './pages/Breadboard';
+import { LogicGates } from './pages/LogicGates';
 import { PlaceholderTopic } from './pages/PlaceholderTopic';
 import { CircuitBoard, Book, ChevronRight, Menu, X } from 'lucide-react';
 
@@ -31,6 +32,8 @@ function App() {
         return <OhmsLaw />;
       case 'what-is-breadboard':
         return <Breadboard />;
+      case 'and-gate':
+        return <LogicGates />;
       default:
         return <PlaceholderTopic categoryTitle={currentCategoryTitle} topicTitle={currentTopicTitle} />;
     }

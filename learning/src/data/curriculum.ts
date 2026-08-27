@@ -173,7 +173,7 @@ export const curriculum: Category[] = [
       { id: 'binary-numbers', title: '114. Binary Numbers' },
       { id: 'decimal-binary', title: '115. Decimal ↔ Binary' },
       { id: 'hexadecimal', title: '116. Hexadecimal' },
-      { id: 'and-gate', title: '117. AND Gate' },
+      { id: 'and-gate', title: '117. AND Gate', isImplemented: true },
       { id: 'or-gate', title: '118. OR Gate' },
       { id: 'not-gate', title: '119. NOT Gate' },
       { id: 'nand-gate', title: '120. NAND Gate' },
