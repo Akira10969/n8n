@@ -4,6 +4,8 @@ import { Electricity } from './pages/Electricity';
 import { OhmsLaw } from './pages/OhmsLaw';
 import { Breadboard } from './pages/Breadboard';
 import { LogicGates } from './pages/LogicGates';
+import { ConductorsInsulators } from './pages/ConductorsInsulators';
+import { DCvsAC } from './pages/DCvsAC';
 import { PlaceholderTopic } from './pages/PlaceholderTopic';
 import { CircuitBoard, Book, ChevronRight, Menu, X } from 'lucide-react';
 
@@ -28,6 +30,10 @@ function App() {
     switch (currentTopicId) {
       case 'what-is-electricity':
         return <Electricity />;
+      case 'conductors-insulators':
+        return <ConductorsInsulators />;
+      case 'dc-vs-ac':
+        return <DCvsAC />;
       case 'ohms-law':
         return <OhmsLaw />;
       case 'what-is-breadboard':
