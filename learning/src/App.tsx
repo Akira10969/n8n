@@ -16,6 +16,10 @@ import { CircuitSafety } from './pages/CircuitSafety';
 import { WhatIsACircuit } from './pages/WhatIsACircuit';
 import { SwitchSimulator } from './pages/SwitchSimulator';
 import { CircuitSchematics } from './pages/CircuitSchematics';
+import { VoltageDividerSimulator } from './pages/VoltageDividerSimulator';
+import { KirchhoffSimulator } from './pages/KirchhoffSimulator';
+import { ResistorColorCode } from './pages/ResistorColorCode';
+import { CapacitorSimulator } from './pages/CapacitorSimulator';
 import { PlaceholderTopic } from './pages/PlaceholderTopic';
 import { CircuitBoard, Book, ChevronRight, Menu, X } from 'lucide-react';
 
@@ -74,7 +78,27 @@ function App() {
       case 'series-circuits':
       case 'parallel-circuits':
       case 'equivalent-resistance':
+      case 'series-parallel':
         return <SeriesParallelSimulator />;
+      case 'voltage-drop':
+      case 'voltage-division':
+      case 'potentiometers':
+        return <VoltageDividerSimulator />;
+      case 'current-division':
+      case 'kcl':
+      case 'kvl':
+      case 'circuit-analysis':
+        return <KirchhoffSimulator />;
+      case 'resistors':
+      case 'resistor-color-codes':
+      case 'resistor-tolerance':
+        return <ResistorColorCode />;
+      case 'capacitors':
+      case 'capacitor-polarity':
+      case 'capacitor-charging':
+      case 'capacitor-discharging':
+      case 'rc-time-constant':
+        return <CapacitorSimulator />;
       case 'what-is-breadboard':
         return <Breadboard />;
       case 'and-gate':
