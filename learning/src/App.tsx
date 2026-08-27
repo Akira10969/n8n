@@ -41,7 +41,7 @@ function App() {
       case 'and-gate':
         return <LogicGates />;
       default:
-        return <PlaceholderTopic categoryTitle={currentCategoryTitle} topicTitle={currentTopicTitle} />;
+        return <PlaceholderTopic categoryTitle={currentCategoryTitle} topicTitle={currentTopicTitle} topicId={currentTopicId} />;
     }
   };
 
