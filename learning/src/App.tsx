@@ -1,49 +1,78 @@
 import { useState } from 'react';
-import { CampaignMap } from './components/CampaignMap';
-import { Mission01 } from './missions/Mission01';
-import { Mission05 } from './missions/Mission05';
-import { Mission17 } from './missions/Mission17';
-import { CircuitBoard, Map } from 'lucide-react';
+import { Electricity } from './pages/Electricity';
+import { OhmsLaw } from './pages/OhmsLaw';
+import { Breadboard } from './pages/Breadboard';
+import { CircuitBoard, Book, ChevronRight } from 'lucide-react';
 
-export type ViewState = 'map' | 'mission_01' | 'mission_05' | 'mission_17';
+export type TopicView = 'electricity' | 'ohms_law' | 'breadboard';
 
 function App() {
-  const [currentView, setCurrentView] = useState<ViewState>('map');
+  const [currentView, setCurrentView] = useState<TopicView>('electricity');
 
   const renderView = () => {
     switch (currentView) {
-      case 'map':
-        return <CampaignMap onSelectMission={setCurrentView} />;
-      case 'mission_01':
-        return <Mission01 onBack={() => setCurrentView('map')} />;
-      case 'mission_05':
-        return <Mission05 onBack={() => setCurrentView('map')} />;
-      case 'mission_17':
-        return <Mission17 onBack={() => setCurrentView('map')} />;
+      case 'electricity':
+        return <Electricity />;
+      case 'ohms_law':
+        return <OhmsLaw />;
+      case 'breadboard':
+        return <Breadboard />;
       default:
-        return <CampaignMap onSelectMission={setCurrentView} />;
+        return <Electricity />;
     }
   };
 
+  const navItemClass = (view: TopicView) => `
+    w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors
+    ${currentView === view ? 'bg-engineering-accent text-white font-medium' : 'text-slate-400 hover:bg-engineering-light hover:text-white'}
+  `;
+
   return (
-    <div className="min-h-screen bg-engineering-dark text-slate-200 flex flex-col font-sans">
-      <header className="bg-engineering-base border-b border-engineering-light p-4 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <CircuitBoard className="text-engineering-accent w-8 h-8" />
-          <h1 className="text-xl font-bold tracking-tight text-white">CE Fundamentals</h1>
-        </div>
-        <nav className="flex gap-4">
-          <button 
-            onClick={() => setCurrentView('map')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${currentView === 'map' ? 'bg-engineering-light text-white' : 'text-slate-400 hover:text-white hover:bg-engineering-light/50'}`}
-          >
-            <Map className="w-4 h-4" />
-            Campaign Map
-          </button>
-        </nav>
-      </header>
+    <div className="min-h-screen bg-engineering-dark text-slate-200 flex font-sans">
       
-      <main className="flex-1 overflow-auto relative">
+      {/* Sidebar */}
+      <aside className="w-72 bg-engineering-base border-r border-engineering-light flex flex-col overflow-y-auto shrink-0">
+        <div className="p-6 border-b border-engineering-light flex items-center gap-3 sticky top-0 bg-engineering-base z-10">
+          <CircuitBoard className="text-engineering-accent w-6 h-6" />
+          <h1 className="text-lg font-bold tracking-tight text-white leading-tight">CE Learning<br/>Platform</h1>
+        </div>
+        
+        <nav className="p-4 space-y-6">
+          <div>
+            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-3 flex items-center gap-2">
+              <Book className="w-3 h-3" /> Electrical Fundamentals
+            </h3>
+            <ul className="space-y-1">
+              <li>
+                <button onClick={() => setCurrentView('electricity')} className={navItemClass('electricity')}>
+                  What is Electricity? <ChevronRight className="w-4 h-4 opacity-50" />
+                </button>
+              </li>
+              <li>
+                <button onClick={() => setCurrentView('ohms_law')} className={navItemClass('ohms_law')}>
+                  Ohm's Law <ChevronRight className="w-4 h-4 opacity-50" />
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-3 flex items-center gap-2">
+              <Book className="w-3 h-3" /> Breadboard Fundamentals
+            </h3>
+            <ul className="space-y-1">
+              <li>
+                <button onClick={() => setCurrentView('breadboard')} className={navItemClass('breadboard')}>
+                  Breadboard Prototyping <ChevronRight className="w-4 h-4 opacity-50" />
+                </button>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </aside>
+      
+      {/* Main Content Area */}
+      <main className="flex-1 h-screen overflow-y-auto">
         {renderView()}
       </main>
     </div>

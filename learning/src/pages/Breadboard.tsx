@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
-import { MissionLayout, Section, Icons } from '../components/MissionLayout';
+import { TopicLayout, Section, Icons } from '../components/TopicLayout';
 import { motion } from 'framer-motion';
-import { Cpu, Power, Zap, AlertTriangle } from 'lucide-react';
 
-export const Mission17: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  // Breadboard grid state
-  // Simplification: We'll have a few key nodes.
-  // Power (+), Ground (-), LED Anode, LED Cathode, Resistor ends.
-  
+export const Breadboard: React.FC = () => {
   const [connections, setConnections] = useState<string[]>([]);
   const [activeNode, setActiveNode] = useState<string | null>(null);
 
@@ -27,7 +22,6 @@ export const Mission17: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       setActiveNode(id);
     } else {
       if (activeNode !== id) {
-        // Create connection
         const newConnection = [activeNode, id].sort().join('-');
         if (!connections.includes(newConnection)) {
           setConnections([...connections, newConnection]);
@@ -41,33 +35,28 @@ export const Mission17: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     return connections.includes([id1, id2].sort().join('-'));
   };
 
-  // Check if circuit is complete
-  // Path: pwr_pos -> bb_row_1 -> (Resistor) -> bb_row_2 -> (Wire) -> bb_row_5 -> (LED) -> bb_row_6 -> (Wire) -> pwr_neg
-  // For simplicity, let's just check if pwr_pos is connected to something, and pwr_neg is connected.
-  
-  // Actually, let's make it a pre-placed components scenario, and they just need to add wires.
   const hasPowerToResistor = isConnected('pwr_pos', 'bb_row_1');
-  const hasResistorToLED = isConnected('bb_row_2', 'bb_row_5'); // jumper
+  const hasResistorToLED = isConnected('bb_row_2', 'bb_row_5'); 
   const hasLEDToGround = isConnected('bb_row_6', 'pwr_neg');
-
   const isCircuitComplete = hasPowerToResistor && hasResistorToLED && hasLEDToGround;
 
   return (
-    <MissionLayout number="17" title="Build Your First Circuit" onBack={onBack}>
-      <Section title="Learn" icon={Icons.Learn}>
+    <TopicLayout category="Breadboard Fundamentals" title="Breadboard Prototyping">
+      <Section title="Concept" icon={Icons.Concept}>
         <p>
-          A <strong>breadboard</strong> is a tool used to prototype circuits without soldering. The holes in a breadboard are connected underneath by metal clips in specific patterns.
+          A <strong>breadboard</strong> is an essential tool used to prototype circuits without soldering. The holes in a breadboard are connected underneath by metal clips in specific patterns.
         </p>
         <ul className="list-disc pl-5 space-y-2 mt-4">
-          <li><strong>Power Rails:</strong> The long strips on the sides, used for +V and GND.</li>
-          <li><strong>Terminal Strips:</strong> The short rows in the middle. Components on the same row are electrically connected.</li>
+          <li><strong>Power Rails:</strong> The long continuous strips on the edges, used for distributing supply voltage (+V) and Ground (GND).</li>
+          <li><strong>Terminal Strips:</strong> The short rows in the middle section. Components plugged into the same row are electrically connected together.</li>
         </ul>
       </Section>
 
-      <Section title="Experiment: Wire the Circuit" icon={Icons.Experiment}>
-        <div className="bg-engineering-dark p-6 rounded-lg border border-engineering-light">
-          <p className="mb-6">
-            Objective: Connect the 5V power to the resistor, connect the resistor to the LED anode, and connect the LED cathode to ground. Click two points to connect a wire.
+      <Section title="Interactive Example: Wiring a Circuit" icon={Icons.Experiment}>
+        <div className="bg-engineering-dark p-6 rounded-lg border border-engineering-light shadow-inner">
+          <p className="mb-6 text-slate-300">
+            <strong>Exercise:</strong> Connect the 5V power to the resistor, bridge the resistor to the LED anode, and connect the LED cathode to ground. 
+            <br/><span className="text-sm text-slate-400">Click two terminal points to place a connecting wire.</span>
           </p>
 
           <div className="relative w-full h-80 bg-slate-900 border-2 border-slate-700 rounded-lg overflow-hidden mb-6">
@@ -112,8 +101,8 @@ export const Mission17: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             ))}
 
             {/* Labels */}
-            <div className="absolute top-[10%] left-[10%] text-xs font-bold text-engineering-danger transform -translate-x-1/2">5V</div>
-            <div className="absolute top-[90%] left-[10%] text-xs font-bold text-engineering-success transform -translate-x-1/2">GND</div>
+            <div className="absolute top-[10%] left-[10%] text-xs font-bold text-engineering-danger transform -translate-x-1/2">5V+</div>
+            <div className="absolute top-[90%] left-[10%] text-xs font-bold text-engineering-success transform -translate-x-1/2">GND-</div>
             <div className="absolute top-[30%] left-[50%] text-xs font-bold text-slate-400 transform -translate-x-1/2">1kΩ Resistor</div>
             <div className="absolute top-[70%] left-[70%] text-xs font-bold text-slate-400 transform -translate-x-1/2">LED</div>
           </div>
@@ -121,32 +110,32 @@ export const Mission17: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           <div className="flex gap-4">
             <button 
               onClick={() => setConnections([])}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded text-white"
+              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded text-sm font-semibold transition-colors text-white"
             >
-              Reset Wires
+              Clear Wires
             </button>
           </div>
 
           {/* Checklist */}
-          <div className="mt-8 space-y-2">
-            <div className={`flex items-center gap-2 ${hasPowerToResistor ? 'text-engineering-success' : 'text-slate-500'}`}>
-              <Icons.Check /> Power connected to resistor
+          <div className="mt-8 space-y-3 bg-engineering-base p-4 rounded border border-engineering-light">
+            <div className={`flex items-center gap-3 ${hasPowerToResistor ? 'text-engineering-success' : 'text-slate-500'}`}>
+              <Icons.Check /> <span className="text-sm">Power source connected to the resistor</span>
             </div>
-            <div className={`flex items-center gap-2 ${hasResistorToLED ? 'text-engineering-success' : 'text-slate-500'}`}>
-              <Icons.Check /> Resistor connected to LED Anode
+            <div className={`flex items-center gap-3 ${hasResistorToLED ? 'text-engineering-success' : 'text-slate-500'}`}>
+              <Icons.Check /> <span className="text-sm">Resistor output connected to the LED Anode</span>
             </div>
-            <div className={`flex items-center gap-2 ${hasLEDToGround ? 'text-engineering-success' : 'text-slate-500'}`}>
-              <Icons.Check /> LED Cathode connected to Ground
+            <div className={`flex items-center gap-3 ${hasLEDToGround ? 'text-engineering-success' : 'text-slate-500'}`}>
+              <Icons.Check /> <span className="text-sm">LED Cathode connected to Ground to close the circuit</span>
             </div>
           </div>
 
           {isCircuitComplete && (
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mt-6 p-4 bg-engineering-success/20 border border-engineering-success rounded-lg text-engineering-success font-bold text-center text-xl">
-              Circuit Complete! The LED is ON.
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mt-6 p-4 bg-engineering-success/10 border border-engineering-success/50 rounded-lg text-engineering-success text-center">
+              <strong>Circuit Successfully Closed.</strong> The continuous path allows current to flow, illuminating the LED.
             </motion.div>
           )}
         </div>
       </Section>
-    </MissionLayout>
+    </TopicLayout>
   );
 };
