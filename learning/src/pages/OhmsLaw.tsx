@@ -31,6 +31,53 @@ export const OhmsLaw: React.FC = () => {
         </ul>
       </Section>
 
+      <Section title="Key Terms & Symbols" icon={Icons.Concept}>
+        <dl className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mt-4">
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-blue-400 text-lg mb-1">Voltage</dt>
+            <dd className="text-slate-300 mb-2">The electrical pressure pushing the electrons.</dd>
+            <div className="bg-slate-800 p-2 rounded text-center font-mono">
+              <span className="text-slate-400">Symbol:</span> <strong>V</strong> (or E)<br/>
+              <span className="text-slate-400">Unit:</span> Volts (V)
+            </div>
+          </div>
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-engineering-success text-lg mb-1">Current</dt>
+            <dd className="text-slate-300 mb-2">The rate of electron flow through the circuit.</dd>
+            <div className="bg-slate-800 p-2 rounded text-center font-mono">
+              <span className="text-slate-400">Symbol:</span> <strong>I</strong><br/>
+              <span className="text-slate-400">Unit:</span> Amperes (A)
+            </div>
+          </div>
+          <div className="bg-engineering-base p-4 rounded border border-engineering-light">
+            <dt className="font-bold text-engineering-warning text-lg mb-1">Resistance</dt>
+            <dd className="text-slate-300 mb-2">The restriction to the flow of electrons.</dd>
+            <div className="bg-slate-800 p-2 rounded text-center font-mono">
+              <span className="text-slate-400">Symbol:</span> <strong>R</strong><br/>
+              <span className="text-slate-400">Unit:</span> Ohms (Ω)
+            </div>
+          </div>
+        </dl>
+      </Section>
+
+      <Section title="The Formulas" icon={Icons.Concept}>
+        <p className="mb-4">Ohm's Law can be rearranged using basic algebra depending on which value you need to calculate. If you know any two values, you can always find the third!</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+          <div className="bg-slate-800 p-4 rounded border border-slate-700">
+            <div className="text-slate-400 text-sm font-bold uppercase mb-2">To find Voltage</div>
+            <div className="text-2xl font-mono text-white font-bold">V = I × R</div>
+          </div>
+          <div className="bg-slate-800 p-4 rounded border border-slate-700">
+            <div className="text-slate-400 text-sm font-bold uppercase mb-2">To find Current</div>
+            <div className="text-2xl font-mono text-white font-bold">I = V / R</div>
+          </div>
+          <div className="bg-slate-800 p-4 rounded border border-slate-700">
+            <div className="text-slate-400 text-sm font-bold uppercase mb-2">To find Resistance</div>
+            <div className="text-2xl font-mono text-white font-bold">R = V / I</div>
+          </div>
+        </div>
+      </Section>
+
       <Section title="Visual Explanation & Interactive Example" icon={Icons.Experiment}>
         <div className="bg-engineering-dark rounded-xl p-8 flex flex-col items-center border border-engineering-light shadow-inner">
           <div className="relative w-full max-w-lg h-64 bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center border-2 border-slate-700 mb-8">
