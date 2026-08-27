@@ -6,6 +6,7 @@ import { Breadboard } from './pages/Breadboard';
 import { LogicGates } from './pages/LogicGates';
 import { ConductorsInsulators } from './pages/ConductorsInsulators';
 import { DCvsAC } from './pages/DCvsAC';
+import { SeriesParallelSimulator } from './pages/SeriesParallelSimulator';
 import { PlaceholderTopic } from './pages/PlaceholderTopic';
 import { CircuitBoard, Book, ChevronRight, Menu, X } from 'lucide-react';
 
@@ -34,6 +35,10 @@ function App() {
         return <ConductorsInsulators />;
       case 'dc-vs-ac':
         return <DCvsAC />;
+      case 'series-circuits':
+      case 'parallel-circuits':
+      case 'equivalent-resistance':
+        return <SeriesParallelSimulator />;
       case 'ohms-law':
         return <OhmsLaw />;
       case 'what-is-breadboard':

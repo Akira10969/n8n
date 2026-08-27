@@ -41,15 +41,15 @@ export const curriculum: Category[] = [
       { id: 'circuit-paths', title: '18. Circuit Paths' },
       { id: 'circuit-symbols', title: '19. Circuit Symbols' },
       { id: 'reading-schematics', title: '20. Reading Schematics' },
-      { id: 'series-circuits', title: '21. Series Circuits' },
-      { id: 'parallel-circuits', title: '22. Parallel Circuits' },
+      { id: 'series-circuits', title: '21. Series Circuits', isImplemented: true },
+      { id: 'parallel-circuits', title: '22. Parallel Circuits', isImplemented: true },
       { id: 'series-parallel', title: '23. Series-Parallel Circuits' },
       { id: 'voltage-drop', title: '24. Voltage Drop' },
       { id: 'voltage-division', title: '25. Voltage Division' },
       { id: 'current-division', title: '26. Current Division' },
       { id: 'kcl', title: '27. Kirchhoff\'s Current Law' },
       { id: 'kvl', title: '28. Kirchhoff\'s Voltage Law' },
-      { id: 'equivalent-resistance', title: '29. Equivalent Resistance' },
+      { id: 'equivalent-resistance', title: '29. Equivalent Resistance', isImplemented: true },
       { id: 'circuit-analysis', title: '30. Circuit Analysis Basics' }
     ]
   },
