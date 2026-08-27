@@ -14,6 +14,8 @@ import { GroundReference } from './pages/GroundReference';
 import { UnitsPrefixes } from './pages/UnitsPrefixes';
 import { CircuitSafety } from './pages/CircuitSafety';
 import { WhatIsACircuit } from './pages/WhatIsACircuit';
+import { SwitchSimulator } from './pages/SwitchSimulator';
+import { CircuitSchematics } from './pages/CircuitSchematics';
 import { PlaceholderTopic } from './pages/PlaceholderTopic';
 import { CircuitBoard, Book, ChevronRight, Menu, X } from 'lucide-react';
 
@@ -63,6 +65,12 @@ function App() {
         return <CircuitSafety />;
       case 'what-is-circuit':
         return <WhatIsACircuit />;
+      case 'open-closed-circuit':
+      case 'circuit-paths':
+        return <SwitchSimulator />;
+      case 'circuit-symbols':
+      case 'reading-schematics':
+        return <CircuitSchematics />;
       case 'series-circuits':
       case 'parallel-circuits':
       case 'equivalent-resistance':
