@@ -20,6 +20,11 @@ import { VoltageDividerSimulator } from './pages/VoltageDividerSimulator';
 import { KirchhoffSimulator } from './pages/KirchhoffSimulator';
 import { ResistorColorCode } from './pages/ResistorColorCode';
 import { CapacitorSimulator } from './pages/CapacitorSimulator';
+import { DiodeSimulator } from './pages/DiodeSimulator';
+import { InductorSimulator } from './pages/InductorSimulator';
+import { TransistorSimulator } from './pages/TransistorSimulator';
+import { MosfetSimulator } from './pages/MosfetSimulator';
+import { VoltageRegulator } from './pages/VoltageRegulator';
 import { PlaceholderTopic } from './pages/PlaceholderTopic';
 import { CircuitBoard, Book, ChevronRight, Menu, X } from 'lucide-react';
 
@@ -99,6 +104,22 @@ function App() {
       case 'capacitor-discharging':
       case 'rc-time-constant':
         return <CapacitorSimulator />;
+      case 'inductors':
+      case 'transformers':
+        return <InductorSimulator />;
+      case 'diodes':
+      case 'diode-polarity':
+      case 'forward-bias':
+      case 'reverse-bias':
+      case 'leds':
+        return <DiodeSimulator />;
+      case 'switches':
+        return <SwitchSimulator />;
+      case 'relays':
+        return <TransistorSimulator />;
+      case 'zener-diodes':
+      case 'voltage-regulators':
+        return <VoltageRegulator />;
       case 'what-is-breadboard':
         return <Breadboard />;
       case 'and-gate':
