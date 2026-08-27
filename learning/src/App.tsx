@@ -7,6 +7,9 @@ import { LogicGates } from './pages/LogicGates';
 import { ConductorsInsulators } from './pages/ConductorsInsulators';
 import { DCvsAC } from './pages/DCvsAC';
 import { SeriesParallelSimulator } from './pages/SeriesParallelSimulator';
+import { ElectricCharge } from './pages/ElectricCharge';
+import { PowerEnergySimulator } from './pages/PowerEnergySimulator';
+import { VoltageCurrentResistance } from './pages/VoltageCurrentResistance';
 import { PlaceholderTopic } from './pages/PlaceholderTopic';
 import { CircuitBoard, Book, ChevronRight, Menu, X } from 'lucide-react';
 
@@ -31,6 +34,13 @@ function App() {
     switch (currentTopicId) {
       case 'what-is-electricity':
         return <Electricity />;
+      case 'electric-charge':
+      case 'electrons':
+        return <ElectricCharge />;
+      case 'voltage':
+      case 'current':
+      case 'resistance':
+        return <VoltageCurrentResistance />;
       case 'conductors-insulators':
         return <ConductorsInsulators />;
       case 'dc-vs-ac':
@@ -41,6 +51,10 @@ function App() {
         return <SeriesParallelSimulator />;
       case 'ohms-law':
         return <OhmsLaw />;
+      case 'electrical-power':
+      case 'electrical-energy':
+      case 'power-formulas':
+        return <PowerEnergySimulator />;
       case 'what-is-breadboard':
         return <Breadboard />;
       case 'and-gate':
