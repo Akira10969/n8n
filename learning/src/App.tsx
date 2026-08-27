@@ -1,78 +1,99 @@
 import { useState } from 'react';
+import { curriculum } from './data/curriculum';
 import { Electricity } from './pages/Electricity';
 import { OhmsLaw } from './pages/OhmsLaw';
 import { Breadboard } from './pages/Breadboard';
-import { CircuitBoard, Book, ChevronRight } from 'lucide-react';
-
-export type TopicView = 'electricity' | 'ohms_law' | 'breadboard';
+import { PlaceholderTopic } from './pages/PlaceholderTopic';
+import { CircuitBoard, Book, ChevronRight, Menu, X } from 'lucide-react';
 
 function App() {
-  const [currentView, setCurrentView] = useState<TopicView>('electricity');
+  const [currentTopicId, setCurrentTopicId] = useState<string>('what-is-electricity');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Find current topic and category
+  let currentTopicTitle = '';
+  let currentCategoryTitle = '';
+  
+  for (const cat of curriculum) {
+    const found = cat.topics.find(t => t.id === currentTopicId);
+    if (found) {
+      currentTopicTitle = found.title;
+      currentCategoryTitle = cat.title;
+      break;
+    }
+  }
 
   const renderView = () => {
-    switch (currentView) {
-      case 'electricity':
+    switch (currentTopicId) {
+      case 'what-is-electricity':
         return <Electricity />;
-      case 'ohms_law':
+      case 'ohms-law':
         return <OhmsLaw />;
-      case 'breadboard':
+      case 'what-is-breadboard':
         return <Breadboard />;
       default:
-        return <Electricity />;
+        return <PlaceholderTopic categoryTitle={currentCategoryTitle} topicTitle={currentTopicTitle} />;
     }
   };
 
-  const navItemClass = (view: TopicView) => `
-    w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors
-    ${currentView === view ? 'bg-engineering-accent text-white font-medium' : 'text-slate-400 hover:bg-engineering-light hover:text-white'}
+  const navItemClass = (id: string) => `
+    w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors text-left
+    ${currentTopicId === id ? 'bg-engineering-accent text-white font-medium' : 'text-slate-400 hover:bg-engineering-light hover:text-white'}
   `;
 
   return (
-    <div className="min-h-screen bg-engineering-dark text-slate-200 flex font-sans">
+    <div className="min-h-screen bg-engineering-dark text-slate-200 flex font-sans overflow-hidden">
       
+      {/* Mobile Toggle */}
+      <button 
+        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-engineering-base border border-engineering-light rounded"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      >
+        {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+      </button>
+
       {/* Sidebar */}
-      <aside className="w-72 bg-engineering-base border-r border-engineering-light flex flex-col overflow-y-auto shrink-0">
-        <div className="p-6 border-b border-engineering-light flex items-center gap-3 sticky top-0 bg-engineering-base z-10">
-          <CircuitBoard className="text-engineering-accent w-6 h-6" />
-          <h1 className="text-lg font-bold tracking-tight text-white leading-tight">CE Learning<br/>Platform</h1>
+      <aside className={`
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        fixed md:relative md:translate-x-0 z-40
+        w-80 h-screen bg-engineering-base border-r border-engineering-light flex flex-col shrink-0 transition-transform duration-300
+      `}>
+        <div className="p-6 border-b border-engineering-light flex items-center gap-3 bg-engineering-base shrink-0">
+          <CircuitBoard className="text-engineering-accent w-8 h-8 shrink-0" />
+          <h1 className="text-lg font-bold tracking-tight text-white leading-tight">Computer Engineering<br/>Learning Platform</h1>
         </div>
         
-        <nav className="p-4 space-y-6">
-          <div>
-            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-3 flex items-center gap-2">
-              <Book className="w-3 h-3" /> Electrical Fundamentals
-            </h3>
-            <ul className="space-y-1">
-              <li>
-                <button onClick={() => setCurrentView('electricity')} className={navItemClass('electricity')}>
-                  What is Electricity? <ChevronRight className="w-4 h-4 opacity-50" />
-                </button>
-              </li>
-              <li>
-                <button onClick={() => setCurrentView('ohms_law')} className={navItemClass('ohms_law')}>
-                  Ohm's Law <ChevronRight className="w-4 h-4 opacity-50" />
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-3 flex items-center gap-2">
-              <Book className="w-3 h-3" /> Breadboard Fundamentals
-            </h3>
-            <ul className="space-y-1">
-              <li>
-                <button onClick={() => setCurrentView('breadboard')} className={navItemClass('breadboard')}>
-                  Breadboard Prototyping <ChevronRight className="w-4 h-4 opacity-50" />
-                </button>
-              </li>
-            </ul>
-          </div>
+        <nav className="flex-1 overflow-y-auto p-4 space-y-8 scrollbar-thin scrollbar-thumb-engineering-light scrollbar-track-transparent">
+          {curriculum.map((category) => (
+            <div key={category.id}>
+              <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 px-2 flex items-center gap-2">
+                <Book className="w-4 h-4 text-engineering-accent" /> {category.title}
+              </h3>
+              <ul className="space-y-1">
+                {category.topics.map((topic) => (
+                  <li key={topic.id}>
+                    <button 
+                      onClick={() => {
+                        setCurrentTopicId(topic.id);
+                        if (window.innerWidth < 768) setIsSidebarOpen(false);
+                      }} 
+                      className={navItemClass(topic.id)}
+                    >
+                      <span className="truncate pr-2">{topic.title.replace(/^\d+\.\s/, '')}</span>
+                      {currentTopicId === topic.id && <ChevronRight className="w-4 h-4 opacity-75 shrink-0" />}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </nav>
       </aside>
       
       {/* Main Content Area */}
-      <main className="flex-1 h-screen overflow-y-auto">
+      <main className="flex-1 h-screen overflow-y-auto bg-engineering-dark">
+        {/* Spacer for mobile menu button */}
+        <div className="md:hidden h-16 w-full bg-engineering-base border-b border-engineering-light"></div>
         {renderView()}
       </main>
     </div>
